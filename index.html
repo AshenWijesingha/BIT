@@ -325,12 +325,8 @@
         .pdf-page-canvas {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             background: white;
-            /* Improve canvas rendering quality - smooth rendering for PDFs */
-            image-rendering: auto;
-            /* For better quality on high-DPI displays - enable hardware acceleration */
-            -webkit-backface-visibility: hidden;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
+            /* Enable hardware acceleration for better performance */
+            will-change: transform;
         }
         
         @media (max-width: 768px) {
@@ -889,8 +885,8 @@
                     canvas.height = scaledViewport.height;
                     
                     // Set CSS dimensions to display at correct size
-                    canvas.style.width = Math.floor(scaledViewport.width / outputScale) + 'px';
-                    canvas.style.height = Math.floor(scaledViewport.height / outputScale) + 'px';
+                    canvas.style.width = Math.round(scaledViewport.width / outputScale) + 'px';
+                    canvas.style.height = Math.round(scaledViewport.height / outputScale) + 'px';
                     
                     // Configure canvas context for high-quality rendering
                     context.imageSmoothingEnabled = true;
