@@ -1891,21 +1891,102 @@
         
         favoritePdf.addEventListener('click', toggleFavorite);
         
+        // Navigate to folder in sidebar
+        function navigateToFolder(folderPath) {
+            // Split path into parts
+            const parts = folderPath.split('/');
+            
+            // Collapse all folders first
+            fileTree.querySelectorAll('.folder-content').forEach(content => {
+                content.classList.remove('expanded');
+            });
+            fileTree.querySelectorAll('.chevron').forEach(chevron => {
+                chevron.classList.remove('rotate-90');
+            });
+            
+            // Find and expand each folder in the path
+            let currentElement = fileTree;
+            for (let i = 0; i < parts.length; i++) {
+                const part = parts[i];
+                const folderContainers = currentElement.querySelectorAll(':scope > .folder-container');
+                
+                for (const container of folderContainers) {
+                    const header = container.querySelector(':scope > div');
+                    const folderName = header?.querySelector('span')?.textContent?.trim();
+                    
+                    if (folderName === part) {
+                        // Expand this folder
+                        const content = container.querySelector('.folder-content');
+                        const chevron = header.querySelector('.chevron');
+                        if (content) {
+                            content.classList.add('expanded');
+                        }
+                        if (chevron) {
+                            chevron.classList.add('rotate-90');
+                        }
+                        
+                        // Scroll the folder header into view
+                        header.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Move to this folder's content for next iteration
+                        currentElement = content || container;
+                        break;
+                    }
+                }
+            }
+            
+            // Open sidebar on mobile
+            if (window.innerWidth < 1024) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+            }
+        }
+        
+        // Navigate home (back to welcome screen)
+        function navigateHome() {
+            // Clear current PDF
+            currentPdfPath = '';
+            
+            // Hide PDF container and show welcome message
+            pdfContainer.classList.add('hidden');
+            welcomeMessage.classList.remove('hidden');
+            loadingIndicator.classList.add('hidden');
+            
+            // Remove active state from sidebar items
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Collapse all folders
+            fileTree.querySelectorAll('.folder-content').forEach(content => {
+                content.classList.remove('expanded');
+            });
+            fileTree.querySelectorAll('.chevron').forEach(chevron => {
+                chevron.classList.remove('rotate-90');
+            });
+            
+            // Update URL to remove pdf parameter
+            const url = new URL(window.location);
+            url.searchParams.delete('pdf');
+            window.history.pushState({}, '', url);
+        }
+        
         // Update breadcrumb
         function updateBreadcrumb(pdfPath) {
             const parts = pdfPath.split('/');
-            breadcrumb.innerHTML = '<li class="flex items-center"><a href="#" class="hover:text-blue-600 transition-colors" onclick="event.preventDefault();">Home</a></li>';
+            breadcrumb.innerHTML = '<li class="flex items-center"><a href="#" class="hover:text-blue-600 transition-colors cursor-pointer" onclick="event.preventDefault(); navigateHome();">Home</a></li>';
             
             let path = '';
             parts.forEach((part, index) => {
                 if (index < parts.length - 1) {
                     path += (path ? '/' : '') + part;
+                    const escapedPath = path.replace(/'/g, "\\'");
                     breadcrumb.innerHTML += `
                         <li class="flex items-center">
                             <svg class="h-3 w-3 mx-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                             </svg>
-                            <span class="text-gray-500">${part}</span>
+                            <a href="#" class="text-gray-500 hover:text-blue-600 transition-colors cursor-pointer" onclick="event.preventDefault(); navigateToFolder('${escapedPath}');">${part}</a>
                         </li>
                     `;
                 } else {
@@ -1914,7 +1995,7 @@
                             <svg class="h-3 w-3 mx-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                             </svg>
-                            <span class="text-gray-700 font-medium">${part}</span>
+                            <span class="text-gray-700 font-medium truncate max-w-xs" title="${part}">${part}</span>
                         </li>
                     `;
                 }
