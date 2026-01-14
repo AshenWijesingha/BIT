@@ -3,22 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
-    <meta name="description" content="BIT Repository - Browse and view PDF course materials for Bachelor of Information Technology program">
+    <meta name="description" content="BIT Repository - Browse and view PDF course materials for Bachelor of Information Technology program. Access lecture notes, tutorials, and study materials for BIT students.">
     <meta name="theme-color" content="#2563eb">
     <meta name="author" content="BIT Repository">
-    <meta name="keywords" content="BIT, Bachelor of Information Technology, PDF, course materials, study materials, university">
+    <meta name="keywords" content="BIT, Bachelor of Information Technology, PDF, course materials, study materials, university, lecture notes, tutorials, IT education, computing, semester materials">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://ashenwijesingha.github.io/BIT/">
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/jpeg" href="https://res.cloudinary.com/dkj22lm1g/image/upload/w_32,h_32,c_fill/v1768415117/BIT_Repository_xropb0.jpg">
+    <link rel="icon" type="image/jpeg" sizes="16x16" href="https://res.cloudinary.com/dkj22lm1g/image/upload/w_16,h_16,c_fill/v1768415117/BIT_Repository_xropb0.jpg">
+    <link rel="icon" type="image/jpeg" sizes="32x32" href="https://res.cloudinary.com/dkj22lm1g/image/upload/w_32,h_32,c_fill/v1768415117/BIT_Repository_xropb0.jpg">
+    <link rel="icon" type="image/jpeg" sizes="96x96" href="https://res.cloudinary.com/dkj22lm1g/image/upload/w_96,h_96,c_fill/v1768415117/BIT_Repository_xropb0.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://res.cloudinary.com/dkj22lm1g/image/upload/w_180,h_180,c_fill/v1768415117/BIT_Repository_xropb0.jpg">
+    <link rel="shortcut icon" href="https://res.cloudinary.com/dkj22lm1g/image/upload/w_32,h_32,c_fill/v1768415117/BIT_Repository_xropb0.jpg">
+    
     <!-- Open Graph meta tags for social sharing -->
-    <meta property="og:title" content="BIT Repository - PDF Viewer">
-    <meta property="og:description" content="Browse and view PDF course materials for Bachelor of Information Technology program">
+    <meta property="og:title" content="BIT Repository - PDF Viewer | Course Materials for BIT Students">
+    <meta property="og:description" content="Browse and view PDF course materials for Bachelor of Information Technology program. Access lecture notes, tutorials, and study materials organized by semester.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://ashenwijesingha.github.io/BIT/">
-    <!-- Note: Add og-image.png to the repository root for social sharing preview image -->
-    <!-- <meta property="og:image" content="https://ashenwijesingha.github.io/BIT/og-image.png"> -->
+    <meta property="og:image" content="https://res.cloudinary.com/dkj22lm1g/image/upload/w_1200,h_630,c_fill/v1768415117/BIT_Repository_xropb0.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="BIT Repository Logo - Bachelor of Information Technology Course Materials">
+    <meta property="og:site_name" content="BIT Repository">
+    <meta property="og:locale" content="en_US">
+    
     <!-- Twitter Card meta tags -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="BIT Repository - PDF Viewer">
-    <meta name="twitter:description" content="Browse and view PDF course materials for Bachelor of Information Technology program">
-    <title>BIT Repository - PDF Viewer</title>
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="BIT Repository - PDF Viewer | Course Materials for BIT Students">
+    <meta name="twitter:description" content="Browse and view PDF course materials for Bachelor of Information Technology program. Access lecture notes and study materials.">
+    <meta name="twitter:image" content="https://res.cloudinary.com/dkj22lm1g/image/upload/w_1200,h_630,c_fill/v1768415117/BIT_Repository_xropb0.jpg">
+    <meta name="twitter:image:alt" content="BIT Repository Logo">
+    
+    <title>BIT Repository - PDF Viewer | Bachelor of Information Technology Course Materials</title>
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "BIT Repository",
+        "alternateName": "Bachelor of Information Technology Repository",
+        "url": "https://ashenwijesingha.github.io/BIT/",
+        "description": "Browse and view PDF course materials for Bachelor of Information Technology program. Access lecture notes, tutorials, and study materials.",
+        "image": "https://res.cloudinary.com/dkj22lm1g/image/upload/v1768415117/BIT_Repository_xropb0.jpg",
+        "publisher": {
+            "@type": "Organization",
+            "name": "BIT Repository",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://res.cloudinary.com/dkj22lm1g/image/upload/v1768415117/BIT_Repository_xropb0.jpg"
+            }
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://ashenwijesingha.github.io/BIT/?pdf={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- PDF.js library for rendering PDFs on all devices including mobile -->
@@ -701,7 +750,7 @@
     <header class="bg-blue-600 text-white shadow-lg fixed w-full z-50 header-height">
         <div class="px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between h-full">
             <h1 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold flex items-center gap-1 sm:gap-2 min-w-0">
-                <span class="flex-shrink-0">📚</span>
+                <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_40,h_40,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg flex-shrink-0 object-cover">
                 <span class="truncate">BIT Repository</span>
                 <span class="hidden sm:inline truncate"> - PDF Viewer</span>
             </h1>
@@ -814,9 +863,7 @@
             <!-- Welcome Message -->
             <div id="welcomeMessage" class="flex flex-col items-center justify-center text-center content-min-height">
                 <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 max-w-md mx-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 sm:h-24 sm:w-24 mx-auto text-blue-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                    <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_192,h_192,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-20 w-20 sm:h-24 sm:w-24 mx-auto rounded-xl shadow-md mb-4 object-cover">
                     <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">Welcome to BIT Repository</h2>
                     <p class="text-base text-gray-600 mb-4">Select a PDF file from the sidebar to start viewing.</p>
                     <p class="text-sm text-gray-500 mb-4">This repository contains course materials for the Bachelor of Information Technology program.</p>
@@ -834,6 +881,7 @@
             <!-- Loading Indicator -->
             <div id="loadingIndicator" class="hidden flex-col items-center justify-center content-min-height">
                 <div class="bg-white rounded-xl shadow-lg p-8 max-w-sm mx-4">
+                    <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_80,h_80,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="Loading" class="h-16 w-16 mx-auto rounded-lg mb-4 object-cover animate-pulse">
                     <div class="loader mb-4 mx-auto"></div>
                     <p class="text-base text-gray-700 font-medium">Loading PDF...</p>
                     <p class="text-sm text-gray-500 mt-2">Please wait while we prepare your document</p>
@@ -956,7 +1004,7 @@
         <div class="max-w-4xl mx-auto text-center">
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
                 <div class="flex items-center gap-2">
-                    <span class="text-2xl">📚</span>
+                    <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_40,h_40,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-8 w-8 rounded-lg object-cover">
                     <span class="font-semibold text-white">BIT Repository</span>
                 </div>
                 <div class="hidden sm:block text-gray-600">|</div>
@@ -1016,7 +1064,7 @@
                     <!-- About Section -->
                     <div>
                         <h3 class="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                            <span>📚</span> About BIT Repository
+                            <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_24,h_24,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="" class="h-5 w-5 rounded object-cover"> About BIT Repository
                         </h3>
                         <p class="text-sm text-gray-600">
                             This is a PDF repository for Bachelor of Information Technology (BIT) course materials. 
