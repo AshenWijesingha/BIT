@@ -1915,9 +1915,12 @@
                 const part = parts[i];
                 const folderContainers = currentElement.querySelectorAll(':scope > .folder-container');
                 
+                let foundFolder = false;
                 for (const container of folderContainers) {
                     const header = container.querySelector(':scope > div');
-                    const folderName = header?.querySelector('span')?.textContent?.trim();
+                    if (!header) continue;
+                    
+                    const folderName = header.querySelector('span')?.textContent?.trim();
                     
                     if (folderName === part) {
                         // Expand this folder
@@ -1934,9 +1937,17 @@
                         header.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         
                         // Move to this folder's content for next iteration
-                        currentElement = content || container;
+                        if (content) {
+                            currentElement = content;
+                            foundFolder = true;
+                        }
                         break;
                     }
+                }
+                
+                // If folder not found, stop searching
+                if (!foundFolder && i < parts.length - 1) {
+                    break;
                 }
             }
             
