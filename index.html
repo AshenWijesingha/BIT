@@ -161,9 +161,23 @@
             .xs\:flex-col { flex-direction: column; }
             .xs\:flex-wrap { flex-wrap: wrap; }
             
-            /* Improve touch targets for mobile - specific selectors to avoid unintended effects */
-            .sidebar-item, .sidebar-item button, .sidebar-item a,
-            header button, .pdf-controls button, .pdf-controls a { min-height: 44px; }
+            /* Improve touch targets for mobile - minimum 44x44px for accessibility */
+            button, .sidebar-item, a[role="button"] { 
+                min-height: 44px; 
+                min-width: 44px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            /* Better text sizes for mobile readability */
+            body { font-size: 16px; } /* Prevent zoom on iOS */
+            
+            /* Adjust header for mobile */
+            header h1 { font-size: 1rem; }
+            
+            /* Make buttons more prominent on mobile */
+            header button { padding: 0.5rem; }
         }
         
         /* Small devices (phones, 480px and up) */
@@ -495,20 +509,26 @@
         <main class="flex-1 lg:ml-80 p-2 sm:p-3 md:p-4 main-min-height">
             <!-- Welcome Message -->
             <div id="welcomeMessage" class="flex flex-col items-center justify-center text-center content-min-height">
-                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 max-w-xs sm:max-w-sm md:max-w-lg mx-2 sm:mx-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 mx-auto text-blue-500 mb-3 sm:mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 max-w-md mx-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 sm:h-24 sm:w-24 mx-auto text-blue-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-2">Welcome to BIT PDF Viewer</h2>
-                    <p class="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">Select a PDF file from the sidebar to start reading.</p>
-                    <p class="text-xs sm:text-sm text-gray-500">This repository contains course materials for BIT (Bachelor of Information Technology) program.</p>
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">Welcome to BIT Repository</h2>
+                    <p class="text-base text-gray-600 mb-4">Select a PDF file from the sidebar to start viewing.</p>
+                    <p class="text-sm text-gray-500 mb-4">This repository contains course materials for the Bachelor of Information Technology program.</p>
+                    <button onclick="document.getElementById('toggleSidebar').click()" class="lg:hidden bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        Browse Files
+                    </button>
                 </div>
             </div>
 
             <!-- Loading Indicator -->
             <div id="loadingIndicator" class="hidden flex-col items-center justify-center content-min-height">
-                <div class="loader mb-4"></div>
-                <p class="text-sm sm:text-base text-gray-600">Loading PDF...</p>
+                <div class="bg-white rounded-xl shadow-lg p-8 max-w-sm mx-4">
+                    <div class="loader mb-4 mx-auto"></div>
+                    <p class="text-base text-gray-700 font-medium">Loading PDF...</p>
+                    <p class="text-sm text-gray-500 mt-2">Please wait while we prepare your document</p>
+                </div>
             </div>
 
             <!-- PDF Viewer Container -->
@@ -624,81 +644,8 @@
         const MAX_ZOOM = 3.0; // Maximum zoom level (300%)
         const MAX_RECENT_FILES = 10; // Maximum number of recent files to track
 
-        // PDF Files organized by folder structure
-        const pdfFiles = {
-            "BIT Project": [
-                "BIT Project/2014173.pdf"
-            ],
-            "Semester 5": {
-                "_root": [
-                    "Semester 5/2014173_sem5_ExamApplication.pdf",
-                    "Semester 5/Notice-Semester-1-_-3.pdf",
-                    "Semester 5/Semester-5-Examination-Applications-are-Open-Now.pdf"
-                ],
-                "EN5106 Fundamentals of Management & Entrepreneurship": [
-                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/EN 5106 - Lesson 1.pdf",
-                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/EN 5106 - Lesson 2.pdf",
-                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/EN 5106 - Lesson 3.pdf",
-                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/EN 5106 - Lesson 4.pdf",
-                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/EN 5106 - Lesson 5.pdf",
-                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/Topic 6.pdf",
-                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/Topic 7.pdf",
-                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/Topic 8.pdf",
-                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/Topic 10.pdf",
-                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/EN5106-Fundamentals of Management  Entrepreneurship-V2.pdf"
-                ],
-                "IT5206 Professional Practice": [
-                    "Semester 5/IT5206 Professional Practice/IT5206- Professional Practice - V2.pdf",
-                    "Semester 5/IT5206 Professional Practice/BIT level III - Professional Practice - Lec 2 for vle.pdf",
-                    "Semester 5/IT5206 Professional Practice/BIT level III - Proffessional Practice - Lec 3 for vle.pdf",
-                    "Semester 5/IT5206 Professional Practice/IT5206 - Lesson 4.pdf",
-                    "Semester 5/IT5206 Professional Practice/Internet Issues for vle.pdf",
-                    "Semester 5/IT5206 Professional Practice/Intellectual Property v1 Jan3.pdf"
-                ],
-                "IT5306 Principles of Information Security": [
-                    "Semester 5/IT5306 Principles of Information Security/IT5306- Principles of Information Security -V2.pdf",
-                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 1.pdf",
-                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 2.pdf",
-                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 3.pdf",
-                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 4.pdf",
-                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 5.pdf",
-                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 6.pdf",
-                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 7.pdf",
-                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 8.pdf",
-                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 9.pdf",
-                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 10.pdf"
-                ],
-                "IT5406 Systems & Network Administration": [
-                    "Semester 5/IT5406 Systems & Network Administration/IT5406- Systems  Network Administration_syllabus.pdf",
-                    "Semester 5/IT5406 Systems & Network Administration/IT5406 Topic 1 - moderated by Dr.Chamath and formatted final.pdf",
-                    "Semester 5/IT5406 Systems & Network Administration/IT5406 Topic 2 - moderated - formatted final.pdf",
-                    "Semester 5/IT5406 Systems & Network Administration/Topic 3 - Teachers note.pdf",
-                    "Semester 5/IT5406 Systems & Network Administration/Topic 4 - Teachers note.pdf",
-                    "Semester 5/IT5406 Systems & Network Administration/Topic 5 - Teachers note.pdf",
-                    "Semester 5/IT5406 Systems & Network Administration/Topic 6 -Teachers note.pdf"
-                ],
-                "IT5506 Mathematics for Computing II": [
-                    "Semester 5/IT5506 Mathematics for Computing II/IT5506- Mathematics for Computing II-Without ILO V2 - Final Version.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/Lession_1.1_Final - v2.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/Matrices -1.2 final.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/Matrices -1.3 final.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/Matrices -1.4 final.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/Matrices -1.5 final.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/Lession-1.6_Vector_Spaces_Final - v2.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/Lession-1.7_Linear_Transformation_final - v2.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/Lession-1.8_Orthogonality_final - v2.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/Linear programming.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/Linear Programming 2.1 v2 final.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/Integer programming.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/Integer Programming 2.2 v2 final.pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/IT5506 Section 03 Handout 01 (draft).pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/IT5506 Section 03 Handout 02 (draft).pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/IT5506 Section 03 Handout 03 (draft).pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/IT5506 Section 03 Handout 05 (draft).pdf",
-                    "Semester 5/IT5506 Mathematics for Computing II/IT5506 Section 03 Handout 06 (draft).pdf"
-                ]
-            }
-        };
+        // PDF Files - loaded dynamically from files.json
+        let pdfFiles = {};
 
         // State variables
         let currentPdfPath = '';
@@ -759,9 +706,42 @@
             loadingIndicator.style.display = 'flex';
         }
 
+        // Load file structure from JSON
+        async function loadFileStructure() {
+            try {
+                const response = await fetch('files.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load file structure');
+                }
+                pdfFiles = await response.json();
+                buildFileTree();
+            } catch (error) {
+                console.error('Error loading file structure:', error);
+                // Show error message to user
+                fileTree.innerHTML = `
+                    <div class="p-4 text-center text-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-sm font-medium">Failed to load file list</p>
+                        <p class="text-xs mt-1">Please refresh the page</p>
+                    </div>
+                `;
+            }
+        }
+
         // Build file tree
         function buildFileTree() {
             fileTree.innerHTML = '';
+            
+            if (Object.keys(pdfFiles).length === 0) {
+                fileTree.innerHTML = `
+                    <div class="p-4 text-center text-gray-500">
+                        <p class="text-sm">Loading files...</p>
+                    </div>
+                `;
+                return;
+            }
             
             for (const [folder, content] of Object.entries(pdfFiles)) {
                 const folderElement = createFolderElement(folder, content);
@@ -773,16 +753,17 @@
             const container = document.createElement('div');
             container.className = 'folder-container';
             
-            // Folder header - responsive margin calculation
+            // Folder header - responsive margin calculation with better touch targets
             const header = document.createElement('div');
-            header.className = 'flex items-center gap-1 sm:gap-2 p-1.5 sm:p-2 rounded cursor-pointer hover:bg-gray-100';
+            header.className = 'flex items-center gap-1 sm:gap-2 p-2 rounded cursor-pointer hover:bg-gray-100 transition-colors';
             header.style.marginLeft = (level * INDENT_SIZE_PX) + 'px';
+            header.style.minHeight = '44px'; // Touch target size
             header.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                 </svg>
-                <span class="text-xs sm:text-sm font-medium text-gray-700 flex-1 truncate" title="${name}">${name}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 chevron transition-transform flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <span class="text-sm font-medium text-gray-700 flex-1 truncate" title="${name}">${name}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 chevron transition-transform flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
             `;
@@ -830,13 +811,14 @@
         function createFileElement(filePath, level) {
             const fileName = filePath.split('/').pop().replace('.pdf', '');
             const element = document.createElement('div');
-            element.className = 'sidebar-item flex items-center gap-1 sm:gap-2 p-1.5 sm:p-2 rounded cursor-pointer hover:bg-gray-100 transition-all';
+            element.className = 'sidebar-item flex items-center gap-1 sm:gap-2 p-2 rounded cursor-pointer hover:bg-gray-100 transition-colors';
             element.style.marginLeft = (level * INDENT_SIZE_PX) + 'px';
+            element.style.minHeight = '44px'; // Touch target size
             element.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <span class="text-xs sm:text-sm text-gray-600 truncate" title="${fileName}">${fileName}</span>
+                <span class="text-sm text-gray-600 truncate" title="${fileName}">${fileName}</span>
             `;
             element.dataset.path = filePath;
             element.addEventListener('click', () => loadPdf(filePath));
@@ -1282,7 +1264,7 @@
         });
 
         // Initialize
-        buildFileTree();
+        loadFileStructure();
     </script>
 </body>
 </html>
