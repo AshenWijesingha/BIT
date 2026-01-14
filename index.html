@@ -325,11 +325,10 @@
         .pdf-page-canvas {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             background: white;
-            /* Improve canvas rendering quality */
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-            image-rendering: pixelated;
-            /* For better quality on high-DPI displays */
+            /* Improve canvas rendering quality - use auto for smooth PDF rendering */
+            image-rendering: auto;
+            image-rendering: high-quality;
+            /* For better quality on high-DPI displays - enable hardware acceleration */
             -webkit-backface-visibility: hidden;
             -webkit-transform: translateZ(0);
             transform: translateZ(0);
@@ -905,9 +904,7 @@
                         viewport: scaledViewport,
                         intent: 'display',
                         enableWebGL: false,
-                        renderInteractiveForms: true,
-                        // Use higher quality text rendering
-                        textContentStream: null
+                        renderInteractiveForms: true
                     }).promise;
                     
                     pdfCanvasContainer.appendChild(canvas);
