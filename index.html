@@ -446,6 +446,8 @@
         // Constants
         const PDF_LOAD_TIMEOUT_MS = 3000; // Fallback timeout for PDF loading
         const INDENT_SIZE_PX = 12; // Indentation for nested sidebar items
+        const PDF_VIEW_MODE = '#view=FitH'; // Default PDF view mode
+        const CANVAS_CONTAINER_PADDING = 32; // Padding for canvas container (2 * 1rem)
 
         // PDF Files organized by folder structure
         const pdfFiles = {
@@ -546,11 +548,21 @@
         function supportsNativePDFViewing() {
             // Mobile devices typically don't support inline PDF viewing
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            
-            // iOS doesn't support inline PDF viewing in iframes/objects
-            // Most Android browsers also have issues
-            return !isMobile && !isIOS;
+            return !isMobile;
+        }
+        
+        // Helper function to hide loading indicator
+        function hideLoadingIndicator() {
+            loadingIndicator.classList.add('hidden');
+            loadingIndicator.style.display = '';
+        }
+        
+        // Helper function to show loading indicator
+        function showLoadingIndicator() {
+            welcomeMessage.classList.add('hidden');
+            pdfContainer.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+            loadingIndicator.style.display = 'flex';
         }
 
         // Build file tree
@@ -660,7 +672,7 @@
                     
                     // Calculate scale to fit screen width
                     const viewport = page.getViewport({ scale: 1 });
-                    const containerWidth = pdfCanvasContainer.clientWidth - 32; // subtract padding
+                    const containerWidth = pdfCanvasContainer.clientWidth - CANVAS_CONTAINER_PADDING;
                     const scale = containerWidth / viewport.width;
                     const scaledViewport = page.getViewport({ scale: scale });
                     
@@ -677,14 +689,12 @@
                 }
                 
                 // Hide loading and show container
-                loadingIndicator.classList.add('hidden');
-                loadingIndicator.style.display = '';
+                hideLoadingIndicator();
                 pdfContainer.classList.remove('hidden');
                 
             } catch (error) {
                 console.error('Error rendering PDF:', error);
-                loadingIndicator.classList.add('hidden');
-                loadingIndicator.style.display = '';
+                hideLoadingIndicator();
                 welcomeMessage.classList.remove('hidden');
                 alert('Error loading PDF file. Please try the "Open in New Tab" option or download the file.');
             }
@@ -701,10 +711,7 @@
             });
             
             // Show loading
-            welcomeMessage.classList.add('hidden');
-            pdfContainer.classList.add('hidden');
-            loadingIndicator.classList.remove('hidden');
-            loadingIndicator.style.display = 'flex';
+            showLoadingIndicator();
             
             // Close sidebar on mobile
             closeSidebar();
@@ -736,18 +743,16 @@
                 pdfCanvasContainer.classList.add('hidden');
                 
                 // Set PDF URL with view parameters for better display
-                const pdfUrl = encodedPath + '#view=FitH';
+                const pdfUrl = encodedPath + PDF_VIEW_MODE;
                 
                 // Load PDF using object tag (better mobile support)
                 pdfViewer.onload = function() {
-                    loadingIndicator.classList.add('hidden');
-                    loadingIndicator.style.display = '';
+                    hideLoadingIndicator();
                     pdfContainer.classList.remove('hidden');
                 };
                 
                 pdfViewer.onerror = function() {
-                    loadingIndicator.classList.add('hidden');
-                    loadingIndicator.style.display = '';
+                    hideLoadingIndicator();
                     welcomeMessage.classList.remove('hidden');
                     alert('Error loading PDF file. Please try again or use the "Open in New Tab" option.');
                 };
@@ -761,8 +766,7 @@
                 // Fallback timeout in case onload doesn't fire
                 setTimeout(() => {
                     if (loadingIndicator.style.display === 'flex') {
-                        loadingIndicator.classList.add('hidden');
-                        loadingIndicator.style.display = '';
+                        hideLoadingIndicator();
                         pdfContainer.classList.remove('hidden');
                     }
                 }, PDF_LOAD_TIMEOUT_MS);
