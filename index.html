@@ -1891,18 +1891,23 @@
         
         favoritePdf.addEventListener('click', toggleFavorite);
         
-        // Navigate to folder in sidebar
-        function navigateToFolder(folderPath) {
-            // Split path into parts
-            const parts = folderPath.split('/');
-            
-            // Collapse all folders first
+        // Helper function to collapse all folders in the sidebar
+        function collapseAllFolders() {
             fileTree.querySelectorAll('.folder-content').forEach(content => {
                 content.classList.remove('expanded');
             });
             fileTree.querySelectorAll('.chevron').forEach(chevron => {
                 chevron.classList.remove('rotate-90');
             });
+        }
+        
+        // Navigate to folder in sidebar
+        function navigateToFolder(folderPath) {
+            // Split path into parts
+            const parts = folderPath.split('/');
+            
+            // Collapse all folders first
+            collapseAllFolders();
             
             // Find and expand each folder in the path
             let currentElement = fileTree;
@@ -1958,12 +1963,7 @@
             });
             
             // Collapse all folders
-            fileTree.querySelectorAll('.folder-content').forEach(content => {
-                content.classList.remove('expanded');
-            });
-            fileTree.querySelectorAll('.chevron').forEach(chevron => {
-                chevron.classList.remove('rotate-90');
-            });
+            collapseAllFolders();
             
             // Update URL to remove pdf parameter
             const url = new URL(window.location);
@@ -1971,34 +1971,74 @@
             window.history.pushState({}, '', url);
         }
         
-        // Update breadcrumb
+        // Helper function to create breadcrumb separator SVG
+        function createBreadcrumbSeparator() {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'h-3 w-3 mx-1 text-gray-400');
+            svg.setAttribute('fill', 'currentColor');
+            svg.setAttribute('viewBox', '0 0 20 20');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('fill-rule', 'evenodd');
+            path.setAttribute('d', 'M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z');
+            path.setAttribute('clip-rule', 'evenodd');
+            svg.appendChild(path);
+            return svg;
+        }
+        
+        // Update breadcrumb using DOM manipulation to prevent XSS
         function updateBreadcrumb(pdfPath) {
             const parts = pdfPath.split('/');
-            breadcrumb.innerHTML = '<li class="flex items-center"><a href="#" class="hover:text-blue-600 transition-colors cursor-pointer" onclick="event.preventDefault(); navigateHome();">Home</a></li>';
             
+            // Clear existing breadcrumb
+            breadcrumb.innerHTML = '';
+            
+            // Create Home link
+            const homeLi = document.createElement('li');
+            homeLi.className = 'flex items-center';
+            const homeLink = document.createElement('a');
+            homeLink.href = '#';
+            homeLink.className = 'hover:text-blue-600 transition-colors cursor-pointer';
+            homeLink.textContent = 'Home';
+            homeLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateHome();
+            });
+            homeLi.appendChild(homeLink);
+            breadcrumb.appendChild(homeLi);
+            
+            // Build path incrementally and create folder links
             let path = '';
             parts.forEach((part, index) => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center';
+                
+                // Add separator
+                li.appendChild(createBreadcrumbSeparator());
+                
                 if (index < parts.length - 1) {
+                    // Folder link (clickable)
                     path += (path ? '/' : '') + part;
-                    const escapedPath = path.replace(/'/g, "\\'");
-                    breadcrumb.innerHTML += `
-                        <li class="flex items-center">
-                            <svg class="h-3 w-3 mx-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                            <a href="#" class="text-gray-500 hover:text-blue-600 transition-colors cursor-pointer" onclick="event.preventDefault(); navigateToFolder('${escapedPath}');">${part}</a>
-                        </li>
-                    `;
+                    const folderPath = path; // Capture current path for closure
+                    
+                    const link = document.createElement('a');
+                    link.href = '#';
+                    link.className = 'text-gray-500 hover:text-blue-600 transition-colors cursor-pointer';
+                    link.textContent = part;
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        navigateToFolder(folderPath);
+                    });
+                    li.appendChild(link);
                 } else {
-                    breadcrumb.innerHTML += `
-                        <li class="flex items-center">
-                            <svg class="h-3 w-3 mx-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="text-gray-700 font-medium truncate max-w-xs" title="${part}">${part}</span>
-                        </li>
-                    `;
+                    // Current file (non-clickable)
+                    const span = document.createElement('span');
+                    span.className = 'text-gray-700 font-medium truncate max-w-xs';
+                    span.title = part;
+                    span.textContent = part;
+                    li.appendChild(span);
                 }
+                
+                breadcrumb.appendChild(li);
             });
         }
         
