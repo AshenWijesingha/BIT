@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
     <meta name="description" content="BIT Repository - Browse and view PDF course materials for Bachelor of Information Technology program">
     <meta name="theme-color" content="#2563eb">
     <title>BIT Repository - PDF Viewer</title>
@@ -161,8 +161,9 @@
             .xs\:flex-col { flex-direction: column; }
             .xs\:flex-wrap { flex-wrap: wrap; }
             
-            /* Improve touch targets */
-            button, .sidebar-item, a { min-height: 44px; }
+            /* Improve touch targets for mobile - specific selectors to avoid unintended effects */
+            .sidebar-item, .sidebar-item button, .sidebar-item a,
+            header button, .pdf-controls button, .pdf-controls a { min-height: 44px; }
         }
         
         /* Small devices (phones, 480px and up) */
@@ -619,6 +620,9 @@
         const INDENT_SIZE_PX = 12; // Indentation for nested sidebar items
         const PDF_VIEW_MODE = '#view=FitH'; // Default PDF view mode
         const CANVAS_CONTAINER_PADDING = 32; // Padding for canvas container (2 * 1rem)
+        const MIN_ZOOM = 0.5; // Minimum zoom level (50%)
+        const MAX_ZOOM = 3.0; // Maximum zoom level (300%)
+        const MAX_RECENT_FILES = 10; // Maximum number of recent files to track
 
         // PDF Files organized by folder structure
         const pdfFiles = {
@@ -1185,7 +1189,7 @@
         
         // Zoom functionality
         function updateZoom(delta) {
-            currentZoom = Math.max(0.5, Math.min(3.0, currentZoom + delta));
+            currentZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentZoom + delta));
             zoomLevel.textContent = Math.round(currentZoom * 100) + '%';
             
             if (usingCanvasRenderer && pdfDoc) {
@@ -1263,8 +1267,8 @@
         function addToRecentFiles(pdfPath) {
             recentFiles = recentFiles.filter(f => f !== pdfPath);
             recentFiles.unshift(pdfPath);
-            if (recentFiles.length > 10) {
-                recentFiles = recentFiles.slice(0, 10);
+            if (recentFiles.length > MAX_RECENT_FILES) {
+                recentFiles = recentFiles.slice(0, MAX_RECENT_FILES);
             }
             localStorage.setItem('pdfRecentFiles', JSON.stringify(recentFiles));
         }
