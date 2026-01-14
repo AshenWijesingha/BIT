@@ -325,9 +325,8 @@
         .pdf-page-canvas {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             background: white;
-            /* Improve canvas rendering quality - use auto for smooth PDF rendering */
+            /* Improve canvas rendering quality - smooth rendering for PDFs */
             image-rendering: auto;
-            image-rendering: high-quality;
             /* For better quality on high-DPI displays - enable hardware acceleration */
             -webkit-backface-visibility: hidden;
             -webkit-transform: translateZ(0);
@@ -848,7 +847,6 @@
                     url: pdfPath,
                     // Enable high-quality rendering options
                     disableAutoFetch: false,
-                    disableStream: false,
                     enableXfa: true
                 });
                 pdfDoc = await loadingTask.promise;
@@ -903,7 +901,6 @@
                         canvasContext: context,
                         viewport: scaledViewport,
                         intent: 'display',
-                        enableWebGL: false,
                         renderInteractiveForms: true
                     }).promise;
                     
