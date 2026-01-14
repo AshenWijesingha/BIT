@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIT Repository - PDF Viewer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tailwind-like utility classes as fallback when CDN is blocked */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; }
+        .min-h-screen { min-height: 100vh; }
+        .bg-gray-100 { background-color: #f3f4f6; }
+        .bg-white { background-color: #ffffff; }
+        .bg-blue-600 { background-color: #2563eb; }
+        .bg-blue-500 { background-color: #3b82f6; }
+        .bg-blue-700 { background-color: #1d4ed8; }
+        .bg-gray-200 { background-color: #e5e7eb; }
+        .bg-gray-800 { background-color: #1f2937; }
+        .text-white { color: #ffffff; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-800 { color: #1f2937; }
+        .text-gray-500 { color: #6b7280; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-yellow-500 { color: #eab308; }
+        .text-red-500 { color: #ef4444; }
+        .text-blue-500 { color: #3b82f6; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-center { text-align: center; }
+        .flex { display: flex; }
+        .hidden { display: none !important; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .flex-col { flex-direction: column; }
+        .flex-1 { flex: 1 1 0%; }
+        .flex-wrap { flex-wrap: wrap; }
+        .flex-shrink-0 { flex-shrink: 0; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+        .p-2 { padding: 0.5rem; }
+        .p-4 { padding: 1rem; }
+        .p-8 { padding: 2rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .pt-16 { padding-top: 4rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .ml-4 { margin-left: 1rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .w-80 { width: 20rem; }
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .h-4 { height: 1rem; }
+        .h-5 { height: 1.25rem; }
+        .h-6 { height: 1.5rem; }
+        .h-24 { height: 6rem; }
+        .w-4 { width: 1rem; }
+        .w-5 { width: 1.25rem; }
+        .w-6 { width: 1.5rem; }
+        .w-24 { width: 6rem; }
+        .max-w-lg { max-width: 32rem; }
+        .max-w-md { max-width: 28rem; }
+        .fixed { position: fixed; }
+        .sticky { position: sticky; }
+        .relative { position: relative; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .top-16 { top: 4rem; }
+        .z-30 { z-index: 30; }
+        .z-40 { z-index: 40; }
+        .z-50 { z-index: 50; }
+        .overflow-y-auto { overflow-y: auto; }
+        .overflow-hidden { overflow: hidden; }
+        .rounded { border-radius: 0.25rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-t-lg { border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; }
+        .rounded-b-lg { border-bottom-left-radius: 0.5rem; border-bottom-right-radius: 0.5rem; }
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .cursor-pointer { cursor: pointer; }
+        .transition-transform { transition-property: transform; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        .duration-300 { transition-duration: 300ms; }
+        .border { border-width: 1px; }
+        .border-gray-200 { border-color: #e5e7eb; }
+        
+        /* Transform utilities */
+        .-translate-x-full { transform: translateX(-100%); }
+        .translate-x-0 { transform: translateX(0); }
+        .rotate-90 { transform: rotate(90deg); }
+        
+        /* Hover states */
+        .hover\:bg-gray-100:hover { background-color: #f3f4f6; }
+        .hover\:bg-gray-300:hover { background-color: #d1d5db; }
+        .hover\:bg-blue-600:hover { background-color: #2563eb; }
+        .hover\:bg-blue-700:hover { background-color: #1d4ed8; }
+        .hover\:bg-blue-800:hover { background-color: #1e40af; }
+        
+        /* Responsive utilities */
+        @media (min-width: 1024px) {
+            .lg\:ml-80 { margin-left: 20rem; }
+            .lg\:translate-x-0 { transform: translateX(0); }
+            .lg\:hidden { display: none; }
+            .lg\:block { display: block; }
+        }
+
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        /* Active sidebar item */
+        .sidebar-item.active { background-color: #3b82f6; color: white; }
+        .sidebar-item.active span { color: white; }
+        .sidebar-item.active svg { color: white; }
+        
+        /* Folder expansion animation */
+        .folder-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .folder-content.expanded { max-height: 5000px; }
+        
+        /* PDF iframe container */
+        .pdf-iframe-container {
+            background: #525659;
+            min-height: calc(100vh - 12rem);
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+        
+        .pdf-iframe-container iframe {
+            width: 100%;
+            height: calc(100vh - 12rem);
+            border: none;
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+        
+        /* Loading spinner */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Sidebar overlay */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 30;
+        }
+        
+        /* Ensure proper height calculations */
+        html, body { height: 100%; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white shadow-lg fixed w-full z-50" style="height: 64px;">
+        <div class="px-4 py-4 flex items-center justify-between h-full">
+            <h1 class="text-2xl font-bold flex items-center gap-2">
+                <span>📚</span>
+                <span>BIT Repository - PDF Viewer</span>
+            </h1>
+            <button id="toggleSidebar" class="lg:hidden bg-blue-700 hover:bg-blue-800 px-3 py-2 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex" style="padding-top: 64px;">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-80 bg-white shadow-lg fixed h-full overflow-y-auto transition-all duration-300 z-40 -translate-x-full lg:translate-x-0" style="top: 64px; height: calc(100vh - 64px);">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    </svg>
+                    <span>PDF Files</span>
+                </h2>
+                <div id="fileTree" class="space-y-2">
+                    <!-- File tree will be dynamically populated by buildFileTree() function -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-80 p-4" style="min-height: calc(100vh - 64px);">
+            <!-- Welcome Message -->
+            <div id="welcomeMessage" class="flex flex-col items-center justify-center text-center" style="min-height: calc(100vh - 8rem);">
+                <div class="bg-white rounded-xl shadow-lg p-8 max-w-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto text-blue-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome to BIT PDF Viewer</h2>
+                    <p class="text-gray-600 mb-4">Select a PDF file from the sidebar to start reading.</p>
+                    <p class="text-sm text-gray-500">This repository contains course materials for BIT (Bachelor of Information Technology) program.</p>
+                </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="loadingIndicator" class="hidden flex-col items-center justify-center" style="min-height: calc(100vh - 8rem);">
+                <div class="loader mb-4"></div>
+                <p class="text-gray-600">Loading PDF...</p>
+            </div>
+
+            <!-- PDF Viewer Container -->
+            <div id="pdfContainer" class="hidden">
+                <!-- PDF Controls -->
+                <div class="bg-white rounded-t-lg shadow-lg p-4 sticky top-16 z-30 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-2 flex-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <h3 id="pdfTitle" class="text-lg font-semibold text-gray-700 truncate"></h3>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a id="downloadPdf" href="#" download class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            <span>Download</span>
+                        </a>
+                        <a id="openInNewTab" href="#" target="_blank" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded flex items-center gap-2 transition-all text-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            <span>Open in New Tab</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- PDF iframe Container -->
+                <div id="pdfIframeContainer" class="pdf-iframe-container">
+                    <iframe id="pdfViewer" title="PDF Viewer"></iframe>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay hidden lg:hidden"></div>
+
+    <script>
+        // Constants
+        const PDF_LOAD_TIMEOUT_MS = 3000; // Fallback timeout for PDF loading
+
+        // PDF Files organized by folder structure
+        const pdfFiles = {
+            "BIT Project": [
+                "BIT Project/2014173.pdf"
+            ],
+            "Semester 5": {
+                "_root": [
+                    "Semester 5/2014173_sem5_ExamApplication.pdf",
+                    "Semester 5/Notice-Semester-1-_-3.pdf",
+                    "Semester 5/Semester-5-Examination-Applications-are-Open-Now.pdf"
+                ],
+                "EN5106 Fundamentals of Management & Entrepreneurship": [
+                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/EN 5106 - Lesson 1.pdf",
+                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/EN 5106 - Lesson 2.pdf",
+                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/EN 5106 - Lesson 3.pdf",
+                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/EN 5106 - Lesson 4.pdf",
+                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/EN 5106 - Lesson 5.pdf",
+                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/Topic 6.pdf",
+                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/Topic 7.pdf",
+                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/Topic 8.pdf",
+                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/Topic 10.pdf",
+                    "Semester 5/EN5106 Fundamentals of Management & Entrepreneurship/EN5106-Fundamentals of Management  Entrepreneurship-V2.pdf"
+                ],
+                "IT5206 Professional Practice": [
+                    "Semester 5/IT5206 Professional Practice/IT5206- Professional Practice - V2.pdf",
+                    "Semester 5/IT5206 Professional Practice/BIT level III - Professional Practice - Lec 2 for vle.pdf",
+                    "Semester 5/IT5206 Professional Practice/BIT level III - Proffessional Practice - Lec 3 for vle.pdf",
+                    "Semester 5/IT5206 Professional Practice/IT5206 - Lesson 4.pdf",
+                    "Semester 5/IT5206 Professional Practice/Internet Issues for vle.pdf",
+                    "Semester 5/IT5206 Professional Practice/Intellectual Property v1 Jan3.pdf"
+                ],
+                "IT5306 Principles of Information Security": [
+                    "Semester 5/IT5306 Principles of Information Security/IT5306- Principles of Information Security -V2.pdf",
+                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 1.pdf",
+                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 2.pdf",
+                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 3.pdf",
+                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 4.pdf",
+                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 5.pdf",
+                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 6.pdf",
+                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 7.pdf",
+                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 8.pdf",
+                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 9.pdf",
+                    "Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 10.pdf"
+                ],
+                "IT5406 Systems & Network Administration": [
+                    "Semester 5/IT5406 Systems & Network Administration/IT5406- Systems  Network Administration_syllabus.pdf",
+                    "Semester 5/IT5406 Systems & Network Administration/IT5406 Topic 1 - moderated by Dr.Chamath and formatted final.pdf",
+                    "Semester 5/IT5406 Systems & Network Administration/IT5406 Topic 2 - moderated - formatted final.pdf",
+                    "Semester 5/IT5406 Systems & Network Administration/Topic 3 - Teachers note.pdf",
+                    "Semester 5/IT5406 Systems & Network Administration/Topic 4 - Teachers note.pdf",
+                    "Semester 5/IT5406 Systems & Network Administration/Topic 5 - Teachers note.pdf",
+                    "Semester 5/IT5406 Systems & Network Administration/Topic 6 -Teachers note.pdf"
+                ],
+                "IT5506 Mathematics for Computing II": [
+                    "Semester 5/IT5506 Mathematics for Computing II/IT5506- Mathematics for Computing II-Without ILO V2 - Final Version.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/Lession_1.1_Final - v2.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/Matrices -1.2 final.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/Matrices -1.3 final.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/Matrices -1.4 final.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/Matrices -1.5 final.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/Lession-1.6_Vector_Spaces_Final - v2.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/Lession-1.7_Linear_Transformation_final - v2.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/Lession-1.8_Orthogonality_final - v2.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/Linear programming.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/Linear Programming 2.1 v2 final.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/Integer programming.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/Integer Programming 2.2 v2 final.pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/IT5506 Section 03 Handout 01 (draft).pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/IT5506 Section 03 Handout 02 (draft).pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/IT5506 Section 03 Handout 03 (draft).pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/IT5506 Section 03 Handout 05 (draft).pdf",
+                    "Semester 5/IT5506 Mathematics for Computing II/IT5506 Section 03 Handout 06 (draft).pdf"
+                ]
+            }
+        };
+
+        // State variables
+        let currentPdfPath = '';
+
+        // DOM Elements
+        const fileTree = document.getElementById('fileTree');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const pdfContainer = document.getElementById('pdfContainer');
+        const pdfTitle = document.getElementById('pdfTitle');
+        const downloadPdf = document.getElementById('downloadPdf');
+        const openInNewTab = document.getElementById('openInNewTab');
+        const pdfViewer = document.getElementById('pdfViewer');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        // Build file tree
+        function buildFileTree() {
+            fileTree.innerHTML = '';
+            
+            for (const [folder, content] of Object.entries(pdfFiles)) {
+                const folderElement = createFolderElement(folder, content);
+                fileTree.appendChild(folderElement);
+            }
+        }
+
+        function createFolderElement(name, content, level = 0) {
+            const container = document.createElement('div');
+            container.className = 'folder-container';
+            
+            // Folder header
+            const header = document.createElement('div');
+            header.className = 'flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-gray-100';
+            header.style.marginLeft = (level * 16) + 'px';
+            header.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+                <span class="text-sm font-medium text-gray-700 flex-1 truncate" title="${name}">${name}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 chevron transition-transform flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            `;
+            
+            // Folder content
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'folder-content';
+            
+            if (Array.isArray(content)) {
+                // Simple array of files
+                content.forEach(file => {
+                    const fileElement = createFileElement(file, level + 1);
+                    contentDiv.appendChild(fileElement);
+                });
+            } else {
+                // Object with subfolders and _root files
+                if (content._root) {
+                    content._root.forEach(file => {
+                        const fileElement = createFileElement(file, level + 1);
+                        contentDiv.appendChild(fileElement);
+                    });
+                }
+                
+                // Subfolders
+                for (const [subFolder, subContent] of Object.entries(content)) {
+                    if (subFolder !== '_root') {
+                        const subFolderElement = createFolderElement(subFolder, subContent, level + 1);
+                        contentDiv.appendChild(subFolderElement);
+                    }
+                }
+            }
+            
+            // Toggle folder expansion
+            header.addEventListener('click', () => {
+                contentDiv.classList.toggle('expanded');
+                header.querySelector('.chevron').classList.toggle('rotate-90');
+            });
+            
+            container.appendChild(header);
+            container.appendChild(contentDiv);
+            
+            return container;
+        }
+
+        function createFileElement(filePath, level) {
+            const fileName = filePath.split('/').pop().replace('.pdf', '');
+            const element = document.createElement('div');
+            element.className = 'sidebar-item flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-gray-100 transition-all';
+            element.style.marginLeft = (level * 16) + 'px';
+            element.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="text-sm text-gray-600 truncate" title="${fileName}">${fileName}</span>
+            `;
+            element.dataset.path = filePath;
+            element.addEventListener('click', () => loadPdf(filePath));
+            return element;
+        }
+
+        // Load and display PDF using iframe
+        function loadPdf(pdfPath) {
+            // Update active state in sidebar
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.path === pdfPath) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Show loading
+            welcomeMessage.classList.add('hidden');
+            pdfContainer.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+            loadingIndicator.style.display = 'flex';
+            
+            // Close sidebar on mobile
+            closeSidebar();
+            
+            currentPdfPath = pdfPath;
+            const encodedPath = encodeURI(pdfPath);
+            const fileName = pdfPath.split('/').pop();
+            
+            // Update UI
+            pdfTitle.textContent = fileName;
+            downloadPdf.href = encodedPath;
+            downloadPdf.download = fileName;
+            openInNewTab.href = encodedPath;
+            
+            // Load PDF in iframe
+            pdfViewer.onload = function() {
+                loadingIndicator.classList.add('hidden');
+                loadingIndicator.style.display = '';
+                pdfContainer.classList.remove('hidden');
+            };
+            
+            pdfViewer.onerror = function() {
+                loadingIndicator.classList.add('hidden');
+                loadingIndicator.style.display = '';
+                welcomeMessage.classList.remove('hidden');
+                alert('Error loading PDF file. Please try again or use the "Open in New Tab" option.');
+            };
+            
+            pdfViewer.src = encodedPath;
+            
+            // Fallback timeout in case onload doesn't fire
+            setTimeout(() => {
+                if (loadingIndicator.style.display === 'flex') {
+                    loadingIndicator.classList.add('hidden');
+                    loadingIndicator.style.display = '';
+                    pdfContainer.classList.remove('hidden');
+                }
+            }, PDF_LOAD_TIMEOUT_MS);
+        }
+
+        // Sidebar toggle for mobile
+        document.getElementById('toggleSidebar').addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        });
+
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        function closeSidebar() {
+            if (window.innerWidth < 1024) {
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+            }
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+            }
+        });
+
+        // Initialize
+        buildFileTree();
+    </script>
+</body>
+</html>
