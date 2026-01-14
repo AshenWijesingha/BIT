@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
     <meta name="description" content="BIT Repository - Browse and view PDF course materials for Bachelor of Information Technology program">
     <meta name="theme-color" content="#2563eb">
+    <meta name="author" content="BIT Repository">
+    <meta name="keywords" content="BIT, Bachelor of Information Technology, PDF, course materials, study materials, university">
+    <!-- Open Graph meta tags for social sharing -->
+    <meta property="og:title" content="BIT Repository - PDF Viewer">
+    <meta property="og:description" content="Browse and view PDF course materials for Bachelor of Information Technology program">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ashenwijesingha.github.io/BIT/">
+    <!-- Note: Add og-image.png to the repository root for social sharing preview image -->
+    <!-- <meta property="og:image" content="https://ashenwijesingha.github.io/BIT/og-image.png"> -->
+    <!-- Twitter Card meta tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="BIT Repository - PDF Viewer">
+    <meta name="twitter:description" content="Browse and view PDF course materials for Bachelor of Information Technology program">
     <title>BIT Repository - PDF Viewer</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -448,9 +461,242 @@
         body.dark-mode input:focus {
             background-color: #4b5563;
         }
+        
+        /* Toast notification styles */
+        .toast-container {
+            position: fixed;
+            bottom: 5rem;
+            right: 1rem;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .toast {
+            background-color: #1f2937;
+            color: #ffffff;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: slideIn 0.3s ease-out;
+            max-width: 300px;
+        }
+        
+        .toast.success { background-color: #059669; }
+        .toast.error { background-color: #dc2626; }
+        .toast.info { background-color: #2563eb; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        .toast.fade-out {
+            animation: slideOut 0.3s ease-out forwards;
+        }
+        
+        /* Scroll to top button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 60;
+            background-color: #2563eb;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .scroll-to-top:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+        }
+        
+        .scroll-to-top.visible {
+            display: flex;
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            max-width: 32rem;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            animation: modalFadeIn 0.2s ease-out;
+        }
+        
+        body.dark-mode .modal-content {
+            background-color: #1f2937;
+        }
+        
+        @keyframes modalFadeIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Footer styles */
+        .footer {
+            background-color: #1f2937;
+            color: #9ca3af;
+            padding: 1.5rem 1rem;
+            margin-top: auto;
+        }
+        
+        .footer a {
+            color: #60a5fa;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .footer a:hover {
+            color: #93c5fd;
+        }
+        
+        /* Sidebar section styles */
+        .sidebar-section {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 0.75rem;
+            margin-top: 0.75rem;
+        }
+        
+        body.dark-mode .sidebar-section {
+            border-color: #374151;
+        }
+        
+        .sidebar-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        body.dark-mode .sidebar-section-title {
+            color: #9ca3af;
+        }
+        
+        /* Skip to content link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #2563eb;
+            color: white;
+            padding: 8px 16px;
+            z-index: 1000;
+            text-decoration: none;
+            border-radius: 0 0 4px 0;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        /* Keyboard shortcut styling */
+        .kbd {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            background-color: #e5e7eb;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+        }
+        
+        body.dark-mode .kbd {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #e5e7eb;
+        }
+        
+        /* File statistics badge */
+        .stats-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background-color: #dbeafe;
+            color: #1e40af;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        body.dark-mode .stats-badge {
+            background-color: #1e3a5f;
+            color: #93c5fd;
+        }
+        
+        /* Folder action buttons */
+        .folder-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .folder-action-btn {
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+        
+        .folder-action-btn:hover {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+        
+        body.dark-mode .folder-action-btn:hover {
+            background-color: #374151;
+            color: #e5e7eb;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    
     <!-- Header -->
     <header class="bg-blue-600 text-white shadow-lg fixed w-full z-50 header-height">
         <div class="px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between h-full">
@@ -459,7 +705,13 @@
                 <span class="truncate">BIT Repository</span>
                 <span class="hidden sm:inline truncate"> - PDF Viewer</span>
             </h1>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1 sm:gap-2">
+                <!-- Help/Keyboard Shortcuts -->
+                <button id="helpButton" class="bg-blue-700 hover:bg-blue-800 px-2 sm:px-3 py-2 rounded flex-shrink-0 transition-colors" aria-label="Help and keyboard shortcuts" title="Help (Press ?)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </button>
                 <!-- Dark Mode Toggle -->
                 <button id="darkModeToggle" class="bg-blue-700 hover:bg-blue-800 px-2 sm:px-3 py-2 rounded flex-shrink-0 transition-colors" aria-label="Toggle dark mode" title="Toggle dark mode">
                     <svg id="darkModeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -501,14 +753,64 @@
                     </svg>
                 </div>
                 
-                <div id="fileTree" class="space-y-2">
-                    <!-- File tree will be dynamically populated by buildFileTree() function -->
+                <!-- File Statistics and Folder Controls -->
+                <div class="flex items-center justify-between mb-3">
+                    <span id="fileStats" class="stats-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span id="fileCount">0 files</span>
+                    </span>
+                    <div class="folder-actions">
+                        <button id="expandAllBtn" class="folder-action-btn" title="Expand all folders" aria-label="Expand all folders">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                            </svg>
+                        </button>
+                        <button id="collapseAllBtn" class="folder-action-btn" title="Collapse all folders" aria-label="Collapse all folders">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Favorites Section -->
+                <div id="favoritesSection" class="sidebar-section hidden">
+                    <div class="sidebar-section-header">
+                        <span class="sidebar-section-title">⭐ Favorites</span>
+                        <button id="clearFavorites" class="text-xs text-gray-400 hover:text-red-500 transition-colors" title="Clear all favorites">Clear</button>
+                    </div>
+                    <div id="favoritesList" class="space-y-1 max-h-32 overflow-y-auto">
+                        <!-- Favorites will be populated dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Recently Viewed Section -->
+                <div id="recentSection" class="sidebar-section hidden">
+                    <div class="sidebar-section-header">
+                        <span class="sidebar-section-title">🕐 Recently Viewed</span>
+                        <button id="clearRecent" class="text-xs text-gray-400 hover:text-red-500 transition-colors" title="Clear history">Clear</button>
+                    </div>
+                    <div id="recentList" class="space-y-1 max-h-32 overflow-y-auto">
+                        <!-- Recent files will be populated dynamically -->
+                    </div>
+                </div>
+                
+                <!-- All Files Section -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-header">
+                        <span class="sidebar-section-title">📁 All Files</span>
+                    </div>
+                    <div id="fileTree" class="space-y-2">
+                        <!-- File tree will be dynamically populated by buildFileTree() function -->
+                    </div>
                 </div>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 lg:ml-80 p-2 sm:p-3 md:p-4 main-min-height">
+        <main id="main-content" class="flex-1 lg:ml-80 p-2 sm:p-3 md:p-4 main-min-height">
             <!-- Welcome Message -->
             <div id="welcomeMessage" class="flex flex-col items-center justify-center text-center content-min-height">
                 <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 max-w-md mx-4">
@@ -518,9 +820,14 @@
                     <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">Welcome to BIT Repository</h2>
                     <p class="text-base text-gray-600 mb-4">Select a PDF file from the sidebar to start viewing.</p>
                     <p class="text-sm text-gray-500 mb-4">This repository contains course materials for the Bachelor of Information Technology program.</p>
-                    <button onclick="document.getElementById('toggleSidebar').click()" class="lg:hidden bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                        Browse Files
-                    </button>
+                    <div class="flex flex-col sm:flex-row gap-2 justify-center">
+                        <button onclick="document.getElementById('toggleSidebar').click()" class="lg:hidden bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                            Browse Files
+                        </button>
+                        <button onclick="openHelpModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors">
+                            View Help
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -573,6 +880,22 @@
                                     </svg>
                                 </button>
                             </div>
+                            
+                            <!-- Print Button -->
+                            <button id="printPdf" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm" aria-label="Print PDF" title="Print PDF">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                </svg>
+                                <span class="hidden md:inline">Print</span>
+                            </button>
+                            
+                            <!-- Copy Link Button -->
+                            <button id="copyLinkBtn" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm" aria-label="Copy link to clipboard" title="Copy link to clipboard">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                </svg>
+                                <span class="hidden md:inline">Copy Link</span>
+                            </button>
                             
                             <!-- Fullscreen Toggle -->
                             <button id="fullscreenToggle" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm" aria-label="Toggle fullscreen" title="Toggle fullscreen">
@@ -628,6 +951,145 @@
         </main>
     </div>
 
+    <!-- Footer -->
+    <footer class="footer lg:ml-80">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">📚</span>
+                    <span class="font-semibold text-white">BIT Repository</span>
+                </div>
+                <div class="hidden sm:block text-gray-600">|</div>
+                <p class="text-sm">Bachelor of Information Technology Course Materials</p>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-4 mb-4 text-sm">
+                <a href="https://github.com/AshenWijesingha/BIT" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub
+                </a>
+                <button onclick="openHelpModal()" class="flex items-center gap-1 hover:text-blue-400 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Help
+                </button>
+                <span class="flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Press <kbd class="kbd text-xs mx-1">?</kbd> for shortcuts
+                </span>
+            </div>
+            <div class="text-xs text-gray-500 border-t border-gray-700 pt-4">
+                <p>© 2024 BIT Repository. Educational materials for the BIT program.</p>
+                <p class="mt-1">Made with ❤️ for students</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTop" class="scroll-to-top" aria-label="Scroll to top" title="Scroll to top">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <!-- Help/Keyboard Shortcuts Modal -->
+    <div id="helpModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+        <div class="modal-content">
+            <div class="p-4 sm:p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 id="helpModalTitle" class="text-xl font-bold text-gray-800">Help & Keyboard Shortcuts</h2>
+                    <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="space-y-6">
+                    <!-- About Section -->
+                    <div>
+                        <h3 class="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                            <span>📚</span> About BIT Repository
+                        </h3>
+                        <p class="text-sm text-gray-600">
+                            This is a PDF repository for Bachelor of Information Technology (BIT) course materials. 
+                            Browse, search, and view PDF files from various semesters and subjects.
+                        </p>
+                    </div>
+                    
+                    <!-- Keyboard Shortcuts -->
+                    <div>
+                        <h3 class="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                            <span>⌨️</span> Keyboard Shortcuts
+                        </h3>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div class="flex items-center justify-between bg-gray-50 rounded p-2">
+                                <span class="text-gray-600">Show help</span>
+                                <kbd class="kbd">?</kbd>
+                            </div>
+                            <div class="flex items-center justify-between bg-gray-50 rounded p-2">
+                                <span class="text-gray-600">Search files</span>
+                                <div><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">F</kbd></div>
+                            </div>
+                            <div class="flex items-center justify-between bg-gray-50 rounded p-2">
+                                <span class="text-gray-600">Zoom in</span>
+                                <div><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">+</kbd></div>
+                            </div>
+                            <div class="flex items-center justify-between bg-gray-50 rounded p-2">
+                                <span class="text-gray-600">Zoom out</span>
+                                <div><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">-</kbd></div>
+                            </div>
+                            <div class="flex items-center justify-between bg-gray-50 rounded p-2">
+                                <span class="text-gray-600">Reset zoom</span>
+                                <div><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">0</kbd></div>
+                            </div>
+                            <div class="flex items-center justify-between bg-gray-50 rounded p-2">
+                                <span class="text-gray-600">Previous page</span>
+                                <kbd class="kbd">←</kbd>
+                            </div>
+                            <div class="flex items-center justify-between bg-gray-50 rounded p-2">
+                                <span class="text-gray-600">Next page</span>
+                                <kbd class="kbd">→</kbd>
+                            </div>
+                            <div class="flex items-center justify-between bg-gray-50 rounded p-2">
+                                <span class="text-gray-600">Close modal</span>
+                                <kbd class="kbd">Esc</kbd>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Features -->
+                    <div>
+                        <h3 class="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                            <span>✨</span> Features
+                        </h3>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li class="flex items-center gap-2"><span>🌙</span> Dark mode support</li>
+                            <li class="flex items-center gap-2"><span>⭐</span> Favorite PDFs for quick access</li>
+                            <li class="flex items-center gap-2"><span>🔍</span> Search through all files</li>
+                            <li class="flex items-center gap-2"><span>📱</span> Mobile-responsive design</li>
+                            <li class="flex items-center gap-2"><span>🔗</span> Share links to specific PDFs</li>
+                            <li class="flex items-center gap-2"><span>🖨️</span> Print PDFs directly</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <button onclick="closeHelpModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        Got it!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Overlay for mobile sidebar -->
     <div id="sidebarOverlay" class="sidebar-overlay hidden lg:hidden"></div>
 
@@ -645,9 +1107,11 @@
         const MIN_ZOOM = 0.5; // Minimum zoom level (50%)
         const MAX_ZOOM = 3.0; // Maximum zoom level (300%)
         const MAX_RECENT_FILES = 10; // Maximum number of recent files to track
+        const TOAST_DURATION_MS = 3000; // Toast notification duration
 
         // PDF Files - loaded dynamically from files.json
         let pdfFiles = {};
+        let totalFileCount = 0;
 
         // State variables
         let currentPdfPath = '';
@@ -686,12 +1150,241 @@
         const nextPage = document.getElementById('nextPage');
         const pageNum = document.getElementById('pageNum');
         const pageCount = document.getElementById('pageCount');
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+        const toastContainer = document.getElementById('toastContainer');
+        const helpModal = document.getElementById('helpModal');
+        const helpButton = document.getElementById('helpButton');
+        const closeHelpModalBtn = document.getElementById('closeHelpModal');
+        const expandAllBtn = document.getElementById('expandAllBtn');
+        const collapseAllBtn = document.getElementById('collapseAllBtn');
+        const fileCountEl = document.getElementById('fileCount');
+        const favoritesSection = document.getElementById('favoritesSection');
+        const favoritesList = document.getElementById('favoritesList');
+        const recentSection = document.getElementById('recentSection');
+        const recentList = document.getElementById('recentList');
+        const clearFavoritesBtn = document.getElementById('clearFavorites');
+        const clearRecentBtn = document.getElementById('clearRecent');
+        const printPdfBtn = document.getElementById('printPdf');
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
         
         // Detect if device likely supports native PDF viewing
         function supportsNativePDFViewing() {
             // Mobile devices typically don't support inline PDF viewing
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             return !isMobile;
+        }
+        
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />' :
+                      type === 'error' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />' :
+                      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />'}
+                </svg>
+                <span class="text-sm">${message}</span>
+            `;
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, TOAST_DURATION_MS);
+        }
+        
+        // Help modal functions
+        function openHelpModal() {
+            helpModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeHelpModal() {
+            helpModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        helpButton.addEventListener('click', openHelpModal);
+        closeHelpModalBtn.addEventListener('click', closeHelpModal);
+        helpModal.addEventListener('click', (e) => {
+            if (e.target === helpModal) closeHelpModal();
+        });
+        
+        // Scroll to top functionality
+        function updateScrollToTopVisibility() {
+            const scrollY = window.scrollY || document.documentElement.scrollTop;
+            if (scrollY > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        }
+        
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        window.addEventListener('scroll', updateScrollToTopVisibility);
+        
+        // Expand/Collapse all folders
+        expandAllBtn.addEventListener('click', () => {
+            fileTree.querySelectorAll('.folder-content').forEach(content => {
+                content.classList.add('expanded');
+            });
+            fileTree.querySelectorAll('.chevron').forEach(chevron => {
+                chevron.classList.add('rotate-90');
+            });
+            showToast('All folders expanded', 'info');
+        });
+        
+        collapseAllBtn.addEventListener('click', () => {
+            fileTree.querySelectorAll('.folder-content').forEach(content => {
+                content.classList.remove('expanded');
+            });
+            fileTree.querySelectorAll('.chevron').forEach(chevron => {
+                chevron.classList.remove('rotate-90');
+            });
+            showToast('All folders collapsed', 'info');
+        });
+        
+        // Update favorites section in sidebar
+        function updateFavoritesSection() {
+            if (favorites.length === 0) {
+                favoritesSection.classList.add('hidden');
+                return;
+            }
+            
+            favoritesSection.classList.remove('hidden');
+            favoritesList.innerHTML = '';
+            
+            favorites.forEach(filePath => {
+                const fileName = filePath.split('/').pop().replace('.pdf', '');
+                const item = document.createElement('div');
+                item.className = 'flex items-center gap-2 p-1.5 rounded cursor-pointer hover:bg-gray-100 transition-colors text-sm';
+                item.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                    </svg>
+                    <span class="truncate text-gray-600" title="${fileName}">${fileName}</span>
+                `;
+                item.addEventListener('click', () => loadPdf(filePath));
+                favoritesList.appendChild(item);
+            });
+        }
+        
+        // Update recent files section in sidebar
+        function updateRecentSection() {
+            if (recentFiles.length === 0) {
+                recentSection.classList.add('hidden');
+                return;
+            }
+            
+            recentSection.classList.remove('hidden');
+            recentList.innerHTML = '';
+            
+            recentFiles.slice(0, 5).forEach(filePath => {
+                const fileName = filePath.split('/').pop().replace('.pdf', '');
+                const item = document.createElement('div');
+                item.className = 'flex items-center gap-2 p-1.5 rounded cursor-pointer hover:bg-gray-100 transition-colors text-sm';
+                item.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="truncate text-gray-600" title="${fileName}">${fileName}</span>
+                `;
+                item.addEventListener('click', () => loadPdf(filePath));
+                recentList.appendChild(item);
+            });
+        }
+        
+        // Clear favorites
+        clearFavoritesBtn.addEventListener('click', () => {
+            favorites = [];
+            localStorage.setItem('pdfFavorites', JSON.stringify(favorites));
+            updateFavoritesSection();
+            showToast('Favorites cleared', 'success');
+        });
+        
+        // Clear recent files
+        clearRecentBtn.addEventListener('click', () => {
+            recentFiles = [];
+            localStorage.setItem('pdfRecentFiles', JSON.stringify(recentFiles));
+            updateRecentSection();
+            showToast('History cleared', 'success');
+        });
+        
+        // Print PDF
+        printPdfBtn.addEventListener('click', () => {
+            if (currentPdfPath && isValidPdfPath(currentPdfPath)) {
+                const printWindow = window.open(encodeURI(currentPdfPath), '_blank');
+                if (printWindow) {
+                    printWindow.onload = () => {
+                        printWindow.print();
+                    };
+                    showToast('Opening print dialog...', 'info');
+                }
+            }
+        });
+        
+        // Copy link to clipboard
+        copyLinkBtn.addEventListener('click', async () => {
+            if (currentPdfPath && isValidPdfPath(currentPdfPath)) {
+                const url = window.location.origin + window.location.pathname + '?pdf=' + encodeURIComponent(currentPdfPath);
+                try {
+                    await navigator.clipboard.writeText(url);
+                    showToast('Link copied to clipboard!', 'success');
+                } catch (err) {
+                    // Fallback for older browsers that don't support Clipboard API
+                    // Note: document.execCommand('copy') is deprecated but still needed for legacy browser support
+                    const textArea = document.createElement('textarea');
+                    textArea.value = url;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showToast('Link copied to clipboard!', 'success');
+                }
+            }
+        });
+        
+        // Count files helper function
+        function countFilesInStructure(obj) {
+            let count = 0;
+            if (Array.isArray(obj)) {
+                return obj.length;
+            }
+            for (const value of Object.values(obj)) {
+                if (Array.isArray(value)) {
+                    count += value.length;
+                } else if (typeof value === 'object') {
+                    count += countFilesInStructure(value);
+                }
+            }
+            return count;
+        }
+        
+        // Validate PDF path to prevent XSS attacks
+        function isValidPdfPath(path) {
+            // Check if path ends with .pdf and doesn't contain malicious characters
+            if (!path || typeof path !== 'string') return false;
+            if (!path.toLowerCase().endsWith('.pdf')) return false;
+            // Prevent path traversal and protocol injection
+            if (path.includes('..') || path.includes('://') || path.startsWith('/')) return false;
+            // Check if path exists in file structure
+            return getAllPdfPaths(pdfFiles).includes(path);
+        }
+        
+        // Get all PDF paths from file structure
+        function getAllPdfPaths(obj, paths = []) {
+            if (Array.isArray(obj)) {
+                paths.push(...obj);
+            } else if (typeof obj === 'object') {
+                for (const value of Object.values(obj)) {
+                    getAllPdfPaths(value, paths);
+                }
+            }
+            return paths;
         }
         
         // Helper function to hide loading indicator
@@ -716,7 +1409,22 @@
                     throw new Error('Failed to load file structure');
                 }
                 pdfFiles = await response.json();
+                totalFileCount = countFilesInStructure(pdfFiles);
+                fileCountEl.textContent = totalFileCount + (totalFileCount === 1 ? ' file' : ' files');
                 buildFileTree();
+                updateFavoritesSection();
+                updateRecentSection();
+                
+                // Check for URL parameter to load specific PDF
+                const urlParams = new URLSearchParams(window.location.search);
+                const pdfParam = urlParams.get('pdf');
+                if (pdfParam) {
+                    // Validate that the PDF path exists in the file structure
+                    const decodedPath = decodeURIComponent(pdfParam);
+                    if (isValidPdfPath(decodedPath)) {
+                        loadPdf(decodedPath);
+                    }
+                }
             } catch (error) {
                 console.error('Error loading file structure:', error);
                 // Show error message to user
@@ -1111,11 +1819,6 @@
         
         darkModeToggle.addEventListener('click', toggleDarkMode);
         
-        // Initialize dark mode
-        if (isDarkMode) {
-            toggleDarkMode();
-        }
-        
         // Favorites functionality
         function toggleFavorite() {
             if (!currentPdfPath) return;
@@ -1126,14 +1829,17 @@
                 favoritePdf.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>';
                 favoritePdf.classList.remove('text-yellow-500');
                 favoritePdf.classList.add('text-gray-400');
+                showToast('Removed from favorites', 'info');
             } else {
                 favorites.push(currentPdfPath);
                 favoritePdf.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>';
                 favoritePdf.classList.remove('text-gray-400');
                 favoritePdf.classList.add('text-yellow-500');
+                showToast('Added to favorites', 'success');
             }
             
             localStorage.setItem('pdfFavorites', JSON.stringify(favorites));
+            updateFavoritesSection();
         }
         
         favoritePdf.addEventListener('click', toggleFavorite);
@@ -1208,6 +1914,29 @@
         
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
+            // Don't trigger shortcuts when typing in input fields
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                if (e.key === 'Escape') {
+                    e.target.blur();
+                }
+                return;
+            }
+            
+            // Help modal shortcut
+            if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+                e.preventDefault();
+                openHelpModal();
+                return;
+            }
+            
+            // Escape key to close modals
+            if (e.key === 'Escape') {
+                if (helpModal.classList.contains('active')) {
+                    closeHelpModal();
+                }
+                return;
+            }
+            
             if (e.ctrlKey || e.metaKey) {
                 if (e.key === '=' || e.key === '+') {
                     e.preventDefault();
@@ -1277,6 +2006,7 @@
                 recentFiles = recentFiles.slice(0, MAX_RECENT_FILES);
             }
             localStorage.setItem('pdfRecentFiles', JSON.stringify(recentFiles));
+            updateRecentSection();
         }
 
         // Handle window resize
@@ -1289,6 +2019,12 @@
 
         // Initialize
         loadFileStructure();
+        
+        // Apply dark mode if previously set
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+            darkModeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />';
+        }
     </script>
 </body>
 </html>
