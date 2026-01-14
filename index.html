@@ -652,6 +652,12 @@
         // Render PDF using PDF.js for mobile devices
         async function renderPDFWithCanvas(pdfPath) {
             try {
+                // Clean up previous PDF document if exists
+                if (pdfDoc) {
+                    await pdfDoc.destroy();
+                    pdfDoc = null;
+                }
+                
                 pdfCanvasContainer.innerHTML = '<p class="text-white text-center">Loading PDF...</p>';
                 
                 // Load PDF document
@@ -660,6 +666,9 @@
                 
                 // Clear container
                 pdfCanvasContainer.innerHTML = '';
+                
+                // Get container width before rendering
+                const containerWidth = Math.max(pdfCanvasContainer.clientWidth - CANVAS_CONTAINER_PADDING, 300);
                 
                 // Render all pages
                 for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
@@ -672,7 +681,6 @@
                     
                     // Calculate scale to fit screen width
                     const viewport = page.getViewport({ scale: 1 });
-                    const containerWidth = pdfCanvasContainer.clientWidth - CANVAS_CONTAINER_PADDING;
                     const scale = containerWidth / viewport.width;
                     const scaledViewport = page.getViewport({ scale: scale });
                     
@@ -739,6 +747,12 @@
                 await renderPDFWithCanvas(encodedPath);
             } else {
                 // Use native PDF viewing for desktop
+                // Clean up PDF.js document if switching from canvas mode
+                if (pdfDoc) {
+                    pdfDoc.destroy().catch(() => {}); // Ignore errors
+                    pdfDoc = null;
+                }
+                
                 pdfViewer.classList.remove('hidden');
                 pdfCanvasContainer.classList.add('hidden');
                 
