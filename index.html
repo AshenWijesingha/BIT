@@ -6,6 +6,8 @@
     <title>BIT Repository - PDF Viewer</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PDF.js library for rendering PDFs on all devices including mobile -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
         /* Tailwind-like utility classes as fallback when CDN is blocked */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -247,25 +249,48 @@
         .folder-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
         .folder-content.expanded { max-height: 5000px; }
         
-        /* PDF iframe container - responsive heights */
+        /* PDF container - responsive heights */
         .pdf-iframe-container {
             background: #525659;
             min-height: calc(100vh - 10rem);
             border-radius: 0 0 0.5rem 0.5rem;
+            overflow: auto;
         }
         
-        .pdf-iframe-container iframe {
+        .pdf-iframe-container iframe,
+        .pdf-iframe-container object {
             width: 100%;
             height: calc(100vh - 10rem);
             border: none;
             border-radius: 0 0 0.5rem 0.5rem;
         }
         
+        /* PDF.js canvas rendering container */
+        #pdfCanvasContainer {
+            width: 100%;
+            height: calc(100vh - 10rem);
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            gap: 1rem;
+        }
+        
+        .pdf-page-canvas {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            background: white;
+        }
+        
         @media (max-width: 768px) {
             .pdf-iframe-container {
                 min-height: calc(100vh - 14rem);
             }
-            .pdf-iframe-container iframe {
+            .pdf-iframe-container iframe,
+            .pdf-iframe-container object {
+                height: calc(100vh - 14rem);
+            }
+            #pdfCanvasContainer {
                 height: calc(100vh - 14rem);
             }
         }
@@ -396,9 +421,14 @@
                         </div>
                     </div>
                 </div>
-                <!-- PDF iframe Container -->
+                <!-- PDF Container -->
                 <div id="pdfIframeContainer" class="pdf-iframe-container">
-                    <iframe id="pdfViewer" title="PDF Viewer"></iframe>
+                    <!-- Native PDF viewer using object tag (works on desktop) -->
+                    <object id="pdfViewer" type="application/pdf" width="100%" height="100%" style="min-height: calc(100vh - 10rem);">
+                        <iframe id="pdfViewerFallback" title="PDF Viewer" width="100%" height="100%" style="min-height: calc(100vh - 10rem);"></iframe>
+                    </object>
+                    <!-- PDF.js canvas rendering for mobile devices -->
+                    <div id="pdfCanvasContainer" class="hidden"></div>
                 </div>
             </div>
         </main>
@@ -408,9 +438,16 @@
     <div id="sidebarOverlay" class="sidebar-overlay hidden lg:hidden"></div>
 
     <script>
+        // Configure PDF.js worker
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+        
         // Constants
         const PDF_LOAD_TIMEOUT_MS = 3000; // Fallback timeout for PDF loading
         const INDENT_SIZE_PX = 12; // Indentation for nested sidebar items
+        const PDF_VIEW_MODE = '#view=FitH'; // Default PDF view mode
+        const CANVAS_CONTAINER_PADDING = 32; // Padding for canvas container (2 * 1rem)
 
         // PDF Files organized by folder structure
         const pdfFiles = {
@@ -490,6 +527,8 @@
 
         // State variables
         let currentPdfPath = '';
+        let pdfDoc = null;
+        let usingCanvasRenderer = false;
 
         // DOM Elements
         const fileTree = document.getElementById('fileTree');
@@ -500,8 +539,31 @@
         const downloadPdf = document.getElementById('downloadPdf');
         const openInNewTab = document.getElementById('openInNewTab');
         const pdfViewer = document.getElementById('pdfViewer');
+        const pdfViewerFallback = document.getElementById('pdfViewerFallback');
+        const pdfCanvasContainer = document.getElementById('pdfCanvasContainer');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
+        
+        // Detect if device likely supports native PDF viewing
+        function supportsNativePDFViewing() {
+            // Mobile devices typically don't support inline PDF viewing
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            return !isMobile;
+        }
+        
+        // Helper function to hide loading indicator
+        function hideLoadingIndicator() {
+            loadingIndicator.classList.add('hidden');
+            loadingIndicator.style.display = '';
+        }
+        
+        // Helper function to show loading indicator
+        function showLoadingIndicator() {
+            welcomeMessage.classList.add('hidden');
+            pdfContainer.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+            loadingIndicator.style.display = 'flex';
+        }
 
         // Build file tree
         function buildFileTree() {
@@ -587,8 +649,67 @@
             return element;
         }
 
-        // Load and display PDF using iframe
-        function loadPdf(pdfPath) {
+        // Render PDF using PDF.js for mobile devices
+        async function renderPDFWithCanvas(pdfPath) {
+            try {
+                // Clean up previous PDF document if exists
+                if (pdfDoc) {
+                    await pdfDoc.destroy();
+                    pdfDoc = null;
+                }
+                
+                pdfCanvasContainer.innerHTML = '<p class="text-white text-center">Loading PDF...</p>';
+                
+                // Load PDF document
+                const loadingTask = pdfjsLib.getDocument(pdfPath);
+                pdfDoc = await loadingTask.promise;
+                
+                // Clear container
+                pdfCanvasContainer.innerHTML = '';
+                
+                // Get container width before rendering
+                const containerWidth = Math.max(pdfCanvasContainer.clientWidth - CANVAS_CONTAINER_PADDING, 300);
+                
+                // Render all pages
+                for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+                    const page = await pdfDoc.getPage(pageNum);
+                    
+                    // Create canvas
+                    const canvas = document.createElement('canvas');
+                    canvas.className = 'pdf-page-canvas';
+                    const context = canvas.getContext('2d');
+                    
+                    // Calculate scale to fit screen width
+                    const viewport = page.getViewport({ scale: 1 });
+                    const scale = containerWidth / viewport.width;
+                    const scaledViewport = page.getViewport({ scale: scale });
+                    
+                    canvas.width = scaledViewport.width;
+                    canvas.height = scaledViewport.height;
+                    
+                    // Render page
+                    await page.render({
+                        canvasContext: context,
+                        viewport: scaledViewport
+                    }).promise;
+                    
+                    pdfCanvasContainer.appendChild(canvas);
+                }
+                
+                // Hide loading and show container
+                hideLoadingIndicator();
+                pdfContainer.classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Error rendering PDF:', error);
+                hideLoadingIndicator();
+                welcomeMessage.classList.remove('hidden');
+                alert('Error loading PDF file. Please try the "Open in New Tab" option or download the file.');
+            }
+        }
+
+        // Load and display PDF using object tag with iframe fallback or PDF.js canvas
+        async function loadPdf(pdfPath) {
             // Update active state in sidebar
             document.querySelectorAll('.sidebar-item').forEach(item => {
                 item.classList.remove('active');
@@ -598,10 +719,7 @@
             });
             
             // Show loading
-            welcomeMessage.classList.add('hidden');
-            pdfContainer.classList.add('hidden');
-            loadingIndicator.classList.remove('hidden');
-            loadingIndicator.style.display = 'flex';
+            showLoadingIndicator();
             
             // Close sidebar on mobile
             closeSidebar();
@@ -616,30 +734,57 @@
             downloadPdf.download = fileName;
             openInNewTab.href = encodedPath;
             
-            // Load PDF in iframe
-            pdfViewer.onload = function() {
-                loadingIndicator.classList.add('hidden');
-                loadingIndicator.style.display = '';
-                pdfContainer.classList.remove('hidden');
-            };
+            // Check if we should use PDF.js canvas rendering (for mobile)
+            const usePDFjs = typeof pdfjsLib !== 'undefined' && !supportsNativePDFViewing();
+            usingCanvasRenderer = usePDFjs;
             
-            pdfViewer.onerror = function() {
-                loadingIndicator.classList.add('hidden');
-                loadingIndicator.style.display = '';
-                welcomeMessage.classList.remove('hidden');
-                alert('Error loading PDF file. Please try again or use the "Open in New Tab" option.');
-            };
-            
-            pdfViewer.src = encodedPath;
-            
-            // Fallback timeout in case onload doesn't fire
-            setTimeout(() => {
-                if (loadingIndicator.style.display === 'flex') {
-                    loadingIndicator.classList.add('hidden');
-                    loadingIndicator.style.display = '';
-                    pdfContainer.classList.remove('hidden');
+            if (usePDFjs) {
+                // Use PDF.js canvas rendering for mobile devices
+                pdfViewer.classList.add('hidden');
+                pdfViewerFallback.classList.add('hidden');
+                pdfCanvasContainer.classList.remove('hidden');
+                
+                await renderPDFWithCanvas(encodedPath);
+            } else {
+                // Use native PDF viewing for desktop
+                // Clean up PDF.js document if switching from canvas mode
+                if (pdfDoc) {
+                    pdfDoc.destroy().catch(() => {}); // Ignore errors
+                    pdfDoc = null;
                 }
-            }, PDF_LOAD_TIMEOUT_MS);
+                
+                pdfViewer.classList.remove('hidden');
+                pdfCanvasContainer.classList.add('hidden');
+                
+                // Set PDF URL with view parameters for better display
+                const pdfUrl = encodedPath + PDF_VIEW_MODE;
+                
+                // Load PDF using object tag (better mobile support)
+                pdfViewer.onload = function() {
+                    hideLoadingIndicator();
+                    pdfContainer.classList.remove('hidden');
+                };
+                
+                pdfViewer.onerror = function() {
+                    hideLoadingIndicator();
+                    welcomeMessage.classList.remove('hidden');
+                    alert('Error loading PDF file. Please try again or use the "Open in New Tab" option.');
+                };
+                
+                // Set the data attribute on object tag for PDF
+                pdfViewer.setAttribute('data', pdfUrl);
+                
+                // Also set the fallback iframe source
+                pdfViewerFallback.src = pdfUrl;
+                
+                // Fallback timeout in case onload doesn't fire
+                setTimeout(() => {
+                    if (loadingIndicator.style.display === 'flex') {
+                        hideLoadingIndicator();
+                        pdfContainer.classList.remove('hidden');
+                    }
+                }, PDF_LOAD_TIMEOUT_MS);
+            }
         }
 
         // Sidebar toggle for mobile
