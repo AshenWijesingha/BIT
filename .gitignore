@@ -1,0 +1,18 @@
+# Large archive files (not needed for web deployment)
+*.zip
+
+# Build/deployment directories
+_site/
+dist/
+build/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

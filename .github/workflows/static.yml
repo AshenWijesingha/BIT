@@ -33,11 +33,17 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Prepare deployment files
+        run: |
+          # Create deployment directory
+          mkdir -p _site
+          # Copy all files except large archives
+          rsync -av --exclude='.git' --exclude='*.zip' --exclude='_site' . _site/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          # Upload deployment directory without large files
+          path: '_site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
