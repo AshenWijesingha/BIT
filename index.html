@@ -325,6 +325,8 @@
         .pdf-page-canvas {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             background: white;
+            /* Enable hardware acceleration for better performance */
+            will-change: transform;
         }
         
         @media (max-width: 768px) {
@@ -836,8 +838,13 @@
                 
                 pdfCanvasContainer.innerHTML = '<p class="text-white text-center">Loading PDF...</p>';
                 
-                // Load PDF document
-                const loadingTask = pdfjsLib.getDocument(pdfPath);
+                // Load PDF document with high-quality rendering options
+                const loadingTask = pdfjsLib.getDocument({
+                    url: pdfPath,
+                    // Enable high-quality rendering options
+                    disableAutoFetch: false,
+                    enableXfa: true
+                });
                 pdfDoc = await loadingTask.promise;
                 
                 // Clear container
@@ -852,6 +859,9 @@
                 // Get container width before rendering
                 const containerWidth = Math.max(pdfCanvasContainer.clientWidth - CANVAS_CONTAINER_PADDING, 300);
                 
+                // Get device pixel ratio for high-DPI displays
+                const devicePixelRatio = window.devicePixelRatio || 1;
+                
                 // Render all pages
                 for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
                     const page = await pdfDoc.getPage(pageNum);
@@ -860,20 +870,34 @@
                     const canvas = document.createElement('canvas');
                     canvas.className = 'pdf-page-canvas';
                     canvas.dataset.pageNum = pageNum;
-                    const context = canvas.getContext('2d');
+                    const context = canvas.getContext('2d', { alpha: false });
                     
                     // Calculate scale to fit screen width with zoom
                     const viewport = page.getViewport({ scale: 1 });
                     const scale = (containerWidth / viewport.width) * currentZoom;
-                    const scaledViewport = page.getViewport({ scale: scale });
                     
+                    // Apply device pixel ratio for high-quality rendering on high-DPI displays
+                    const outputScale = devicePixelRatio;
+                    const scaledViewport = page.getViewport({ scale: scale * outputScale });
+                    
+                    // Set canvas dimensions to match the scaled viewport
                     canvas.width = scaledViewport.width;
                     canvas.height = scaledViewport.height;
                     
-                    // Render page
+                    // Set CSS dimensions to display at correct size
+                    canvas.style.width = Math.round(scaledViewport.width / outputScale) + 'px';
+                    canvas.style.height = Math.round(scaledViewport.height / outputScale) + 'px';
+                    
+                    // Configure canvas context for high-quality rendering
+                    context.imageSmoothingEnabled = true;
+                    context.imageSmoothingQuality = 'high';
+                    
+                    // Render page with high-quality settings
                     await page.render({
                         canvasContext: context,
-                        viewport: scaledViewport
+                        viewport: scaledViewport,
+                        intent: 'display',
+                        renderInteractiveForms: true
                     }).promise;
                     
                     pdfCanvasContainer.appendChild(canvas);
