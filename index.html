@@ -1710,7 +1710,8 @@
                 
                 // Get container dimensions for proper scaling
                 const container = pdfCanvasContainer;
-                const containerWidth = container.clientWidth || window.innerWidth;
+                const containerRect = container.getBoundingClientRect();
+                const containerWidth = containerRect.width > 0 ? containerRect.width : window.innerWidth;
                 const containerPadding = window.innerWidth <= 768 ? 16 : CANVAS_CONTAINER_PADDING;
                 const availableWidth = Math.max(containerWidth - containerPadding, 300);
                 
@@ -2165,7 +2166,7 @@
                 if (container.requestFullscreen) {
                     container.requestFullscreen().catch(err => {
                         console.error('Fullscreen error:', err);
-                        showToast('Fullscreen not supported on this device', 'error');
+                        showToast('Unable to enter fullscreen mode', 'error');
                     });
                 } else if (container.webkitRequestFullscreen) {
                     container.webkitRequestFullscreen();
