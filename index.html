@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Viewport configuration optimized for mobile devices (especially Samsung S10 5G and similar high-DPI devices) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
     <meta name="description" content="BIT Repository - Browse and view PDF course materials for Bachelor of Information Technology program. Access lecture notes, tutorials, and study materials for BIT students.">
     <meta name="theme-color" content="#2563eb">
@@ -1817,6 +1818,8 @@
                 if (isMobile) {
                     // On mobile, use the visual viewport width for more accurate measurement
                     // This accounts for browser chrome and ensures PDF fits within visible area
+                    // Visual Viewport API is supported in modern browsers (Chrome 61+, Safari 13+, Firefox 91+)
+                    // Falls back to window.innerWidth for older browsers
                     containerWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
                 } else {
                     // On desktop, use container's bounding rect
@@ -1848,7 +1851,8 @@
                     const scale = (availableWidth / viewport.width) * currentZoom;
                     
                     // Calculate CSS dimensions (actual display size)
-                    // Ensure canvas width never exceeds available width
+                    // Ensure canvas width never exceeds available width to prevent horizontal overflow
+                    // This is critical for mobile devices to avoid horizontal scrolling issues
                     const cssWidth = Math.min(Math.round(viewport.width * scale), availableWidth);
                     const cssHeight = Math.round(viewport.height * scale);
                     
