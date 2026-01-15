@@ -235,10 +235,39 @@
             body { font-size: 16px; } /* Prevent zoom on iOS */
             
             /* Adjust header for mobile */
-            header h1 { font-size: 1rem; }
+            header h1 { 
+                font-size: 0.875rem;
+                gap: 0.375rem;
+            }
+            
+            header h1 img {
+                height: 1.75rem;
+                width: 1.75rem;
+            }
             
             /* Make buttons more prominent on mobile */
-            header button { padding: 0.5rem; }
+            header button { 
+                padding: 0.5rem;
+                min-width: 44px;
+                min-height: 44px;
+            }
+            
+            /* Sidebar improvements for mobile */
+            .sidebar-item, .folder-container > div {
+                padding: 0.625rem 0.5rem;
+                min-height: 48px;
+            }
+            
+            /* Footer adjustments for mobile */
+            .footer {
+                padding: 1rem 0.75rem;
+                text-align: center;
+            }
+            
+            .footer .flex {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
         }
         
         /* Small devices (phones, 480px and up) */
@@ -624,6 +653,17 @@
             margin-top: auto;
         }
         
+        @media (max-width: 640px) {
+            .footer {
+                padding: 1.25rem 1rem;
+            }
+            
+            .footer .flex.flex-wrap {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
         .footer a {
             color: #60a5fa;
             text-decoration: none;
@@ -749,9 +789,9 @@
     <header class="bg-blue-600 text-white shadow-lg fixed w-full z-50 header-height">
         <div class="px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between h-full">
             <h1 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold flex items-center gap-1 sm:gap-2 min-w-0">
-                <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_40,h_40,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg flex-shrink-0 object-cover">
-                <span class="truncate">BIT Repository</span>
-                <span class="hidden sm:inline truncate"> - PDF Viewer</span>
+                <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_40,h_40,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-7 w-7 sm:h-10 sm:w-10 rounded-lg flex-shrink-0 object-cover">
+                <span class="truncate text-sm sm:text-base md:text-lg lg:text-xl">BIT Repository</span>
+                <span class="hidden sm:inline truncate text-sm md:text-base lg:text-lg"> - PDF Viewer</span>
             </h1>
             <div class="flex items-center gap-1 sm:gap-2">
                 <!-- Help/Keyboard Shortcuts -->
@@ -866,11 +906,11 @@
                     <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">Welcome to BIT Repository</h2>
                     <p class="text-base text-gray-600 mb-4">Select a PDF file from the sidebar to start viewing.</p>
                     <p class="text-sm text-gray-500 mb-4">This repository contains course materials for the Bachelor of Information Technology program.</p>
-                    <div class="flex flex-col sm:flex-row gap-2 justify-center">
-                        <button onclick="document.getElementById('toggleSidebar').click()" class="lg:hidden bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    <div class="flex flex-col gap-2 sm:gap-3 justify-center w-full max-w-xs">
+                        <button onclick="document.getElementById('toggleSidebar').click()" class="lg:hidden bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors w-full">
                             Browse Files
                         </button>
-                        <button onclick="openHelpModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors">
+                        <button onclick="openHelpModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors w-full">
                             View Help
                         </button>
                     </div>
