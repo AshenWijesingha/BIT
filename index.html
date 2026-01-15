@@ -1346,6 +1346,10 @@
         const MAX_ZOOM = 3.0; // Maximum zoom level (300%)
         const MAX_RECENT_FILES = 10; // Maximum number of recent files to track
         const TOAST_DURATION_MS = 3000; // Toast notification duration
+        const MIN_MOBILE_PDF_WIDTH = 280; // Minimum PDF width on mobile devices (in pixels)
+        const MOBILE_EDGE_MARGIN = 8; // Additional margin for mobile to prevent edge overflow (in pixels)
+        const MAX_MOBILE_DEVICE_PIXEL_RATIO = 2; // Maximum device pixel ratio for mobile (for performance)
+        const RESIZE_DEBOUNCE_MS = 300; // Debounce delay for resize events (in milliseconds)
 
         // PDF Files - loaded dynamically from files.json
         let pdfFiles = {};
@@ -1823,11 +1827,11 @@
                 // Account for padding and safe areas on mobile devices
                 const containerPadding = isMobile ? 16 : CANVAS_CONTAINER_PADDING;
                 // Additional margin for mobile to prevent edge overflow
-                const edgeMargin = isMobile ? 8 : 0;
-                const availableWidth = Math.max(containerWidth - containerPadding - edgeMargin, 280);
+                const edgeMargin = isMobile ? MOBILE_EDGE_MARGIN : 0;
+                const availableWidth = Math.max(containerWidth - containerPadding - edgeMargin, MIN_MOBILE_PDF_WIDTH);
                 
                 // Get device pixel ratio for high-DPI displays (limit to 2 for performance on mobile)
-                const devicePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+                const devicePixelRatio = Math.min(window.devicePixelRatio || 1, MAX_MOBILE_DEVICE_PIXEL_RATIO);
                 
                 // Render all pages
                 for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
@@ -2021,7 +2025,7 @@
                 if (usingCanvasRenderer && pdfDoc && currentPdfPath) {
                     renderPDFWithCanvas(currentPdfPath);
                 }
-            }, 300);
+            }, RESIZE_DEBOUNCE_MS);
         });
         
         // Handle visual viewport resize specifically for mobile devices
@@ -2034,7 +2038,7 @@
                     if (usingCanvasRenderer && pdfDoc && currentPdfPath) {
                         renderPDFWithCanvas(currentPdfPath);
                     }
-                }, 300);
+                }, RESIZE_DEBOUNCE_MS);
             });
         }
         
