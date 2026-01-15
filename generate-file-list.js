@@ -17,9 +17,18 @@ const INCLUDE_EXTENSIONS = ['.pdf'];
  * Recursively scan directory and build file tree
  * @param {string} dirPath - Directory path to scan
  * @param {string} relativePath - Relative path from root
+ * @param {Set} visited - Set of visited directories to prevent infinite loops
  * @returns {Object|Array} - File tree structure
  */
-function scanDirectory(dirPath, relativePath = '') {
+function scanDirectory(dirPath, relativePath = '', visited = new Set()) {
+    // Prevent infinite loops from circular symlinks
+    const realPath = fs.realpathSync(dirPath);
+    if (visited.has(realPath)) {
+        console.warn(`Circular symlink detected, skipping: ${dirPath}`);
+        return [];
+    }
+    visited.add(realPath);
+    
     const items = fs.readdirSync(dirPath, { withFileTypes: true });
     const files = [];
     const folders = {};
@@ -28,23 +37,32 @@ function scanDirectory(dirPath, relativePath = '') {
         const itemPath = path.join(dirPath, item.name);
         const itemRelativePath = relativePath ? `${relativePath}/${item.name}` : item.name;
         
-        if (item.isDirectory()) {
-            // Skip hidden directories
-            if (item.name.startsWith('.')) continue;
-            
-            // Recursively scan subdirectory
-            const subContent = scanDirectory(itemPath, itemRelativePath);
-            
-            // Only include folders that have content
-            if (Array.isArray(subContent) ? subContent.length > 0 : Object.keys(subContent).length > 0) {
-                folders[item.name] = subContent;
+        try {
+            if (item.isDirectory() || item.isSymbolicLink()) {
+                // Skip hidden directories
+                if (item.name.startsWith('.')) continue;
+                
+                // Check if symlink points to a directory
+                const stats = fs.statSync(itemPath);
+                if (!stats.isDirectory()) continue;
+                
+                // Recursively scan subdirectory with visited set
+                const subContent = scanDirectory(itemPath, itemRelativePath, visited);
+                
+                // Only include folders that have content
+                if (Array.isArray(subContent) ? subContent.length > 0 : Object.keys(subContent).length > 0) {
+                    folders[item.name] = subContent;
+                }
+            } else if (item.isFile()) {
+                // Check if file has allowed extension
+                const ext = path.extname(item.name).toLowerCase();
+                if (INCLUDE_EXTENSIONS.includes(ext)) {
+                    files.push(itemRelativePath);
+                }
             }
-        } else if (item.isFile()) {
-            // Check if file has allowed extension
-            const ext = path.extname(item.name).toLowerCase();
-            if (INCLUDE_EXTENSIONS.includes(ext)) {
-                files.push(itemRelativePath);
-            }
+        } catch (err) {
+            console.warn(`Error processing ${itemPath}:`, err.message);
+            continue;
         }
     }
     
@@ -73,14 +91,24 @@ function generateFileStructure() {
     for (const dir of INCLUDE_DIRS) {
         const dirPath = path.join(__dirname, dir);
         
-        if (fs.existsSync(dirPath)) {
-            const content = scanDirectory(dirPath, dir);
-            if (Array.isArray(content) ? content.length > 0 : Object.keys(content).length > 0) {
-                fileStructure[dir] = content;
+        try {
+            if (fs.existsSync(dirPath)) {
+                const content = scanDirectory(dirPath, dir);
+                if (Array.isArray(content) ? content.length > 0 : Object.keys(content).length > 0) {
+                    fileStructure[dir] = content;
+                } else {
+                    console.warn(`Warning: Directory "${dir}" exists but contains no PDF files`);
+                }
+            } else {
+                console.warn(`Warning: Directory "${dir}" not found, skipping...`);
             }
-        } else {
-            console.warn(`Warning: Directory "${dir}" not found, skipping...`);
+        } catch (err) {
+            console.error(`Error scanning directory "${dir}":`, err.message);
         }
+    }
+    
+    if (Object.keys(fileStructure).length === 0) {
+        console.warn('Warning: No PDF files found in any directory');
     }
     
     return fileStructure;

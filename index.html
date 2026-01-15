@@ -967,7 +967,7 @@
                         id="searchInput" 
                         placeholder="Search PDFs..." 
                         class="w-full px-10 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-white hover:border-gray-400 dark:hover:border-gray-500 placeholder:text-gray-400 dark:placeholder:text-gray-500"
-                        aria-label="Search PDF files"
+                        aria-label="Search for PDF files by name or folder"
                     />
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-500 absolute left-3 top-2.5 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -1043,7 +1043,7 @@
                     <p class="text-base text-gray-700 dark:text-gray-300 mb-3 font-medium">Browse and view PDF course materials</p>
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Access lecture notes, tutorials, and study materials for the Bachelor of Information Technology program.</p>
                     <div class="flex flex-col gap-3 justify-center w-full max-w-xs mx-auto">
-                        <button onclick="document.getElementById('toggleSidebar')?.click()" class="lg:hidden bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3.5 rounded-xl font-semibold transition-all duration-200 w-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:scale-95">
+                        <button id="browsFilesBtn" class="lg:hidden bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3.5 rounded-xl font-semibold transition-all duration-200 w-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:scale-95">
                             <span class="flex items-center justify-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
@@ -1051,7 +1051,7 @@
                                 Browse Files
                             </span>
                         </button>
-                        <button onclick="openHelpModal()" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3.5 rounded-xl font-semibold transition-all duration-200 w-full shadow-md hover:shadow-lg transform hover:-translate-y-1 active:scale-95 border border-gray-200 dark:border-gray-600">
+                        <button id="viewHelpBtn" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3.5 rounded-xl font-semibold transition-all duration-200 w-full shadow-md hover:shadow-lg transform hover:-translate-y-1 active:scale-95 border border-gray-200 dark:border-gray-600">
                             <span class="flex items-center justify-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1082,7 +1082,7 @@
                 <nav class="mb-2 sm:mb-3" aria-label="Breadcrumb">
                     <ol id="breadcrumb" class="flex items-center flex-wrap gap-1 text-xs sm:text-sm text-gray-600">
                         <li class="flex items-center">
-                            <a href="#" class="hover:text-blue-600 transition-colors" onclick="event.preventDefault();">Home</a>
+                            <a href="#" id="breadcrumbHome" class="hover:text-blue-600 transition-colors">Home</a>
                         </li>
                     </ol>
                 </nav>
@@ -1208,7 +1208,7 @@
                     </svg>
                     GitHub
                 </a>
-                <button onclick="openHelpModal()" class="flex items-center gap-1 hover:text-blue-400 transition-colors">
+                <button id="footerHelpBtn" class="flex items-center gap-1 hover:text-blue-400 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -1321,7 +1321,7 @@
                 </div>
                 
                 <div class="mt-6 pt-4 border-t border-gray-200">
-                    <button onclick="closeHelpModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                    <button id="closeHelpModalFooterBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
                         Got it!
                     </button>
                 </div>
@@ -1346,7 +1346,7 @@
         const MIN_ZOOM = 0.5; // Minimum zoom level (50%)
         const MAX_ZOOM = 3.0; // Maximum zoom level (300%)
         const MAX_RECENT_FILES = 10; // Maximum number of recent files to track
-        const TOAST_DURATION_MS = 3000; // Toast notification duration
+        const TOAST_DURATION_MS = 5000; // Toast notification duration (5s for accessibility)
         const MIN_MOBILE_PDF_WIDTH = 280; // Minimum PDF width on mobile devices (in pixels)
         const MOBILE_EDGE_MARGIN = 8; // Additional margin for mobile to prevent edge overflow (in pixels)
         const MAX_MOBILE_DEVICE_PIXEL_RATIO = 2; // Maximum device pixel ratio for mobile (for performance)
@@ -1362,9 +1362,38 @@
         let usingCanvasRenderer = false;
         let currentZoom = 1.0;
         let currentPage = 1;
-        let favorites = JSON.parse(localStorage.getItem('pdfFavorites') || '[]');
-        let recentFiles = JSON.parse(localStorage.getItem('pdfRecentFiles') || '[]');
-        let isDarkMode = localStorage.getItem('darkMode') === 'true';
+        
+        // Safe localStorage parsing with error handling
+        let favorites = [];
+        let recentFiles = [];
+        let isDarkMode = false;
+        
+        try {
+            favorites = JSON.parse(localStorage.getItem('pdfFavorites') || '[]');
+            // Validate that it's an array
+            if (!Array.isArray(favorites)) favorites = [];
+        } catch (e) {
+            console.error('Failed to parse favorites from localStorage:', e);
+            favorites = [];
+            localStorage.removeItem('pdfFavorites');
+        }
+        
+        try {
+            recentFiles = JSON.parse(localStorage.getItem('pdfRecentFiles') || '[]');
+            // Validate that it's an array
+            if (!Array.isArray(recentFiles)) recentFiles = [];
+        } catch (e) {
+            console.error('Failed to parse recent files from localStorage:', e);
+            recentFiles = [];
+            localStorage.removeItem('pdfRecentFiles');
+        }
+        
+        try {
+            isDarkMode = localStorage.getItem('darkMode') === 'true';
+        } catch (e) {
+            console.error('Failed to access dark mode from localStorage:', e);
+            isDarkMode = false;
+        }
 
         // DOM Elements
         const fileTree = document.getElementById('fileTree');
@@ -1410,6 +1439,24 @@
         const printPdfBtn = document.getElementById('printPdf');
         const copyLinkBtn = document.getElementById('copyLinkBtn');
         
+        // Validate critical DOM elements exist
+        const criticalElements = {
+            fileTree, welcomeMessage, loadingIndicator, pdfContainer,
+            sidebar, toastContainer
+        };
+        
+        for (const [name, element] of Object.entries(criticalElements)) {
+            if (!element) {
+                console.error(`Critical DOM element missing: ${name}`);
+                document.body.innerHTML = `<div style="padding: 2rem; text-align: center; color: red;">
+                    <h1>Application Error</h1>
+                    <p>Critical page element missing: ${name}</p>
+                    <p>Please refresh the page or contact support.</p>
+                </div>`;
+                throw new Error(`Critical DOM element missing: ${name}`);
+            }
+        }
+        
         // Detect if device likely supports native PDF viewing
         function supportsNativePDFViewing() {
             // Mobile devices typically don't support inline PDF viewing
@@ -1454,6 +1501,38 @@
             if (e.target === helpModal) closeHelpModal();
         });
         
+        // Additional button event listeners for inline handlers
+        const browsFilesBtn = document.getElementById('browsFilesBtn');
+        const viewHelpBtn = document.getElementById('viewHelpBtn');
+        const breadcrumbHome = document.getElementById('breadcrumbHome');
+        const footerHelpBtn = document.getElementById('footerHelpBtn');
+        const closeHelpModalFooterBtn = document.getElementById('closeHelpModalFooterBtn');
+        
+        if (browsFilesBtn) {
+            browsFilesBtn.addEventListener('click', () => {
+                const toggleSidebarBtn = document.getElementById('toggleSidebar');
+                if (toggleSidebarBtn) toggleSidebarBtn.click();
+            });
+        }
+        
+        if (viewHelpBtn) {
+            viewHelpBtn.addEventListener('click', openHelpModal);
+        }
+        
+        if (breadcrumbHome) {
+            breadcrumbHome.addEventListener('click', (e) => {
+                e.preventDefault();
+            });
+        }
+        
+        if (footerHelpBtn) {
+            footerHelpBtn.addEventListener('click', openHelpModal);
+        }
+        
+        if (closeHelpModalFooterBtn) {
+            closeHelpModalFooterBtn.addEventListener('click', closeHelpModal);
+        }
+        
         // Scroll to top functionality
         function updateScrollToTopVisibility() {
             const scrollY = window.scrollY || document.documentElement.scrollTop;
@@ -1493,6 +1572,9 @@
         
         // Update favorites section in sidebar
         function updateFavoritesSection() {
+            // Filter out invalid paths
+            favorites = favorites.filter(path => isValidPdfPath(path));
+            
             if (favorites.length === 0) {
                 favoritesSection.classList.add('hidden');
                 return;
@@ -1518,6 +1600,9 @@
         
         // Update recent files section in sidebar
         function updateRecentSection() {
+            // Filter out invalid paths
+            recentFiles = recentFiles.filter(path => isValidPdfPath(path));
+            
             if (recentFiles.length === 0) {
                 recentSection.classList.add('hidden');
                 return;
@@ -1578,15 +1663,31 @@
                     await navigator.clipboard.writeText(url);
                     showToast('Link copied to clipboard!', 'success');
                 } catch (err) {
-                    // Fallback for older browsers that don't support Clipboard API
-                    // Note: document.execCommand('copy') is deprecated but still needed for legacy browser support
-                    const textArea = document.createElement('textarea');
-                    textArea.value = url;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    showToast('Link copied to clipboard!', 'success');
+                    console.error('Clipboard API failed:', err);
+                    // Fallback for older browsers
+                    try {
+                        const textArea = document.createElement('textarea');
+                        textArea.value = url;
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-9999px';
+                        textArea.setAttribute('readonly', '');
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        textArea.setSelectionRange(0, 99999); // For mobile devices
+                        
+                        // Try execCommand as last resort
+                        const successful = document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        
+                        if (successful) {
+                            showToast('Link copied to clipboard!', 'success');
+                        } else {
+                            throw new Error('execCommand failed');
+                        }
+                    } catch (fallbackErr) {
+                        console.error('Fallback copy failed:', fallbackErr);
+                        showToast('Failed to copy link. Please copy manually: ' + url, 'error');
+                    }
                 }
             }
         });
@@ -1662,10 +1763,18 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const pdfParam = urlParams.get('pdf');
                 if (pdfParam) {
-                    // Validate that the PDF path exists in the file structure
-                    const decodedPath = decodeURIComponent(pdfParam);
-                    if (isValidPdfPath(decodedPath)) {
-                        loadPdf(decodedPath);
+                    try {
+                        // Validate that the PDF path exists in the file structure
+                        const decodedPath = decodeURIComponent(pdfParam);
+                        if (isValidPdfPath(decodedPath)) {
+                            loadPdf(decodedPath);
+                        } else {
+                            console.warn('Invalid PDF path in URL parameter:', decodedPath);
+                            showToast('Invalid PDF link. Please select a file from the sidebar.', 'error');
+                        }
+                    } catch (decodeError) {
+                        console.error('Error decoding PDF parameter:', decodeError);
+                        showToast('Invalid PDF link format.', 'error');
                     }
                 }
             } catch (error) {
@@ -1980,7 +2089,7 @@
                 pdfViewer.onerror = function() {
                     hideLoadingIndicator();
                     welcomeMessage.classList.remove('hidden');
-                    alert('Error loading PDF file. Please try again or use the "Open in New Tab" option.');
+                    showToast('Error loading PDF file. Please try again or use the "Open in New Tab" option.', 'error');
                 };
                 
                 // Set the data attribute on object tag for PDF
@@ -2027,7 +2136,10 @@
             resizeTimeout = setTimeout(() => {
                 // Re-render PDF if using canvas mode
                 if (usingCanvasRenderer && pdfDoc && currentPdfPath) {
-                    renderPDFWithCanvas(currentPdfPath);
+                    renderPDFWithCanvas(currentPdfPath).catch(error => {
+                        console.error('Error re-rendering PDF on resize:', error);
+                        showToast('Error updating PDF display. Please reload the page.', 'error');
+                    });
                 }
             }, RESIZE_DEBOUNCE_MS);
         });
@@ -2040,50 +2152,57 @@
                 clearTimeout(visualViewportResizeTimeout);
                 visualViewportResizeTimeout = setTimeout(() => {
                     if (usingCanvasRenderer && pdfDoc && currentPdfPath) {
-                        renderPDFWithCanvas(currentPdfPath);
+                        renderPDFWithCanvas(currentPdfPath).catch(error => {
+                            console.error('Error re-rendering PDF on viewport resize:', error);
+                        });
                     }
                 }, RESIZE_DEBOUNCE_MS);
             });
         }
         
-        // Search functionality
+        // Search functionality with debounce
+        let searchTimeout;
+        const SEARCH_DEBOUNCE_MS = 300;
+        
         searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            const allItems = fileTree.querySelectorAll('.sidebar-item, .folder-container');
-            
-            if (searchTerm === '') {
-                // Show all items
-                allItems.forEach(item => {
-                    item.style.display = '';
-                });
-                // Collapse all folders
-                fileTree.querySelectorAll('.folder-content').forEach(content => {
-                    content.classList.remove('expanded');
-                });
-                fileTree.querySelectorAll('.chevron').forEach(chevron => {
-                    chevron.classList.remove('rotate-90');
-                });
-            } else {
-                // Hide all items first
-                allItems.forEach(item => {
-                    item.style.display = 'none';
-                });
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                const allItems = fileTree.querySelectorAll('.sidebar-item, .folder-container');
                 
-                // Show matching items and their parents
-                const items = fileTree.querySelectorAll('.sidebar-item');
-                items.forEach(item => {
-                    const text = item.textContent.toLowerCase();
-                    if (text.includes(searchTerm)) {
+                if (searchTerm === '') {
+                    // Show all items
+                    allItems.forEach(item => {
                         item.style.display = '';
-                        
-                        // Show parent folders
-                        let parent = item.parentElement;
-                        while (parent && parent !== fileTree) {
-                            parent.style.display = '';
-                            if (parent.classList.contains('folder-content')) {
-                                parent.classList.add('expanded');
-                                const header = parent.previousElementSibling;
-                                if (header) {
+                    });
+                    // Collapse all folders
+                    fileTree.querySelectorAll('.folder-content').forEach(content => {
+                        content.classList.remove('expanded');
+                    });
+                    fileTree.querySelectorAll('.chevron').forEach(chevron => {
+                        chevron.classList.remove('rotate-90');
+                    });
+                } else {
+                    // Hide all items first
+                    allItems.forEach(item => {
+                        item.style.display = 'none';
+                    });
+                    
+                    // Show matching items and their parents
+                    const items = fileTree.querySelectorAll('.sidebar-item');
+                    items.forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            item.style.display = '';
+                            
+                            // Show parent folders
+                            let parent = item.parentElement;
+                            while (parent && parent !== fileTree) {
+                                parent.style.display = '';
+                                if (parent.classList.contains('folder-content')) {
+                                    parent.classList.add('expanded');
+                                    const header = parent.previousElementSibling;
+                                    if (header) {
                                     const chevron = header.querySelector('.chevron');
                                     if (chevron) chevron.classList.add('rotate-90');
                                 }
@@ -2468,14 +2587,6 @@
             localStorage.setItem('pdfRecentFiles', JSON.stringify(recentFiles));
             updateRecentSection();
         }
-
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 1024) {
-                sidebar.classList.remove('-translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-            }
-        });
 
         // Initialize
         loadFileStructure();
