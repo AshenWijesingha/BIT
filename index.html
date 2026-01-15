@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <!-- Viewport configuration optimized for mobile devices (especially Samsung S10 5G and similar high-DPI devices) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <!-- Content Security Policy: Allow scripts from CDNs and inline styles (required for Tailwind CDN) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com data:; font-src 'self' data:; connect-src 'self'; frame-src 'self'; object-src 'self';">
+    
     <meta name="description" content="BIT Repository - Browse and view PDF course materials for Bachelor of Information Technology program. Access lecture notes, tutorials, and study materials for BIT students.">
     <meta name="theme-color" content="#2563eb">
     <meta name="author" content="BIT Repository">
@@ -28,7 +37,7 @@
     <meta property="og:url" content="https://ashenwijesingha.github.io/BIT/">
     <meta property="og:image" content="https://res.cloudinary.com/dkj22lm1g/image/upload/w_1200,h_630,c_fill/v1768415117/BIT_Repository_xropb0.jpg">
     <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image:height" content="1630">
     <meta property="og:image:alt" content="BIT Repository Logo - Bachelor of Information Technology Course Materials">
     <meta property="og:site_name" content="BIT Repository">
     <meta property="og:locale" content="en_US">
@@ -68,10 +77,10 @@
     }
     </script>
     
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS CDN - Note: Inline styles required, CSP allows 'unsafe-inline' for style-src -->
+    <script src="https://cdn.tailwindcss.com" crossorigin="anonymous"></script>
     <!-- PDF.js library for rendering PDFs on all devices including mobile -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous"></script>
     <style>
         /* Tailwind-like utility classes as fallback when CDN is blocked */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1395,6 +1404,9 @@
             isDarkMode = false;
         }
 
+        // PDF loading abort controller for race condition prevention
+        let currentPdfLoadController = null;
+        
         // DOM Elements
         const fileTree = document.getElementById('fileTree');
         const welcomeMessage = document.getElementById('welcomeMessage');
@@ -1467,10 +1479,16 @@
                 errorDiv.appendChild(p1);
                 errorDiv.appendChild(p2);
                 
-                document.body.innerHTML = '';
+                // Create error overlay instead of clearing body to avoid destroying state
+                errorDiv.style.cssText = 'position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9);';
                 document.body.appendChild(errorDiv);
                 throw new Error(`Critical DOM element missing: ${name}`);
             }
+        }
+        
+        // Configure PDF.js worker
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
         
         // Detect if device likely supports native PDF viewing
@@ -1480,18 +1498,41 @@
             return !isMobile;
         }
         
-        // Toast notification system
+        // Toast notification system - Secure implementation using DOM API
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />' :
-                      type === 'error' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />' :
-                      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />'}
-                </svg>
-                <span class="text-sm">${message}</span>
-            `;
+            
+            // Create SVG icon safely
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'h-5 w-5 flex-shrink-0');
+            svg.setAttribute('fill', 'none');
+            svg.setAttribute('viewBox', '0 0 24 24');
+            svg.setAttribute('stroke', 'currentColor');
+            
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('stroke-linecap', 'round');
+            path.setAttribute('stroke-linejoin', 'round');
+            path.setAttribute('stroke-width', '2');
+            
+            // Set path based on type
+            if (type === 'success') {
+                path.setAttribute('d', 'M5 13l4 4L19 7');
+            } else if (type === 'error') {
+                path.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+            } else {
+                path.setAttribute('d', 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
+            }
+            
+            svg.appendChild(path);
+            
+            // Create message span safely using textContent
+            const span = document.createElement('span');
+            span.className = 'text-sm';
+            span.textContent = message; // Safe - prevents XSS
+            
+            toast.appendChild(svg);
+            toast.appendChild(span);
             toastContainer.appendChild(toast);
             
             setTimeout(() => {
@@ -1617,12 +1658,24 @@
                 const fileName = filePath.split('/').pop().replace('.pdf', '');
                 const item = document.createElement('div');
                 item.className = 'flex items-center gap-2 p-1.5 rounded cursor-pointer hover:bg-gray-100 transition-colors text-sm';
-                item.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                    </svg>
-                    <span class="truncate text-gray-600" title="${fileName}">${fileName}</span>
-                `;
+                
+                // Create star icon safely
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('class', 'h-4 w-4 text-yellow-500 flex-shrink-0');
+                svg.setAttribute('fill', 'currentColor');
+                svg.setAttribute('viewBox', '0 0 24 24');
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z');
+                svg.appendChild(path);
+                
+                // Create text span safely using textContent
+                const span = document.createElement('span');
+                span.className = 'truncate text-gray-600';
+                span.textContent = fileName; // Safe - prevents XSS
+                span.title = fileName; // Safe - browser sanitizes attributes
+                
+                item.appendChild(svg);
+                item.appendChild(span);
                 item.addEventListener('click', () => loadPdf(filePath));
                 favoritesList.appendChild(item);
             });
@@ -1645,12 +1698,28 @@
                 const fileName = filePath.split('/').pop().replace('.pdf', '');
                 const item = document.createElement('div');
                 item.className = 'flex items-center gap-2 p-1.5 rounded cursor-pointer hover:bg-gray-100 transition-colors text-sm';
-                item.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span class="truncate text-gray-600" title="${fileName}">${fileName}</span>
-                `;
+                
+                // Create clock icon safely
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('class', 'h-4 w-4 text-gray-400 flex-shrink-0');
+                svg.setAttribute('fill', 'none');
+                svg.setAttribute('viewBox', '0 0 24 24');
+                svg.setAttribute('stroke', 'currentColor');
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('stroke-linecap', 'round');
+                path.setAttribute('stroke-linejoin', 'round');
+                path.setAttribute('stroke-width', '2');
+                path.setAttribute('d', 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z');
+                svg.appendChild(path);
+                
+                // Create text span safely using textContent
+                const span = document.createElement('span');
+                span.className = 'truncate text-gray-600';
+                span.textContent = fileName; // Safe - prevents XSS
+                span.title = fileName; // Safe - browser sanitizes attributes
+                
+                item.appendChild(svg);
+                item.appendChild(span);
                 item.addEventListener('click', () => loadPdf(filePath));
                 recentList.appendChild(item);
             });
@@ -1685,39 +1754,26 @@
             }
         });
         
-        // Copy link to clipboard
+        // Copy link to clipboard - Modern secure implementation
         copyLinkBtn.addEventListener('click', async () => {
             if (currentPdfPath && isValidPdfPath(currentPdfPath)) {
                 const url = window.location.origin + window.location.pathname + '?pdf=' + encodeURIComponent(currentPdfPath);
+                
+                // Check if clipboard API is available
+                if (!navigator.clipboard) {
+                    // Show error message if clipboard API not available (e.g., non-HTTPS)
+                    showToast('Copy to clipboard requires HTTPS or localhost. Please copy manually.', 'error');
+                    console.error('Clipboard API not available. URL:', url);
+                    return;
+                }
+                
                 try {
                     await navigator.clipboard.writeText(url);
                     showToast('Link copied to clipboard!', 'success');
                 } catch (err) {
                     console.error('Clipboard API failed:', err);
-                    // Fallback for older browsers
-                    try {
-                        const textArea = document.createElement('textarea');
-                        textArea.value = url;
-                        textArea.style.position = 'fixed';
-                        textArea.style.left = '-9999px';
-                        textArea.setAttribute('readonly', '');
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        textArea.setSelectionRange(0, 99999); // For mobile devices
-                        
-                        // Try execCommand as last resort
-                        const successful = document.execCommand('copy');
-                        document.body.removeChild(textArea);
-                        
-                        if (successful) {
-                            showToast('Link copied to clipboard!', 'success');
-                        } else {
-                            throw new Error('execCommand failed');
-                        }
-                    } catch (fallbackErr) {
-                        console.error('Fallback copy failed:', fallbackErr);
-                        showToast('Failed to copy link. Please copy manually: ' + url, 'error');
-                    }
+                    // Show the URL so user can copy manually
+                    showToast('Failed to copy. Please copy the link from browser address bar.', 'error');
                 }
             }
         });
@@ -2335,7 +2391,8 @@
                     // Show matching items and their parents
                     const items = fileTree.querySelectorAll('.sidebar-item');
                     items.forEach(item => {
-                        const text = item.textContent.toLowerCase();
+                        // Add defensive null check
+                        const text = (item.textContent || '').toLowerCase();
                         if (text.includes(searchTerm)) {
                             item.style.display = '';
                             
@@ -2343,7 +2400,7 @@
                             let parent = item.parentElement;
                             while (parent && parent !== fileTree) {
                                 parent.style.display = '';
-                                if (parent.classList.contains('folder-content')) {
+                                if (parent.classList && parent.classList.contains('folder-content')) {
                                     parent.classList.add('expanded');
                                     const header = parent.previousElementSibling;
                                     if (header) {
