@@ -2345,15 +2345,16 @@
                                     parent.classList.add('expanded');
                                     const header = parent.previousElementSibling;
                                     if (header) {
-                                    const chevron = header.querySelector('.chevron');
-                                    if (chevron) chevron.classList.add('rotate-90');
+                                        const chevron = header.querySelector('.chevron');
+                                        if (chevron) chevron.classList.add('rotate-90');
+                                    }
                                 }
+                                parent = parent.parentElement;
                             }
-                            parent = parent.parentElement;
                         }
-                    }
-                });
-            }
+                    });
+                }
+            }, SEARCH_DEBOUNCE_MS);
         });
         
         // Dark mode toggle
