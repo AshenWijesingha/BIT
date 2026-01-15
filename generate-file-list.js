@@ -122,9 +122,28 @@ function main() {
         console.log('Scanning repository for PDF files...');
         const fileStructure = generateFileStructure();
         
-        // Write to JSON file
+        // Validate structure before writing
+        if (typeof fileStructure !== 'object' || fileStructure === null) {
+            throw new Error('Invalid file structure generated');
+        }
+        
+        const jsonString = JSON.stringify(fileStructure, null, 2);
+        
+        // Validate JSON is parseable
+        try {
+            JSON.parse(jsonString);
+        } catch (parseError) {
+            throw new Error(`Generated invalid JSON: ${parseError.message}`);
+        }
+        
+        // Write to temporary file first (atomic write)
         const outputPath = path.join(__dirname, 'files.json');
-        fs.writeFileSync(outputPath, JSON.stringify(fileStructure, null, 2), 'utf8');
+        const tempPath = outputPath + '.tmp';
+        
+        fs.writeFileSync(tempPath, jsonString, 'utf8');
+        
+        // Rename temp file to final file (atomic operation on most systems)
+        fs.renameSync(tempPath, outputPath);
         
         console.log(`✓ Successfully generated files.json`);
         console.log(`  Found ${countFiles(fileStructure)} PDF files`);
@@ -132,6 +151,15 @@ function main() {
         
     } catch (error) {
         console.error('Error generating file list:', error);
+        // Clean up temp file if it exists
+        try {
+            const tempPath = path.join(__dirname, 'files.json.tmp');
+            if (fs.existsSync(tempPath)) {
+                fs.unlinkSync(tempPath);
+            }
+        } catch (cleanupError) {
+            // Ignore cleanup errors
+        }
         process.exit(1);
     }
 }

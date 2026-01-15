@@ -31,6 +31,24 @@ jobs:
       - name: Generate file list
         run: node generate-file-list.js
 
+      - name: Validate generated JSON
+        run: |
+          echo "Validating files.json structure..."
+          node -e "
+            const fs = require('fs');
+            try {
+              const data = JSON.parse(fs.readFileSync('files.json', 'utf8'));
+              if (typeof data !== 'object' || data === null) {
+                throw new Error('Invalid JSON structure: root must be an object');
+              }
+              console.log('✓ JSON validation passed');
+              console.log('✓ Found', Object.keys(data).length, 'top-level directories');
+            } catch (err) {
+              console.error('✗ JSON validation failed:', err.message);
+              process.exit(1);
+            }
+          "
+
       - name: Check for changes
         id: check_changes
         run: |
