@@ -705,6 +705,7 @@
             color: #9ca3af;
             padding: 1.5rem 1rem;
             margin-top: auto;
+            width: 100%;
         }
         
         @media (max-width: 640px) {
@@ -835,7 +836,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Skip to content link for accessibility -->
     <a href="#main-content" class="skip-link">Skip to content</a>
     
@@ -870,7 +871,7 @@
         </div>
     </header>
 
-    <div class="flex header-spacing">
+    <div class="flex flex-1 header-spacing">
         <!-- Sidebar -->
         <aside id="sidebar" class="sidebar-responsive sidebar-position bg-white shadow-lg fixed overflow-y-auto transition-all duration-300 z-40 -translate-x-full lg:translate-x-0">
             <div class="p-3 sm:p-4">
@@ -952,9 +953,9 @@
         </aside>
 
         <!-- Main Content -->
-        <main id="main-content" class="flex-1 lg:ml-80 p-2 sm:p-3 md:p-4 main-min-height">
+        <main id="main-content" class="flex-1 lg:ml-80 p-2 sm:p-3 md:p-4 flex flex-col">
             <!-- Welcome Message -->
-            <div id="welcomeMessage" class="flex flex-col items-center justify-center text-center content-min-height">
+            <div id="welcomeMessage" class="flex flex-col items-center justify-center text-center flex-1">
                 <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 max-w-md mx-4">
                     <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_192,h_192,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-20 w-20 sm:h-24 sm:w-24 mx-auto rounded-xl shadow-md mb-4 object-cover">
                     <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">Welcome to BIT Repository</h2>
@@ -972,7 +973,7 @@
             </div>
 
             <!-- Loading Indicator -->
-            <div id="loadingIndicator" class="hidden flex-col items-center justify-center content-min-height">
+            <div id="loadingIndicator" class="hidden flex-col items-center justify-center flex-1">
                 <div class="bg-white rounded-xl shadow-lg p-8 max-w-sm mx-4">
                     <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_80,h_80,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo - Loading" class="h-16 w-16 mx-auto rounded-lg mb-4 object-cover animate-pulse">
                     <div class="loader mb-4 mx-auto"></div>
