@@ -1823,17 +1823,22 @@
                     const viewport = page.getViewport({ scale: 1 });
                     const scale = (availableWidth / viewport.width) * currentZoom;
                     
+                    // Calculate CSS dimensions (actual display size)
+                    const cssWidth = Math.round(viewport.width * scale);
+                    const cssHeight = Math.round(viewport.height * scale);
+                    
                     // Apply device pixel ratio for high-quality rendering on high-DPI displays
+                    // This only affects internal canvas resolution, not display size
                     const outputScale = devicePixelRatio;
-                    const scaledViewport = page.getViewport({ scale: scale * outputScale });
+                    const canvasViewport = page.getViewport({ scale: scale * outputScale });
                     
-                    // Set canvas dimensions to match the scaled viewport
-                    canvas.width = scaledViewport.width;
-                    canvas.height = scaledViewport.height;
+                    // Set canvas internal dimensions (for rendering at high resolution)
+                    canvas.width = canvasViewport.width;
+                    canvas.height = canvasViewport.height;
                     
-                    // Set CSS dimensions to display at correct size
-                    canvas.style.width = Math.round(scaledViewport.width / outputScale) + 'px';
-                    canvas.style.height = Math.round(scaledViewport.height / outputScale) + 'px';
+                    // Set CSS dimensions to match the intended display size
+                    canvas.style.width = cssWidth + 'px';
+                    canvas.style.height = cssHeight + 'px';
                     
                     // Configure canvas context for high-quality rendering
                     context.imageSmoothingEnabled = true;
@@ -1842,7 +1847,7 @@
                     // Render page with high-quality settings
                     await page.render({
                         canvasContext: context,
-                        viewport: scaledViewport,
+                        viewport: canvasViewport,
                         intent: 'display',
                         renderInteractiveForms: true
                     }).promise;
