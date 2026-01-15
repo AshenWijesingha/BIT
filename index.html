@@ -1823,12 +1823,9 @@
                     const viewport = page.getViewport({ scale: 1 });
                     const scale = (availableWidth / viewport.width) * currentZoom;
                     
-                    // Get the display viewport (what the user sees)
-                    const displayViewport = page.getViewport({ scale: scale });
-                    
                     // Calculate CSS dimensions (actual display size)
-                    const cssWidth = Math.round(displayViewport.width);
-                    const cssHeight = Math.round(displayViewport.height);
+                    const cssWidth = Math.round(viewport.width * scale);
+                    const cssHeight = Math.round(viewport.height * scale);
                     
                     // Apply device pixel ratio for high-quality rendering on high-DPI displays
                     // This only affects internal canvas resolution, not display size
