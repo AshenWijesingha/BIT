@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <meta name="description" content="BIT Repository - Browse and view PDF course materials for Bachelor of Information Technology program. Access lecture notes, tutorials, and study materials for BIT students.">
     <meta name="theme-color" content="#2563eb">
     <meta name="author" content="BIT Repository">
@@ -390,6 +390,7 @@
             min-height: calc(100vh - 10rem);
             border-radius: 0 0 0.5rem 0.5rem;
             overflow: auto;
+            position: relative;
         }
         
         .pdf-iframe-container iframe,
@@ -417,6 +418,8 @@
             background: white;
             /* Enable hardware acceleration for better performance */
             will-change: transform;
+            max-width: 100%;
+            height: auto;
         }
         
         @media (max-width: 768px) {
@@ -429,7 +432,58 @@
             }
             #pdfCanvasContainer {
                 height: calc(100vh - 14rem);
+                padding: 0.5rem;
             }
+        }
+        
+        /* Fullscreen mode styles */
+        .pdf-iframe-container:fullscreen,
+        .pdf-iframe-container:-webkit-full-screen,
+        .pdf-iframe-container:-moz-full-screen,
+        .pdf-iframe-container:-ms-fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            border-radius: 0 !important;
+            background: #525659;
+        }
+        
+        .pdf-iframe-container:fullscreen iframe,
+        .pdf-iframe-container:fullscreen object,
+        .pdf-iframe-container:-webkit-full-screen iframe,
+        .pdf-iframe-container:-webkit-full-screen object {
+            width: 100vw !important;
+            height: 100vh !important;
+            border-radius: 0 !important;
+        }
+        
+        .pdf-iframe-container:fullscreen #pdfCanvasContainer,
+        .pdf-iframe-container:-webkit-full-screen #pdfCanvasContainer {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            padding: 0.25rem;
+        }
+        
+        /* Hide controls when in fullscreen */
+        .fullscreen-active .pdf-controls-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .fullscreen-active .pdf-controls-wrapper:hover,
+        .fullscreen-active .pdf-controls-wrapper.show-controls {
+            transform: translateY(0);
         }
         
         /* Responsive sidebar width */
@@ -938,91 +992,94 @@
                     </ol>
                 </nav>
                 
-                <!-- PDF Controls -->
-                <div class="bg-white rounded-t-lg shadow-lg p-2 sm:p-3 md:p-4 sticky top-14 z-30">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 md:gap-4">
-                        <div class="flex items-center gap-2 min-w-0 flex-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <h3 id="pdfTitle" class="text-sm sm:text-base md:text-lg font-semibold text-gray-700 truncate"></h3>
-                            <button id="favoritePdf" class="flex-shrink-0 text-gray-400 hover:text-yellow-500 transition-colors" aria-label="Add to favorites" title="Add to favorites">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                <!-- PDF Controls Wrapper -->
+                <div class="pdf-controls-wrapper">
+                    <!-- PDF Controls -->
+                    <div class="bg-white rounded-t-lg shadow-lg p-2 sm:p-3 md:p-4 sticky top-14 z-30">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 md:gap-4">
+                            <div class="flex items-center gap-2 min-w-0 flex-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                            </button>
-                        </div>
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <!-- Zoom Controls -->
-                            <div class="hidden sm:flex items-center gap-1 bg-gray-100 rounded px-2 py-1">
-                                <button id="zoomOut" class="hover:bg-gray-200 p-1 rounded transition-colors" aria-label="Zoom out" title="Zoom out">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
-                                    </svg>
-                                </button>
-                                <span id="zoomLevel" class="text-xs font-medium min-w-[3rem] text-center">100%</span>
-                                <button id="zoomIn" class="hover:bg-gray-200 p-1 rounded transition-colors" aria-label="Zoom in" title="Zoom in">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                                <h3 id="pdfTitle" class="text-sm sm:text-base md:text-lg font-semibold text-gray-700 truncate"></h3>
+                                <button id="favoritePdf" class="flex-shrink-0 text-gray-400 hover:text-yellow-500 transition-colors" aria-label="Add to favorites" title="Add to favorites">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                                     </svg>
                                 </button>
                             </div>
-                            
-                            <!-- Print Button -->
-                            <button id="printPdf" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm" aria-label="Print PDF" title="Print PDF">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                                </svg>
-                                <span class="hidden md:inline">Print</span>
-                            </button>
-                            
-                            <!-- Copy Link Button -->
-                            <button id="copyLinkBtn" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm" aria-label="Copy link to clipboard" title="Copy link to clipboard">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                </svg>
-                                <span class="hidden md:inline">Copy Link</span>
-                            </button>
-                            
-                            <!-- Fullscreen Toggle -->
-                            <button id="fullscreenToggle" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm" aria-label="Toggle fullscreen" title="Toggle fullscreen">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                </svg>
-                                <span class="hidden md:inline">Fullscreen</span>
-                            </button>
-                            
-                            <!-- Download Button -->
-                            <a id="downloadPdf" href="#" download class="bg-blue-500 hover:bg-blue-600 text-white px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded flex items-center gap-1 sm:gap-2 transition-all text-xs sm:text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                <span class="hidden sm:inline">Download</span>
-                            </a>
-                            
-                            <!-- Open in New Tab -->
-                            <a id="openInNewTab" href="#" target="_blank" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded flex items-center gap-1 sm:gap-2 transition-all text-gray-700 text-xs sm:text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                                <span class="hidden sm:inline">New Tab</span>
-                            </a>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <!-- Zoom Controls -->
+                                <div class="hidden sm:flex items-center gap-1 bg-gray-100 rounded px-2 py-1">
+                                    <button id="zoomOut" class="hover:bg-gray-200 p-1 rounded transition-colors" aria-label="Zoom out" title="Zoom out">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                                        </svg>
+                                    </button>
+                                    <span id="zoomLevel" class="text-xs font-medium min-w-[3rem] text-center">100%</span>
+                                    <button id="zoomIn" class="hover:bg-gray-200 p-1 rounded transition-colors" aria-label="Zoom in" title="Zoom in">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <!-- Print Button -->
+                                <button id="printPdf" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm" aria-label="Print PDF" title="Print PDF">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                    </svg>
+                                    <span class="hidden md:inline">Print</span>
+                                </button>
+                                
+                                <!-- Copy Link Button -->
+                                <button id="copyLinkBtn" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm" aria-label="Copy link to clipboard" title="Copy link to clipboard">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                    </svg>
+                                    <span class="hidden md:inline">Copy Link</span>
+                                </button>
+                                
+                                <!-- Fullscreen Toggle -->
+                                <button id="fullscreenToggle" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm" aria-label="Toggle fullscreen" title="Toggle fullscreen">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                    </svg>
+                                    <span class="hidden md:inline">Fullscreen</span>
+                                </button>
+                                
+                                <!-- Download Button -->
+                                <a id="downloadPdf" href="#" download class="bg-blue-500 hover:bg-blue-600 text-white px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded flex items-center gap-1 sm:gap-2 transition-all text-xs sm:text-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    <span class="hidden sm:inline">Download</span>
+                                </a>
+                                
+                                <!-- Open in New Tab -->
+                                <a id="openInNewTab" href="#" target="_blank" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded flex items-center gap-1 sm:gap-2 transition-all text-gray-700 text-xs sm:text-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    <span class="hidden sm:inline">New Tab</span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <!-- Page Navigation for Canvas Mode -->
-                    <div id="pageNavigation" class="hidden mt-2 sm:mt-3 flex items-center justify-center gap-2 border-t border-gray-200 pt-2 sm:pt-3">
-                        <button id="prevPage" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-sm transition-colors" aria-label="Previous page">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-                        <span id="pageInfo" class="text-sm text-gray-600">Page <span id="pageNum">1</span> of <span id="pageCount">1</span></span>
-                        <button id="nextPage" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-sm transition-colors" aria-label="Next page">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
+                        
+                        <!-- Page Navigation for Canvas Mode -->
+                        <div id="pageNavigation" class="hidden mt-2 sm:mt-3 flex items-center justify-center gap-2 border-t border-gray-200 pt-2 sm:pt-3">
+                            <button id="prevPage" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-sm transition-colors" aria-label="Previous page">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <span id="pageInfo" class="text-sm text-gray-600">Page <span id="pageNum">1</span> of <span id="pageCount">1</span></span>
+                            <button id="nextPage" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-sm transition-colors" aria-label="Next page">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <!-- PDF Container -->
@@ -1651,11 +1708,15 @@
                 currentPage = 1;
                 updatePageDisplay();
                 
-                // Get container width before rendering
-                const containerWidth = Math.max(pdfCanvasContainer.clientWidth - CANVAS_CONTAINER_PADDING, 300);
+                // Get container dimensions for proper scaling
+                const container = pdfCanvasContainer;
+                const containerRect = container.getBoundingClientRect();
+                const containerWidth = containerRect.width > 0 ? containerRect.width : window.innerWidth;
+                const containerPadding = window.innerWidth <= 768 ? 16 : CANVAS_CONTAINER_PADDING;
+                const availableWidth = Math.max(containerWidth - containerPadding, 300);
                 
-                // Get device pixel ratio for high-DPI displays
-                const devicePixelRatio = window.devicePixelRatio || 1;
+                // Get device pixel ratio for high-DPI displays (limit to 2 for performance on mobile)
+                const devicePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
                 
                 // Render all pages
                 for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
@@ -1669,7 +1730,7 @@
                     
                     // Calculate scale to fit screen width with zoom
                     const viewport = page.getViewport({ scale: 1 });
-                    const scale = (containerWidth / viewport.width) * currentZoom;
+                    const scale = (availableWidth / viewport.width) * currentZoom;
                     
                     // Apply device pixel ratio for high-quality rendering on high-DPI displays
                     const outputScale = devicePixelRatio;
@@ -1706,7 +1767,7 @@
                 console.error('Error rendering PDF:', error);
                 hideLoadingIndicator();
                 welcomeMessage.classList.remove('hidden');
-                alert('Error loading PDF file. Please try the "Open in New Tab" option or download the file.');
+                showToast('Error loading PDF. Try "Open in New Tab" or download the file.', 'error');
             }
         }
 
@@ -2094,27 +2155,63 @@
         }
         
         // Fullscreen functionality
+        let isFullscreenActive = false;
+        
         function toggleFullscreen() {
             const container = document.getElementById('pdfIframeContainer');
             
-            if (!document.fullscreenElement) {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && 
+                !document.mozFullScreenElement && !document.msFullscreenElement) {
+                // Enter fullscreen
                 if (container.requestFullscreen) {
-                    container.requestFullscreen();
+                    container.requestFullscreen().catch(err => {
+                        console.error('Fullscreen error:', err);
+                        showToast('Unable to enter fullscreen mode', 'error');
+                    });
                 } else if (container.webkitRequestFullscreen) {
                     container.webkitRequestFullscreen();
+                } else if (container.mozRequestFullScreen) {
+                    container.mozRequestFullScreen();
                 } else if (container.msRequestFullscreen) {
                     container.msRequestFullscreen();
+                } else {
+                    // Fallback for mobile devices that don't support fullscreen API
+                    showToast('Fullscreen not supported. Try rotating your device.', 'info');
                 }
             } else {
+                // Exit fullscreen
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
                 } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
                 } else if (document.msExitFullscreen) {
                     document.msExitFullscreen();
                 }
             }
         }
+        
+        // Handle fullscreen change events
+        function handleFullscreenChange() {
+            isFullscreenActive = !!(document.fullscreenElement || document.webkitFullscreenElement || 
+                                    document.mozFullScreenElement || document.msFullscreenElement);
+            
+            if (isFullscreenActive) {
+                document.body.classList.add('fullscreen-active');
+                // Hide sidebar in fullscreen
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+            } else {
+                document.body.classList.remove('fullscreen-active');
+            }
+        }
+        
+        // Add fullscreen event listeners
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
         
         fullscreenToggle.addEventListener('click', toggleFullscreen);
         
