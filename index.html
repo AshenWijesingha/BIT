@@ -2230,8 +2230,8 @@
                 
                 pdfViewer.onerror = function() {
                     // Only set iframe fallback when object tag fails
-                    console.log('Object tag failed, using iframe fallback');
                     pdfViewerFallback.src = pdfUrl;
+                    // Still hide loading and show container - iframe fallback will attempt to load
                     hideLoadingIndicator();
                     pdfContainer.classList.remove('hidden');
                 };
