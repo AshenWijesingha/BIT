@@ -1448,11 +1448,27 @@
         for (const [name, element] of Object.entries(criticalElements)) {
             if (!element) {
                 console.error(`Critical DOM element missing: ${name}`);
-                document.body.innerHTML = `<div style="padding: 2rem; text-align: center; color: red;">
-                    <h1>Application Error</h1>
-                    <p>Critical page element missing: ${name}</p>
-                    <p>Please refresh the page or contact support.</p>
-                </div>`;
+                // Create error message safely without innerHTML
+                const errorDiv = document.createElement('div');
+                errorDiv.style.padding = '2rem';
+                errorDiv.style.textAlign = 'center';
+                errorDiv.style.color = 'red';
+                
+                const h1 = document.createElement('h1');
+                h1.textContent = 'Application Error';
+                
+                const p1 = document.createElement('p');
+                p1.textContent = `Critical page element missing: ${name}`;
+                
+                const p2 = document.createElement('p');
+                p2.textContent = 'Please refresh the page or contact support.';
+                
+                errorDiv.appendChild(h1);
+                errorDiv.appendChild(p1);
+                errorDiv.appendChild(p2);
+                
+                document.body.innerHTML = '';
+                document.body.appendChild(errorDiv);
                 throw new Error(`Critical DOM element missing: ${name}`);
             }
         }
@@ -1807,16 +1823,35 @@
                 console.error('Error loading file structure:', error);
                 fileLoadRetryCount++;
                 
-                // Create error message with retry button
+                // Create error message with retry button (using DOM API to prevent XSS)
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'p-4 text-center text-red-500';
-                errorDiv.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p class="text-sm font-medium">Failed to load file list</p>
-                    <p class="text-xs mt-1">${error.message}</p>
-                `;
+                
+                // Create error icon
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('class', 'h-12 w-12 mx-auto mb-2');
+                svg.setAttribute('fill', 'none');
+                svg.setAttribute('viewBox', '0 0 24 24');
+                svg.setAttribute('stroke', 'currentColor');
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('stroke-linecap', 'round');
+                path.setAttribute('stroke-linejoin', 'round');
+                path.setAttribute('stroke-width', '2');
+                path.setAttribute('d', 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
+                svg.appendChild(path);
+                errorDiv.appendChild(svg);
+                
+                // Create error message paragraphs
+                const p1 = document.createElement('p');
+                p1.className = 'text-sm font-medium';
+                p1.textContent = 'Failed to load file list';
+                errorDiv.appendChild(p1);
+                
+                const p2 = document.createElement('p');
+                p2.className = 'text-xs mt-1';
+                // Sanitize error message to prevent XSS
+                p2.textContent = error.message || 'Unknown error occurred';
+                errorDiv.appendChild(p2);
                 
                 // Add retry button if we haven't exceeded max retries
                 if (fileLoadRetryCount < MAX_FILE_LOAD_RETRIES) {
@@ -1824,7 +1859,15 @@
                     retryBtn.className = 'mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm';
                     retryBtn.textContent = `Retry (${fileLoadRetryCount}/${MAX_FILE_LOAD_RETRIES})`;
                     retryBtn.addEventListener('click', () => {
-                        fileTree.innerHTML = '<div class="p-4 text-center text-gray-500"><p class="text-sm">Loading files...</p></div>';
+                        // Clear and show loading message
+                        const loadingDiv = document.createElement('div');
+                        loadingDiv.className = 'p-4 text-center text-gray-500';
+                        const loadingP = document.createElement('p');
+                        loadingP.className = 'text-sm';
+                        loadingP.textContent = 'Loading files...';
+                        loadingDiv.appendChild(loadingP);
+                        fileTree.innerHTML = '';
+                        fileTree.appendChild(loadingDiv);
                         loadFileStructure();
                     });
                     errorDiv.appendChild(retryBtn);
