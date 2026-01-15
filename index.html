@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <!-- Viewport configuration optimized for mobile devices (especially Samsung S10 5G and similar high-DPI devices) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
     <meta name="description" content="BIT Repository - Browse and view PDF course materials for Bachelor of Information Technology program. Access lecture notes, tutorials, and study materials for BIT students.">
     <meta name="theme-color" content="#2563eb">
     <meta name="author" content="BIT Repository">
@@ -443,7 +444,10 @@
             /* Enable hardware acceleration for better performance */
             will-change: transform;
             max-width: 100%;
+            width: 100%;
             height: auto;
+            /* Prevent overflow on mobile devices */
+            object-fit: contain;
         }
         
         @media (max-width: 768px) {
@@ -1343,6 +1347,10 @@
         const MAX_ZOOM = 3.0; // Maximum zoom level (300%)
         const MAX_RECENT_FILES = 10; // Maximum number of recent files to track
         const TOAST_DURATION_MS = 3000; // Toast notification duration
+        const MIN_MOBILE_PDF_WIDTH = 280; // Minimum PDF width on mobile devices (in pixels)
+        const MOBILE_EDGE_MARGIN = 8; // Additional margin for mobile to prevent edge overflow (in pixels)
+        const MAX_MOBILE_DEVICE_PIXEL_RATIO = 2; // Maximum device pixel ratio for mobile (for performance)
+        const RESIZE_DEBOUNCE_MS = 300; // Debounce delay for resize events (in milliseconds)
 
         // PDF Files - loaded dynamically from files.json
         let pdfFiles = {};
@@ -1801,13 +1809,32 @@
                 
                 // Get container dimensions for proper scaling
                 const container = pdfCanvasContainer;
-                const containerRect = container.getBoundingClientRect();
-                const containerWidth = containerRect.width > 0 ? containerRect.width : window.innerWidth;
-                const containerPadding = window.innerWidth <= 768 ? 16 : CANVAS_CONTAINER_PADDING;
-                const availableWidth = Math.max(containerWidth - containerPadding, 300);
+                
+                // For mobile devices, use window.innerWidth for more reliable viewport width
+                // This ensures we account for the actual visible area on devices like Samsung S10 5G
+                const isMobile = window.innerWidth <= 768;
+                let containerWidth;
+                
+                if (isMobile) {
+                    // On mobile, use the visual viewport width for more accurate measurement
+                    // This accounts for browser chrome and ensures PDF fits within visible area
+                    // Visual Viewport API is supported in modern browsers (Chrome 61+, Safari 13+, Firefox 91+)
+                    // Falls back to window.innerWidth for older browsers
+                    containerWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+                } else {
+                    // On desktop, use container's bounding rect
+                    const containerRect = container.getBoundingClientRect();
+                    containerWidth = containerRect.width > 0 ? containerRect.width : window.innerWidth;
+                }
+                
+                // Account for padding and safe areas on mobile devices
+                const containerPadding = isMobile ? 16 : CANVAS_CONTAINER_PADDING;
+                // Additional margin for mobile to prevent edge overflow
+                const edgeMargin = isMobile ? MOBILE_EDGE_MARGIN : 0;
+                const availableWidth = Math.max(containerWidth - containerPadding - edgeMargin, MIN_MOBILE_PDF_WIDTH);
                 
                 // Get device pixel ratio for high-DPI displays (limit to 2 for performance on mobile)
-                const devicePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+                const devicePixelRatio = Math.min(window.devicePixelRatio || 1, MAX_MOBILE_DEVICE_PIXEL_RATIO);
                 
                 // Render all pages
                 for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
@@ -1824,7 +1851,9 @@
                     const scale = (availableWidth / viewport.width) * currentZoom;
                     
                     // Calculate CSS dimensions (actual display size)
-                    const cssWidth = Math.round(viewport.width * scale);
+                    // Ensure canvas width never exceeds available width to prevent horizontal overflow
+                    // This is critical for mobile devices to avoid horizontal scrolling issues
+                    const cssWidth = Math.min(Math.round(viewport.width * scale), availableWidth);
                     const cssHeight = Math.round(viewport.height * scale);
                     
                     // Apply device pixel ratio for high-quality rendering on high-DPI displays
@@ -1985,18 +2014,37 @@
             }
         }
 
-        // Handle window resize
+        // Handle window resize with debouncing for better mobile performance
+        let resizeTimeout;
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 1024) {
                 sidebar.classList.remove('-translate-x-full');
                 sidebarOverlay.classList.add('hidden');
             }
             
-            // Re-render PDF if using canvas mode and zoom is active
-            if (usingCanvasRenderer && pdfDoc && currentZoom !== 1.0) {
-                renderPDFWithCanvas(currentPdfPath);
-            }
+            // Debounce re-rendering for better performance
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Re-render PDF if using canvas mode
+                if (usingCanvasRenderer && pdfDoc && currentPdfPath) {
+                    renderPDFWithCanvas(currentPdfPath);
+                }
+            }, RESIZE_DEBOUNCE_MS);
         });
+        
+        // Handle visual viewport resize specifically for mobile devices
+        // This handles cases like keyboard appearance/disappearance
+        if (window.visualViewport) {
+            let visualViewportResizeTimeout;
+            window.visualViewport.addEventListener('resize', () => {
+                clearTimeout(visualViewportResizeTimeout);
+                visualViewportResizeTimeout = setTimeout(() => {
+                    if (usingCanvasRenderer && pdfDoc && currentPdfPath) {
+                        renderPDFWithCanvas(currentPdfPath);
+                    }
+                }, RESIZE_DEBOUNCE_MS);
+            });
+        }
         
         // Search functionality
         searchInput.addEventListener('input', (e) => {
