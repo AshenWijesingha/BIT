@@ -464,7 +464,7 @@
             height: 100vh !important;
             max-width: 100vw !important;
             max-height: 100vh !important;
-            padding: 0.5rem;
+            padding: 0.25rem;
         }
         
         /* Hide controls when in fullscreen */
@@ -1726,7 +1726,7 @@
                     const canvas = document.createElement('canvas');
                     canvas.className = 'pdf-page-canvas';
                     canvas.dataset.pageNum = pageNum;
-                    const context = canvas.getContext('2d', { alpha: false, willReadFrequently: false });
+                    const context = canvas.getContext('2d', { alpha: false });
                     
                     // Calculate scale to fit screen width with zoom
                     const viewport = page.getViewport({ scale: 1 });
