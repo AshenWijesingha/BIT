@@ -2229,16 +2229,18 @@
                 };
                 
                 pdfViewer.onerror = function() {
+                    // Only set iframe fallback when object tag fails
+                    console.log('Object tag failed, using iframe fallback');
+                    pdfViewerFallback.src = pdfUrl;
                     hideLoadingIndicator();
-                    welcomeMessage.classList.remove('hidden');
-                    showToast('Error loading PDF file. Please try again or use the "Open in New Tab" option.', 'error');
+                    pdfContainer.classList.remove('hidden');
                 };
+                
+                // Clear previous iframe src to prevent double loading
+                pdfViewerFallback.src = '';
                 
                 // Set the data attribute on object tag for PDF
                 pdfViewer.setAttribute('data', pdfUrl);
-                
-                // Also set the fallback iframe source
-                pdfViewerFallback.src = pdfUrl;
                 
                 // Fallback timeout in case onload doesn't fire
                 setTimeout(() => {
