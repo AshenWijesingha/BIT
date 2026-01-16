@@ -2451,7 +2451,6 @@
                 if (existingError) {
                     existingError.remove();
                 }
-                errorContainer.appendChild(errorBox);
                 mainContent.appendChild(errorContainer);
                 
                 showToast('Failed to load PDF. Please try downloading or opening in a new tab.', 'error');
@@ -2602,7 +2601,7 @@
             if (window.innerWidth < 1024) return; // Only works on desktop
             
             isSidebarMinimized = !isSidebarMinimized;
-            safeSetLocalStorage('sidebarMinimized', String(isSidebarMinimized));
+            safeSetLocalStorage('sidebarMinimized', isSidebarMinimized);
             
             if (isSidebarMinimized) {
                 sidebar.classList.add('minimized');
@@ -2743,7 +2742,7 @@
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
             document.body.classList.toggle('dark-mode', isDarkMode);
-            safeSetLocalStorage('darkMode', String(isDarkMode));
+            safeSetLocalStorage('darkMode', isDarkMode);
             
             // Update icon
             if (isDarkMode) {
