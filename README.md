@@ -2,6 +2,8 @@
 
 A modern, responsive web-based PDF viewer for Bachelor of Information Technology (BIT) course materials.
 
+**Version:** 2.1.0
+
 ## Features
 
 - 📚 **Auto-updating File Organization**: Automatically detects and displays new folders and PDFs added to the repository
@@ -11,6 +13,9 @@ A modern, responsive web-based PDF viewer for Bachelor of Information Technology
 - ⭐ **Favorites**: Mark frequently accessed PDFs
 - 📖 **Smart PDF Rendering**: Uses native PDF viewer on desktop, PDF.js canvas rendering on mobile
 - 🎨 **Modern UI/UX**: Clean interface following best practices for accessibility and usability
+- 📲 **Progressive Web App (PWA)**: Install as a native app on mobile and desktop
+- 🔒 **Enterprise Security**: Content Security Policy, XSS prevention, secure DOM manipulation
+- ⚡ **Offline Support**: Service Worker provides caching and offline access to viewed PDFs
 
 ## Auto-Update Feature
 
@@ -48,6 +53,8 @@ BIT/
 │   └── IT5506 Mathematics for Computing II/
 ├── index.html            # Main web application
 ├── files.json            # Auto-generated file structure
+├── manifest.json         # PWA manifest for app installation
+├── sw.js                 # Service Worker for offline support
 └── generate-file-list.js # File list generator script
 ```
 
@@ -69,6 +76,21 @@ The website is optimized for mobile devices with:
 - **Optimized Layout**: Content reflows for optimal viewing on any device
 - **Landscape Support**: Special handling for landscape orientation on mobile
 - **Safe Areas**: Respects device notches and safe areas
+
+## Progressive Web App (PWA)
+
+The application can be installed as a native app:
+
+### Installation
+- **Chrome/Edge**: Click the install button in the address bar
+- **Safari (iOS)**: Tap Share > Add to Home Screen
+- **Android**: Tap the install prompt or use the browser menu
+
+### PWA Features
+- Offline access to previously viewed PDFs
+- App icon on home screen
+- Full-screen experience
+- Automatic updates when new content is available
 
 ## Browser Support
 
@@ -111,6 +133,8 @@ The website follows WCAG 2.1 guidelines:
 - ARIA labels for interactive elements
 - Sufficient color contrast
 - Responsive text sizing
+- Screen reader compatible
+- Reduced motion support
 
 ## Performance
 
@@ -118,3 +142,17 @@ The website follows WCAG 2.1 guidelines:
 - Efficient file tree rendering
 - Minimal external dependencies
 - Optimized for mobile data usage
+- Service Worker caching
+- Loading skeletons for better perceived performance
+
+## Security
+
+The application implements enterprise-grade security measures:
+
+- **Content Security Policy (CSP)**: Restricts resource loading to trusted sources
+- **XSS Prevention**: All user-facing content uses secure DOM APIs (textContent, createElement)
+- **Input Validation**: PDF paths are validated before loading
+- **No eval()**: Code does not use eval or innerHTML with user data
+- **HTTPS Ready**: All external resources use HTTPS
+
+For detailed security information, see [SECURITY_FIXES.md](SECURITY_FIXES.md).
