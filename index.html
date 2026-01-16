@@ -2375,31 +2375,73 @@
                 
                 // Create a better error UI with recovery options
                 const errorContainer = document.createElement('div');
-                errorContainer.className = 'flex flex-col items-center justify-center flex-1 min-h-[500px]';
-                errorContainer.innerHTML = `
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 max-w-lg mx-4 border border-gray-100 dark:border-gray-700">
-                        <div class="flex justify-center mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                            </svg>
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">Failed to Load PDF</h2>
-                        <p class="text-base text-gray-700 dark:text-gray-300 mb-6 text-center">
-                            The PDF file could not be displayed. This may be due to file corruption, network issues, or browser limitations.
-                        </p>
-                        <div class="flex flex-col gap-3">
-                            <a href="${encodeURI(currentPdfPath)}" download class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 w-full text-center shadow-lg hover:shadow-xl">
-                                Download PDF
-                            </a>
-                            <a href="${encodeURI(currentPdfPath)}" target="_blank" rel="noopener noreferrer" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 w-full text-center shadow-lg hover:shadow-xl">
-                                Open in New Tab
-                            </a>
-                            <button onclick="location.reload()" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-xl font-semibold transition-all duration-200 w-full text-center">
-                                Refresh Page
-                            </button>
-                        </div>
-                    </div>
-                `;
+                errorContainer.className = 'flex flex-col items-center justify-center flex-1 min-h-[500px] error-container';
+                
+                const errorBox = document.createElement('div');
+                errorBox.className = 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 max-w-lg mx-4 border border-gray-100 dark:border-gray-700';
+                
+                // Error icon
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'flex justify-center mb-6';
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('class', 'h-20 w-20 text-red-500');
+                svg.setAttribute('fill', 'none');
+                svg.setAttribute('viewBox', '0 0 24 24');
+                svg.setAttribute('stroke', 'currentColor');
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('stroke-linecap', 'round');
+                path.setAttribute('stroke-linejoin', 'round');
+                path.setAttribute('stroke-width', '1.5');
+                path.setAttribute('d', 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z');
+                svg.appendChild(path);
+                iconDiv.appendChild(svg);
+                
+                // Title
+                const title = document.createElement('h2');
+                title.className = 'text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center';
+                title.textContent = 'Failed to Load PDF';
+                
+                // Description
+                const desc = document.createElement('p');
+                desc.className = 'text-base text-gray-700 dark:text-gray-300 mb-6 text-center';
+                desc.textContent = 'The PDF file could not be displayed. This may be due to file corruption, network issues, or browser limitations.';
+                
+                // Buttons container
+                const buttonsDiv = document.createElement('div');
+                buttonsDiv.className = 'flex flex-col gap-3';
+                
+                // Download button
+                const downloadBtn = document.createElement('a');
+                downloadBtn.href = encodeURI(currentPdfPath);
+                downloadBtn.download = '';
+                downloadBtn.className = 'bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 w-full text-center shadow-lg hover:shadow-xl';
+                downloadBtn.textContent = 'Download PDF';
+                
+                // Open in new tab button
+                const openBtn = document.createElement('a');
+                openBtn.href = encodeURI(currentPdfPath);
+                openBtn.target = '_blank';
+                openBtn.rel = 'noopener noreferrer';
+                openBtn.className = 'bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 w-full text-center shadow-lg hover:shadow-xl';
+                openBtn.textContent = 'Open in New Tab';
+                
+                // Refresh button
+                const refreshBtn = document.createElement('button');
+                refreshBtn.className = 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-xl font-semibold transition-all duration-200 w-full text-center';
+                refreshBtn.textContent = 'Refresh Page';
+                refreshBtn.addEventListener('click', () => {
+                    location.reload();
+                });
+                
+                buttonsDiv.appendChild(downloadBtn);
+                buttonsDiv.appendChild(openBtn);
+                buttonsDiv.appendChild(refreshBtn);
+                
+                errorBox.appendChild(iconDiv);
+                errorBox.appendChild(title);
+                errorBox.appendChild(desc);
+                errorBox.appendChild(buttonsDiv);
+                errorContainer.appendChild(errorBox);
                 
                 // Show error UI
                 welcomeMessage.classList.add('hidden');
@@ -2409,7 +2451,7 @@
                 if (existingError) {
                     existingError.remove();
                 }
-                errorContainer.classList.add('error-container');
+                errorContainer.appendChild(errorBox);
                 mainContent.appendChild(errorContainer);
                 
                 showToast('Failed to load PDF. Please try downloading or opening in a new tab.', 'error');
@@ -2511,7 +2553,7 @@
                     // Set a timeout to check if iframe also fails
                     setTimeout(() => {
                         // If we're still in loading state after iframe attempt, show error
-                        if (loadingIndicator.classList.contains('flex') || !loadingIndicator.classList.contains('hidden')) {
+                        if (!loadingIndicator.classList.contains('hidden')) {
                             hideLoadingIndicator();
                             pdfContainer.classList.add('hidden');
                             
@@ -2560,7 +2602,7 @@
             if (window.innerWidth < 1024) return; // Only works on desktop
             
             isSidebarMinimized = !isSidebarMinimized;
-            safeSetLocalStorage('sidebarMinimized', isSidebarMinimized);
+            safeSetLocalStorage('sidebarMinimized', String(isSidebarMinimized));
             
             if (isSidebarMinimized) {
                 sidebar.classList.add('minimized');
@@ -2701,7 +2743,7 @@
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
             document.body.classList.toggle('dark-mode', isDarkMode);
-            safeSetLocalStorage('darkMode', isDarkMode);
+            safeSetLocalStorage('darkMode', String(isDarkMode));
             
             // Update icon
             if (isDarkMode) {
