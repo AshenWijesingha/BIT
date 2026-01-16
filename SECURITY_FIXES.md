@@ -29,12 +29,12 @@ This document summarizes all security vulnerabilities that have been identified 
 ### 4. Security Headers
 **Status:** ✅ Fixed
 **Issue:** Missing security headers
-**Fix:** Added multiple security headers:
+**Fix:** Added security headers via meta tags:
 - `X-Content-Type-Options: nosniff`
-- `X-Frame-Options: SAMEORIGIN`
 - `X-XSS-Protection: 1; mode=block`
 - `Referrer-Policy: strict-origin-when-cross-origin`
-**Location:** `index.html` lines 8-12
+**Note:** X-Frame-Options was removed as it should only be set via HTTP headers (not meta tags). The console error "X-Frame-Options may only be set via an HTTP header" has been resolved.
+**Location:** `index.html` lines 8-11
 
 ### 5. Insecure Clipboard API Fallback
 **Status:** ✅ Fixed
