@@ -1,24 +1,83 @@
 #!/usr/bin/env node
 
 /**
- * Generate file list JSON from repository structure
- * This script scans the repository and creates a JSON file with all PDF files organized by folder
+ * ============================================================================
+ * BIT REPOSITORY - FILE LIST GENERATOR
+ * ============================================================================
+ * 
+ * This script scans the repository for PDF files and generates a JSON file
+ * (files.json) that the web application uses to build the file tree navigation.
+ * 
+ * USAGE:
+ *   node generate-file-list.js
+ * 
+ * OUTPUT:
+ *   Creates/updates files.json in the repository root with the following structure:
+ *   {
+ *     "BIT Project": ["BIT Project/file1.pdf", ...],
+ *     "Semester 5": {
+ *       "_root": ["Semester 5/notice.pdf", ...],
+ *       "Subject Name": ["Semester 5/Subject Name/lecture.pdf", ...]
+ *     }
+ *   }
+ * 
+ * FEATURES:
+ *   - Recursive directory scanning
+ *   - Symbolic link handling with circular reference detection
+ *   - Atomic file writes to prevent corruption
+ *   - JSON validation before writing
+ *   - Comprehensive error handling
+ * 
+ * CONFIGURATION:
+ *   - INCLUDE_DIRS: Directories to scan for PDF files
+ *   - INCLUDE_EXTENSIONS: File extensions to include
+ * 
+ * @author BIT Repository
+ * @version 1.1.0
+ * ============================================================================
  */
 
 const fs = require('fs');
 const path = require('path');
 
-// Directories to include in the scan
+/**
+ * ============================================================================
+ * CONFIGURATION
+ * ============================================================================
+ */
+
+/** @constant {string[]} INCLUDE_DIRS - Directories to include in the scan */
 const INCLUDE_DIRS = ['BIT Project', 'Semester 5'];
-// File extensions to include
+
+/** @constant {string[]} INCLUDE_EXTENSIONS - File extensions to include (lowercase) */
 const INCLUDE_EXTENSIONS = ['.pdf'];
 
 /**
- * Recursively scan directory and build file tree
- * @param {string} dirPath - Directory path to scan
- * @param {string} relativePath - Relative path from root
- * @param {Set} visited - Set of visited directories to prevent infinite loops
- * @returns {Object|Array} - File tree structure
+ * ============================================================================
+ * DIRECTORY SCANNING FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * Recursively scans a directory and builds a file tree structure.
+ * Handles symbolic links and prevents infinite loops from circular references.
+ * 
+ * @function scanDirectory
+ * @param {string} dirPath - Absolute path to the directory to scan
+ * @param {string} [relativePath=''] - Relative path from the repository root
+ * @param {Set<string>} [visited=new Set()] - Set of visited real paths to prevent circular references
+ * @returns {Object|Array} File tree structure:
+ *   - Array of file paths if directory contains only files
+ *   - Object with folder names as keys if directory contains subdirectories
+ *   - Object with _root key for files and folder keys for subdirectories if both exist
+ * 
+ * @example
+ * // Returns: ['Semester 5/file1.pdf', 'Semester 5/file2.pdf']
+ * scanDirectory('/repo/Semester 5', 'Semester 5');
+ * 
+ * @example
+ * // Returns: { _root: ['Semester 5/notice.pdf'], 'Subject': ['Semester 5/Subject/lecture.pdf'] }
+ * scanDirectory('/repo/Semester 5', 'Semester 5');
  */
 function scanDirectory(dirPath, relativePath = '', visited = new Set()) {
     // Prevent infinite loops from circular symlinks
@@ -83,7 +142,21 @@ function scanDirectory(dirPath, relativePath = '', visited = new Set()) {
 }
 
 /**
- * Generate the complete file structure
+ * ============================================================================
+ * FILE STRUCTURE GENERATION
+ * ============================================================================
+ */
+
+/**
+ * Generates the complete file structure by scanning all configured directories.
+ * Iterates through INCLUDE_DIRS and builds a hierarchical structure of PDF files.
+ * 
+ * @function generateFileStructure
+ * @returns {Object} Object with directory names as keys and file structures as values
+ * 
+ * @example
+ * const structure = generateFileStructure();
+ * // Returns: { "BIT Project": [...], "Semester 5": {...} }
  */
 function generateFileStructure() {
     const fileStructure = {};
@@ -115,7 +188,21 @@ function generateFileStructure() {
 }
 
 /**
- * Main execution
+ * ============================================================================
+ * MAIN EXECUTION
+ * ============================================================================
+ */
+
+/**
+ * Main entry point for the file list generator.
+ * Performs the following steps:
+ * 1. Scans the repository for PDF files
+ * 2. Validates the generated structure
+ * 3. Writes to files.json using atomic write pattern
+ * 4. Cleans up temporary files on error
+ * 
+ * @function main
+ * @throws {Error} Exits with code 1 on any error
  */
 function main() {
     try {
@@ -165,7 +252,17 @@ function main() {
 }
 
 /**
- * Count total files in structure
+ * ============================================================================
+ * HELPER FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * Recursively counts the total number of files in the structure.
+ * 
+ * @function countFiles
+ * @param {Object|Array} obj - The file structure to count
+ * @returns {number} Total number of PDF files
  */
 function countFiles(obj) {
     let count = 0;
@@ -183,7 +280,13 @@ function countFiles(obj) {
 }
 
 /**
- * Count total folders in structure
+ * Recursively counts the total number of folders in the structure.
+ * Excludes the _root key which represents files in the current folder.
+ * 
+ * @function countFolders
+ * @param {Object|Array} obj - The file structure to count
+ * @param {number} [level=0] - Current nesting level (used internally)
+ * @returns {number} Total number of folders
  */
 function countFolders(obj, level = 0) {
     let count = level > 0 ? 1 : 0;
@@ -197,6 +300,12 @@ function countFolders(obj, level = 0) {
     }
     return count;
 }
+
+/**
+ * ============================================================================
+ * SCRIPT EXECUTION
+ * ============================================================================
+ */
 
 // Run the script
 main();

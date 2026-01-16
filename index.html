@@ -1466,41 +1466,194 @@
     <div id="sidebarOverlay" class="sidebar-overlay hidden lg:hidden"></div>
 
     <script>
-        // Configure PDF.js worker
+        /**
+         * ============================================================================
+         * BIT REPOSITORY - PDF VIEWER APPLICATION
+         * ============================================================================
+         * 
+         * A comprehensive web-based PDF viewer for Bachelor of Information Technology
+         * course materials. This application provides a modern, responsive interface
+         * for browsing and viewing PDF files organized by semester and subject.
+         * 
+         * KEY FEATURES:
+         * - Dynamic file tree navigation with search functionality
+         * - PDF viewing using native viewers (desktop) or PDF.js (mobile)
+         * - Dark mode support with persistent preferences
+         * - Favorites and recent files tracking
+         * - Responsive design optimized for mobile devices
+         * - Keyboard shortcuts for power users
+         * - Deep linking support via URL parameters
+         * 
+         * SECURITY FEATURES:
+         * - Content Security Policy (CSP) headers
+         * - XSS prevention using DOM API instead of innerHTML
+         * - Input validation and sanitization
+         * - Safe localStorage operations
+         * 
+         * BROWSER SUPPORT:
+         * - Chrome/Edge (recommended)
+         * - Firefox
+         * - Safari (including iOS)
+         * - Mobile browsers (Chrome Mobile, Safari Mobile, Samsung Internet)
+         * 
+         * @author BIT Repository
+         * @version 2.0.0
+         * @license Educational Use
+         * ============================================================================
+         */
+        
+        // Configure PDF.js worker - Must be set before any PDF loading
         if (typeof pdfjsLib !== 'undefined') {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
         
-        // Constants
-        const PDF_LOAD_TIMEOUT_MS = 3000; // Fallback timeout for PDF loading
-        const INDENT_SIZE_PX = 12; // Indentation for nested sidebar items
-        const PDF_VIEW_MODE = '#view=FitH'; // Default PDF view mode
-        const CANVAS_CONTAINER_PADDING = 32; // Padding for canvas container (2 * 1rem)
-        const MIN_ZOOM = 0.5; // Minimum zoom level (50%)
-        const MAX_ZOOM = 3.0; // Maximum zoom level (300%)
-        const MAX_RECENT_FILES = 10; // Maximum number of recent files to track
-        const TOAST_DURATION_MS = 5000; // Toast notification duration (5s for accessibility)
-        const MIN_MOBILE_PDF_WIDTH = 280; // Minimum PDF width on mobile devices (in pixels)
-        const MOBILE_EDGE_MARGIN = 8; // Additional margin for mobile to prevent edge overflow (in pixels)
-        const MAX_MOBILE_DEVICE_PIXEL_RATIO = 2; // Maximum device pixel ratio for mobile (for performance)
-        const RESIZE_DEBOUNCE_MS = 300; // Debounce delay for resize events (in milliseconds)
+        /**
+         * ============================================================================
+         * CONFIGURATION CONSTANTS
+         * ============================================================================
+         * These constants define the behavior and limits of the application.
+         * Modify these values to customize the application behavior.
+         */
+        
+        /** @constant {number} PDF_LOAD_TIMEOUT_MS - Fallback timeout for PDF loading in milliseconds */
+        const PDF_LOAD_TIMEOUT_MS = 3000;
+        
+        /** @constant {number} INDENT_SIZE_PX - Indentation for nested sidebar items in pixels */
+        const INDENT_SIZE_PX = 12;
+        
+        /** @constant {string} PDF_VIEW_MODE - Default PDF view mode fragment for native viewers */
+        const PDF_VIEW_MODE = '#view=FitH';
+        
+        /** @constant {number} CANVAS_CONTAINER_PADDING - Padding for canvas container (2 * 1rem) in pixels */
+        const CANVAS_CONTAINER_PADDING = 32;
+        
+        /** @constant {number} MIN_ZOOM - Minimum zoom level (50%) */
+        const MIN_ZOOM = 0.5;
+        
+        /** @constant {number} MAX_ZOOM - Maximum zoom level (300%) */
+        const MAX_ZOOM = 3.0;
+        
+        /** @constant {number} MAX_RECENT_FILES - Maximum number of recent files to track */
+        const MAX_RECENT_FILES = 10;
+        
+        /** @constant {number} TOAST_DURATION_MS - Toast notification duration (5s for accessibility) */
+        const TOAST_DURATION_MS = 5000;
+        
+        /** @constant {number} MIN_MOBILE_PDF_WIDTH - Minimum PDF width on mobile devices in pixels */
+        const MIN_MOBILE_PDF_WIDTH = 280;
+        
+        /** @constant {number} MOBILE_EDGE_MARGIN - Additional margin for mobile to prevent edge overflow in pixels */
+        const MOBILE_EDGE_MARGIN = 8;
+        
+        /** @constant {number} MAX_MOBILE_DEVICE_PIXEL_RATIO - Maximum device pixel ratio for mobile (for performance) */
+        const MAX_MOBILE_DEVICE_PIXEL_RATIO = 2;
+        
+        /** @constant {number} RESIZE_DEBOUNCE_MS - Debounce delay for resize events in milliseconds */
+        const RESIZE_DEBOUNCE_MS = 300;
+        
+        /** @constant {number} MAX_FILE_LOAD_RETRIES - Maximum number of retries for loading file structure */
+        const MAX_FILE_LOAD_RETRIES = 3;
+        
+        /** @constant {number} SEARCH_DEBOUNCE_MS - Debounce delay for search input in milliseconds */
+        const SEARCH_DEBOUNCE_MS = 300;
 
-        // PDF Files - loaded dynamically from files.json
+        /**
+         * ============================================================================
+         * APPLICATION STATE
+         * ============================================================================
+         * Global state variables that track the current state of the application.
+         * These are initialized from localStorage where applicable.
+         */
+        
+        /**
+         * Object containing the PDF file structure loaded from files.json
+         * @type {Object.<string, (Array<string>|Object)>}
+         */
         let pdfFiles = {};
+        
+        /**
+         * Total count of PDF files in the repository
+         * @type {number}
+         */
         let totalFileCount = 0;
+        
+        /**
+         * Counter for file load retry attempts
+         * @type {number}
+         */
+        let fileLoadRetryCount = 0;
 
-        // State variables
+        /**
+         * Current PDF file path being displayed
+         * @type {string}
+         */
         let currentPdfPath = '';
+        
+        /**
+         * PDF.js document instance for the currently loaded PDF
+         * @type {PDFDocumentProxy|null}
+         */
         let pdfDoc = null;
+        
+        /**
+         * Flag indicating if PDF.js canvas renderer is being used (true for mobile)
+         * @type {boolean}
+         */
         let usingCanvasRenderer = false;
+        
+        /**
+         * Current zoom level for PDF viewing (1.0 = 100%)
+         * @type {number}
+         */
         let currentZoom = 1.0;
+        
+        /**
+         * Current page number being viewed in canvas mode
+         * @type {number}
+         */
         let currentPage = 1;
         
-        // Safe localStorage parsing with error handling
+        /**
+         * Array of favorited PDF file paths
+         * Persisted to localStorage under key 'pdfFavorites'
+         * @type {Array<string>}
+         */
         let favorites = [];
+        
+        /**
+         * Array of recently viewed PDF file paths
+         * Persisted to localStorage under key 'pdfRecentFiles'
+         * @type {Array<string>}
+         */
         let recentFiles = [];
+        
+        /**
+         * Flag indicating if dark mode is enabled
+         * Persisted to localStorage under key 'darkMode'
+         * @type {boolean}
+         */
         let isDarkMode = false;
+        
+        /**
+         * Flag indicating if sidebar is minimized (desktop only)
+         * Persisted to localStorage under key 'sidebarMinimized'
+         * @type {boolean}
+         */
         let isSidebarMinimized = false;
+        
+        /**
+         * AbortController for cancelling in-progress PDF loading operations
+         * Used to prevent race conditions when switching between PDFs quickly
+         * @type {AbortController|null}
+         */
+        let currentPdfLoadController = null;
+        
+        /**
+         * ============================================================================
+         * LOCAL STORAGE INITIALIZATION
+         * ============================================================================
+         * Load persisted user preferences from localStorage with error handling
+         */
         
         try {
             favorites = JSON.parse(localStorage.getItem('pdfFavorites') || '[]');
@@ -1535,11 +1688,13 @@
             console.error('Failed to access sidebar state from localStorage:', e);
             isSidebarMinimized = false;
         }
-
-        // PDF loading abort controller for race condition prevention
-        let currentPdfLoadController = null;
         
-        // DOM Elements
+        /**
+         * ============================================================================
+         * DOM ELEMENT REFERENCES
+         * ============================================================================
+         * Cache DOM element references for better performance and cleaner code
+         */
         const fileTree = document.getElementById('fileTree');
         const welcomeMessage = document.getElementById('welcomeMessage');
         const loadingIndicator = document.getElementById('loadingIndicator');
@@ -1626,14 +1781,46 @@
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
         
-        // Detect if device likely supports native PDF viewing
+        /**
+         * ============================================================================
+         * UTILITY FUNCTIONS
+         * ============================================================================
+         */
+        
+        /**
+         * Detects if the current device likely supports native PDF viewing.
+         * Mobile devices typically require PDF.js canvas rendering for proper display.
+         * 
+         * @function supportsNativePDFViewing
+         * @returns {boolean} True if native PDF viewing is supported (typically desktop browsers)
+         * 
+         * @example
+         * if (supportsNativePDFViewing()) {
+         *     // Use native PDF viewer (iframe/object tag)
+         * } else {
+         *     // Use PDF.js canvas rendering
+         * }
+         */
         function supportsNativePDFViewing() {
             // Mobile devices typically don't support inline PDF viewing
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             return !isMobile;
         }
         
-        // Toast notification system - Secure implementation using DOM API
+        /**
+         * Displays a toast notification to the user.
+         * Uses secure DOM API to prevent XSS attacks.
+         * Toast automatically dismisses after TOAST_DURATION_MS milliseconds.
+         * 
+         * @function showToast
+         * @param {string} message - The message to display in the toast
+         * @param {('info'|'success'|'error')} [type='info'] - The type of toast which determines styling and icon
+         * 
+         * @example
+         * showToast('File saved successfully', 'success');
+         * showToast('An error occurred', 'error');
+         * showToast('Loading PDF...', 'info');
+         */
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -1676,7 +1863,19 @@
             }, TOAST_DURATION_MS);
         }
         
-        // Safe localStorage wrapper
+        /**
+         * Safely stores a value in localStorage with error handling.
+         * Handles quota exceeded errors and other storage failures gracefully.
+         * 
+         * @function safeSetLocalStorage
+         * @param {string} key - The localStorage key to set
+         * @param {*} value - The value to store (will be JSON stringified)
+         * @returns {boolean} True if the operation succeeded, false otherwise
+         * 
+         * @example
+         * safeSetLocalStorage('pdfFavorites', ['file1.pdf', 'file2.pdf']);
+         * safeSetLocalStorage('darkMode', true);
+         */
         function safeSetLocalStorage(key, value) {
             try {
                 localStorage.setItem(key, JSON.stringify(value));
@@ -1690,12 +1889,29 @@
             }
         }
         
-        // Help modal functions
+        /**
+         * ============================================================================
+         * HELP MODAL FUNCTIONS
+         * ============================================================================
+         */
+        
+        /**
+         * Opens the help modal dialog.
+         * Prevents body scrolling while modal is open.
+         * 
+         * @function openHelpModal
+         */
         function openHelpModal() {
             helpModal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
         
+        /**
+         * Closes the help modal dialog.
+         * Restores body scrolling.
+         * 
+         * @function closeHelpModal
+         */
         function closeHelpModal() {
             helpModal.classList.remove('active');
             document.body.style.overflow = '';
@@ -1739,7 +1955,18 @@
             closeHelpModalFooterBtn.addEventListener('click', closeHelpModal);
         }
         
-        // Scroll to top functionality
+        /**
+         * ============================================================================
+         * UI INTERACTION FUNCTIONS
+         * ============================================================================
+         */
+        
+        /**
+         * Updates the visibility of the scroll-to-top button based on scroll position.
+         * Shows the button when the user has scrolled more than 300 pixels.
+         * 
+         * @function updateScrollToTopVisibility
+         */
         function updateScrollToTopVisibility() {
             const scrollY = window.scrollY || document.documentElement.scrollTop;
             if (scrollY > 300) {
@@ -1755,7 +1982,7 @@
         
         window.addEventListener('scroll', updateScrollToTopVisibility);
         
-        // Expand/Collapse all folders
+        // Expand all folders in file tree
         expandAllBtn.addEventListener('click', () => {
             fileTree.querySelectorAll('.folder-content').forEach(content => {
                 content.classList.add('expanded');
@@ -1766,6 +1993,7 @@
             showToast('All folders expanded', 'info');
         });
         
+        // Collapse all folders in file tree
         collapseAllBtn.addEventListener('click', () => {
             fileTree.querySelectorAll('.folder-content').forEach(content => {
                 content.classList.remove('expanded');
@@ -1776,7 +2004,19 @@
             showToast('All folders collapsed', 'info');
         });
         
-        // Update favorites section in sidebar
+        /**
+         * ============================================================================
+         * FAVORITES MANAGEMENT FUNCTIONS
+         * ============================================================================
+         */
+        
+        /**
+         * Updates the favorites section in the sidebar.
+         * Filters out invalid paths and renders the favorite items.
+         * Uses secure DOM API to prevent XSS attacks.
+         * 
+         * @function updateFavoritesSection
+         */
         function updateFavoritesSection() {
             // Filter out invalid paths
             favorites = favorites.filter(path => isValidPdfPath(path));
@@ -1818,7 +2058,19 @@
             });
         }
         
-        // Update recent files section in sidebar
+        /**
+         * ============================================================================
+         * RECENT FILES MANAGEMENT FUNCTIONS
+         * ============================================================================
+         */
+        
+        /**
+         * Updates the recent files section in the sidebar.
+         * Displays the 5 most recently viewed PDFs.
+         * Filters out invalid paths and uses secure DOM API.
+         * 
+         * @function updateRecentSection
+         */
         function updateRecentSection() {
             // Filter out invalid paths
             recentFiles = recentFiles.filter(path => isValidPdfPath(path));
@@ -1862,7 +2114,7 @@
             });
         }
         
-        // Clear favorites
+        // Clear favorites button event handler
         clearFavoritesBtn.addEventListener('click', () => {
             favorites = [];
             safeSetLocalStorage('pdfFavorites', favorites);
@@ -1870,7 +2122,7 @@
             showToast('Favorites cleared', 'success');
         });
         
-        // Clear recent files
+        // Clear recent files button event handler
         clearRecentBtn.addEventListener('click', () => {
             recentFiles = [];
             safeSetLocalStorage('pdfRecentFiles', recentFiles);
@@ -1878,7 +2130,7 @@
             showToast('History cleared', 'success');
         });
         
-        // Print PDF
+        // Print PDF button event handler - Opens PDF in new window for printing
         printPdfBtn.addEventListener('click', () => {
             if (currentPdfPath && isValidPdfPath(currentPdfPath)) {
                 const printWindow = window.open(encodeURI(currentPdfPath), '_blank');
@@ -1915,7 +2167,23 @@
             }
         });
         
-        // Count files helper function
+        /**
+         * ============================================================================
+         * FILE STRUCTURE HELPER FUNCTIONS
+         * ============================================================================
+         */
+        
+        /**
+         * Recursively counts the total number of PDF files in the file structure.
+         * 
+         * @function countFilesInStructure
+         * @param {Object|Array} obj - The file structure object or array to count
+         * @returns {number} The total count of PDF files
+         * 
+         * @example
+         * const count = countFilesInStructure(pdfFiles);
+         * console.log(`Found ${count} PDF files`);
+         */
         function countFilesInStructure(obj) {
             let count = 0;
             if (Array.isArray(obj)) {
@@ -1931,7 +2199,19 @@
             return count;
         }
         
-        // Validate PDF path to prevent XSS attacks
+        /**
+         * Validates a PDF file path for security.
+         * Prevents XSS attacks and path traversal attempts.
+         * 
+         * @function isValidPdfPath
+         * @param {string} path - The file path to validate
+         * @returns {boolean} True if the path is valid and exists in the file structure
+         * 
+         * @example
+         * if (isValidPdfPath('Semester 5/lecture.pdf')) {
+         *     loadPdf(path);
+         * }
+         */
         function isValidPdfPath(path) {
             // Check if path ends with .pdf and doesn't contain malicious characters
             if (!path || typeof path !== 'string') return false;
@@ -1942,7 +2222,18 @@
             return getAllPdfPaths(pdfFiles).includes(path);
         }
         
-        // Get all PDF paths from file structure
+        /**
+         * Recursively extracts all PDF file paths from the file structure.
+         * 
+         * @function getAllPdfPaths
+         * @param {Object|Array} obj - The file structure object or array
+         * @param {Array<string>} [paths=[]] - Accumulator array for paths
+         * @returns {Array<string>} Array of all PDF file paths
+         * 
+         * @example
+         * const allPaths = getAllPdfPaths(pdfFiles);
+         * console.log(`Found ${allPaths.length} PDF files`);
+         */
         function getAllPdfPaths(obj, paths = []) {
             if (Array.isArray(obj)) {
                 paths.push(...obj);
@@ -1954,13 +2245,27 @@
             return paths;
         }
         
-        // Helper function to hide loading indicator
+        /**
+         * ============================================================================
+         * LOADING INDICATOR FUNCTIONS
+         * ============================================================================
+         */
+        
+        /**
+         * Hides the loading indicator overlay.
+         * 
+         * @function hideLoadingIndicator
+         */
         function hideLoadingIndicator() {
             loadingIndicator.classList.add('hidden');
             loadingIndicator.style.display = '';
         }
         
-        // Helper function to show loading indicator
+        /**
+         * Shows the loading indicator overlay and hides other content.
+         * 
+         * @function showLoadingIndicator
+         */
         function showLoadingIndicator() {
             welcomeMessage.classList.add('hidden');
             pdfContainer.classList.add('hidden');
@@ -1968,10 +2273,25 @@
             loadingIndicator.style.display = 'flex';
         }
 
-        // Load file structure from JSON with retry mechanism
-        let fileLoadRetryCount = 0;
-        const MAX_FILE_LOAD_RETRIES = 3;
+        /**
+         * ============================================================================
+         * FILE STRUCTURE LOADING
+         * ============================================================================
+         */
         
+        /**
+         * Loads the file structure from files.json.
+         * Implements retry mechanism for resilience.
+         * After loading, builds the file tree UI and checks for deep links.
+         * 
+         * @async
+         * @function loadFileStructure
+         * @throws {Error} If file structure cannot be loaded after maximum retries
+         * 
+         * @example
+         * await loadFileStructure();
+         * console.log(`Loaded ${totalFileCount} PDF files`);
+         */
         async function loadFileStructure() {
             try {
                 const response = await fetch('files.json');
@@ -2077,7 +2397,18 @@
             }
         }
 
-        // Build file tree
+        /**
+         * ============================================================================
+         * FILE TREE BUILDING FUNCTIONS
+         * ============================================================================
+         */
+        
+        /**
+         * Builds the file tree UI from the loaded PDF file structure.
+         * Renders folders and files in a hierarchical tree view.
+         * 
+         * @function buildFileTree
+         */
         function buildFileTree() {
             fileTree.innerHTML = '';
             
@@ -2096,6 +2427,21 @@
             }
         }
 
+        /**
+         * Creates a folder element for the file tree.
+         * Handles nested folders and files recursively.
+         * Uses secure DOM API to prevent XSS attacks.
+         * 
+         * @function createFolderElement
+         * @param {string} name - The folder name to display
+         * @param {Object|Array} content - The folder contents (files or nested folders)
+         * @param {number} [level=0] - The nesting level for indentation
+         * @returns {HTMLDivElement} The folder container element
+         * 
+         * @example
+         * const folderEl = createFolderElement('Semester 5', { 'Course 1': ['file1.pdf'] }, 0);
+         * fileTree.appendChild(folderEl);
+         */
         function createFolderElement(name, content, level = 0) {
             const container = document.createElement('div');
             container.className = 'folder-container';
@@ -2183,6 +2529,20 @@
             return container;
         }
 
+        /**
+         * Creates a file element for the file tree sidebar.
+         * Uses secure DOM API to prevent XSS attacks.
+         * Includes PDF icon and click handler to load the PDF.
+         * 
+         * @function createFileElement
+         * @param {string} filePath - The full path to the PDF file
+         * @param {number} level - The nesting level for indentation
+         * @returns {HTMLDivElement} The file element with icon and label
+         * 
+         * @example
+         * const fileEl = createFileElement('Semester 5/lecture.pdf', 1);
+         * container.appendChild(fileEl);
+         */
         function createFileElement(filePath, level) {
             // Safely extract and sanitize file name
             const pathParts = filePath.split('/');
@@ -2222,7 +2582,30 @@
             return element;
         }
 
-        // Render PDF using PDF.js for mobile devices with timeout and abort support
+        /**
+         * ============================================================================
+         * PDF RENDERING FUNCTIONS
+         * ============================================================================
+         */
+        
+        /**
+         * Renders a PDF file using PDF.js canvas rendering.
+         * This is the primary method for mobile devices that don't support native PDF viewing.
+         * Includes features like:
+         * - Abort controller for cancelling in-progress loads
+         * - 30-second timeout for failed loads
+         * - High-DPI display support
+         * - Responsive sizing based on viewport
+         * - Memory cleanup for previous documents
+         * 
+         * @async
+         * @function renderPDFWithCanvas
+         * @param {string} pdfPath - The encoded URL path to the PDF file
+         * @throws {Error} If PDF loading fails, displays error UI with recovery options
+         * 
+         * @example
+         * await renderPDFWithCanvas('Semester%205/lecture.pdf');
+         */
         async function renderPDFWithCanvas(pdfPath) {
             // Cancel any previous render in progress
             if (currentPdfLoadController) {
@@ -2456,7 +2839,28 @@
             }
         }
 
-        // Load and display PDF using object tag with iframe fallback or PDF.js canvas
+        /**
+         * Loads and displays a PDF file.
+         * Automatically chooses the appropriate rendering method:
+         * - PDF.js canvas rendering for mobile devices
+         * - Native PDF viewer (object/iframe) for desktop browsers
+         * 
+         * Features:
+         * - Cancels any in-progress PDF loading to prevent race conditions
+         * - Updates sidebar active state
+         * - Updates breadcrumb navigation
+         * - Manages favorites button state
+         * - Adds file to recent history
+         * - Supports deep linking via URL parameters
+         * 
+         * @async
+         * @function loadPdf
+         * @param {string} pdfPath - The file path to the PDF (e.g., 'Semester 5/lecture.pdf')
+         * 
+         * @example
+         * // Load a PDF file
+         * await loadPdf('Semester 5/IT5306 Principles of Information Security/IT5306-Teachers note-Topic 1.pdf');
+         */
         async function loadPdf(pdfPath) {
             // Cancel any previous PDF loading
             if (currentPdfLoadController) {
@@ -2580,7 +2984,13 @@
             }
         }
 
-        // Sidebar toggle for mobile
+        /**
+         * ============================================================================
+         * SIDEBAR MANAGEMENT FUNCTIONS
+         * ============================================================================
+         */
+        
+        // Sidebar toggle for mobile - toggle visibility when hamburger menu is clicked
         document.getElementById('toggleSidebar').addEventListener('click', () => {
             sidebar.classList.toggle('-translate-x-full');
             sidebarOverlay.classList.toggle('hidden');
@@ -2588,6 +2998,12 @@
 
         sidebarOverlay.addEventListener('click', closeSidebar);
 
+        /**
+         * Closes the sidebar on mobile devices.
+         * Only affects devices with viewport width less than 1024px.
+         * 
+         * @function closeSidebar
+         */
         function closeSidebar() {
             if (window.innerWidth < 1024) {
                 sidebar.classList.add('-translate-x-full');
@@ -2595,7 +3011,13 @@
             }
         }
         
-        // Sidebar minimize/expand functionality (desktop only)
+        /**
+         * Toggles the sidebar between minimized and expanded states (desktop only).
+         * In minimized state, only icons are visible.
+         * Persists state to localStorage.
+         * 
+         * @function toggleSidebarMinimized
+         */
         function toggleSidebarMinimized() {
             if (window.innerWidth < 1024) return; // Only works on desktop
             
@@ -2644,6 +3066,12 @@
             minimizeSidebarBtn.addEventListener('click', toggleSidebarMinimized);
         }
 
+        /**
+         * ============================================================================
+         * WINDOW RESIZE HANDLING
+         * ============================================================================
+         */
+        
         // Handle window resize with debouncing for better mobile performance
         let resizeTimeout;
         window.addEventListener('resize', () => {
@@ -2681,10 +3109,20 @@
             });
         }
         
-        // Search functionality with debounce
-        let searchTimeout;
-        const SEARCH_DEBOUNCE_MS = 300;
+        /**
+         * ============================================================================
+         * SEARCH FUNCTIONALITY
+         * ============================================================================
+         */
         
+        // Search functionality with debounce for performance
+        let searchTimeout;
+        
+        /**
+         * Search input event handler.
+         * Filters the file tree based on search term.
+         * Uses debouncing to avoid excessive DOM operations.
+         */
         searchInput.addEventListener('input', (e) => {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
@@ -2737,13 +3175,25 @@
             }, SEARCH_DEBOUNCE_MS);
         });
         
-        // Dark mode toggle
+        /**
+         * ============================================================================
+         * DARK MODE FUNCTIONALITY
+         * ============================================================================
+         */
+        
+        /**
+         * Toggles dark mode on/off.
+         * Persists preference to localStorage.
+         * Updates the dark mode icon in the header.
+         * 
+         * @function toggleDarkMode
+         */
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
             document.body.classList.toggle('dark-mode', isDarkMode);
             safeSetLocalStorage('darkMode', isDarkMode);
             
-            // Update icon
+            // Update icon to show sun (light mode) or moon (dark mode)
             if (isDarkMode) {
                 darkModeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />';
             } else {
@@ -2753,7 +3203,13 @@
         
         darkModeToggle.addEventListener('click', toggleDarkMode);
         
-        // Favorites functionality
+        /**
+         * Toggles the favorite status of the currently viewed PDF.
+         * Adds or removes the PDF from the favorites list.
+         * Persists changes to localStorage.
+         * 
+         * @function toggleFavorite
+         */
         function toggleFavorite() {
             if (!currentPdfPath) return;
             
@@ -2778,7 +3234,18 @@
         
         favoritePdf.addEventListener('click', toggleFavorite);
         
-        // Helper function to collapse all folders in the sidebar
+        /**
+         * ============================================================================
+         * NAVIGATION FUNCTIONS
+         * ============================================================================
+         */
+        
+        /**
+         * Collapses all folders in the sidebar file tree.
+         * Useful for resetting the tree view or before navigating to a specific folder.
+         * 
+         * @function collapseAllFolders
+         */
         function collapseAllFolders() {
             fileTree.querySelectorAll('.folder-content').forEach(content => {
                 content.classList.remove('expanded');
@@ -2788,7 +3255,17 @@
             });
         }
         
-        // Navigate to folder in sidebar
+        /**
+         * Navigates to and expands a folder in the sidebar.
+         * Expands all parent folders in the path and scrolls the folder into view.
+         * Opens the sidebar on mobile devices.
+         * 
+         * @function navigateToFolder
+         * @param {string} folderPath - The folder path to navigate to (e.g., 'Semester 5/IT5306')
+         * 
+         * @example
+         * navigateToFolder('Semester 5/IT5306 Principles of Information Security');
+         */
         function navigateToFolder(folderPath) {
             // Split path into parts
             const parts = folderPath.split('/');
@@ -2845,7 +3322,13 @@
             }
         }
         
-        // Navigate home (back to welcome screen)
+        /**
+         * Navigates to the home/welcome screen.
+         * Clears the current PDF and resets the view state.
+         * Updates the URL to remove the PDF parameter.
+         * 
+         * @function navigateHome
+         */
         function navigateHome() {
             // Clear current PDF
             currentPdfPath = '';
@@ -2869,7 +3352,18 @@
             window.history.pushState({}, '', url);
         }
         
-        // Helper function to create breadcrumb separator SVG
+        /**
+         * ============================================================================
+         * BREADCRUMB FUNCTIONS
+         * ============================================================================
+         */
+        
+        /**
+         * Creates a breadcrumb separator SVG element (chevron right).
+         * 
+         * @function createBreadcrumbSeparator
+         * @returns {SVGElement} An SVG element for the breadcrumb separator
+         */
         function createBreadcrumbSeparator() {
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('class', 'h-4 w-4 mx-1 text-gray-400');
@@ -2883,7 +3377,18 @@
             return svg;
         }
         
-        // Update breadcrumb using DOM manipulation to prevent XSS
+        /**
+         * Updates the breadcrumb navigation for the current PDF.
+         * Creates clickable links for each folder in the path.
+         * Uses secure DOM manipulation to prevent XSS attacks.
+         * 
+         * @function updateBreadcrumb
+         * @param {string} pdfPath - The full path to the current PDF file
+         * 
+         * @example
+         * updateBreadcrumb('Semester 5/IT5306 Principles of Information Security/Topic 1.pdf');
+         * // Renders: Home > Semester 5 > IT5306 Principles of Information Security > Topic 1.pdf
+         */
         function updateBreadcrumb(pdfPath) {
             const parts = pdfPath.split('/');
             
@@ -2940,9 +3445,22 @@
             });
         }
         
-        // Fullscreen functionality
+        /**
+         * ============================================================================
+         * FULLSCREEN FUNCTIONALITY
+         * ============================================================================
+         */
+        
+        /** @type {boolean} Flag indicating if fullscreen mode is currently active */
         let isFullscreenActive = false;
         
+        /**
+         * Toggles fullscreen mode for the PDF viewer.
+         * Uses Fullscreen API with vendor prefix fallbacks.
+         * Shows toast notification if fullscreen is not supported.
+         * 
+         * @function toggleFullscreen
+         */
         function toggleFullscreen() {
             const container = document.getElementById('pdfIframeContainer');
             
@@ -2978,7 +3496,12 @@
             }
         }
         
-        // Handle fullscreen change events
+        /**
+         * Handles fullscreen change events from all vendor-prefixed APIs.
+         * Updates body class and hides sidebar when entering fullscreen.
+         * 
+         * @function handleFullscreenChange
+         */
         function handleFullscreenChange() {
             isFullscreenActive = !!(document.fullscreenElement || document.webkitFullscreenElement || 
                                     document.mozFullScreenElement || document.msFullscreenElement);
@@ -2993,7 +3516,7 @@
             }
         }
         
-        // Add fullscreen event listeners
+        // Add fullscreen event listeners for all vendor prefixes
         document.addEventListener('fullscreenchange', handleFullscreenChange);
         document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
         document.addEventListener('mozfullscreenchange', handleFullscreenChange);
@@ -3001,7 +3524,24 @@
         
         fullscreenToggle.addEventListener('click', toggleFullscreen);
         
-        // Zoom functionality
+        /**
+         * ============================================================================
+         * ZOOM FUNCTIONALITY
+         * ============================================================================
+         */
+        
+        /**
+         * Updates the zoom level for the PDF viewer.
+         * Clamps the zoom level between MIN_ZOOM and MAX_ZOOM.
+         * Re-renders the PDF when using canvas mode.
+         * 
+         * @function updateZoom
+         * @param {number} delta - The amount to change the zoom level (e.g., 0.1 for +10%)
+         * 
+         * @example
+         * updateZoom(0.1);  // Zoom in by 10%
+         * updateZoom(-0.1); // Zoom out by 10%
+         */
         function updateZoom(delta) {
             currentZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentZoom + delta));
             zoomLevel.textContent = Math.round(currentZoom * 100) + '%';
@@ -3014,7 +3554,20 @@
         zoomIn.addEventListener('click', () => updateZoom(0.1));
         zoomOut.addEventListener('click', () => updateZoom(-0.1));
         
-        // Keyboard shortcuts
+        /**
+         * ============================================================================
+         * KEYBOARD SHORTCUTS
+         * ============================================================================
+         * Supported shortcuts:
+         * - ? or Shift+/ : Open help modal
+         * - Escape : Close modals, blur focused input
+         * - Ctrl/Cmd + : Zoom in
+         * - Ctrl/Cmd - : Zoom out
+         * - Ctrl/Cmd 0 : Reset zoom to 100%
+         * - Ctrl/Cmd F : Focus search input
+         * - Left Arrow : Previous page (canvas mode)
+         * - Right Arrow : Next page (canvas mode)
+         */
         document.addEventListener('keydown', (e) => {
             // Don't trigger shortcuts when typing in input fields
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
@@ -3069,7 +3622,18 @@
             }
         });
         
-        // Page navigation for canvas mode
+        /**
+         * ============================================================================
+         * PAGE NAVIGATION FUNCTIONS (Canvas Mode)
+         * ============================================================================
+         */
+        
+        /**
+         * Navigates to the previous page in canvas mode.
+         * Updates the page display and scrolls to the page.
+         * 
+         * @function goToPreviousPage
+         */
         function goToPreviousPage() {
             if (currentPage > 1) {
                 currentPage--;
@@ -3078,6 +3642,12 @@
             }
         }
         
+        /**
+         * Navigates to the next page in canvas mode.
+         * Updates the page display and scrolls to the page.
+         * 
+         * @function goToNextPage
+         */
         function goToNextPage() {
             if (pdfDoc && currentPage < pdfDoc.numPages) {
                 currentPage++;
@@ -3086,10 +3656,22 @@
             }
         }
         
+        /**
+         * Updates the page number display in the navigation controls.
+         * 
+         * @function updatePageDisplay
+         */
         function updatePageDisplay() {
             pageNum.textContent = currentPage;
         }
         
+        /**
+         * Scrolls to a specific page in the canvas container.
+         * Uses smooth scrolling for better user experience.
+         * 
+         * @function scrollToPage
+         * @param {number} page - The page number to scroll to (1-indexed)
+         */
         function scrollToPage(page) {
             const canvases = pdfCanvasContainer.querySelectorAll('.pdf-page-canvas');
             if (canvases[page - 1]) {
@@ -3100,7 +3682,14 @@
         prevPage.addEventListener('click', goToPreviousPage);
         nextPage.addEventListener('click', goToNextPage);
         
-        // Add to recent files
+        /**
+         * Adds a PDF file path to the recent files list.
+         * Moves existing entries to the top and limits the list to MAX_RECENT_FILES.
+         * Persists to localStorage.
+         * 
+         * @function addToRecentFiles
+         * @param {string} pdfPath - The PDF file path to add to recent files
+         */
         function addToRecentFiles(pdfPath) {
             recentFiles = recentFiles.filter(f => f !== pdfPath);
             recentFiles.unshift(pdfPath);
@@ -3111,10 +3700,16 @@
             updateRecentSection();
         }
 
-        // Initialize
+        /**
+         * ============================================================================
+         * APPLICATION INITIALIZATION
+         * ============================================================================
+         */
+        
+        // Load file structure and initialize the application
         loadFileStructure();
         
-        // Apply dark mode if previously set
+        // Apply dark mode if previously set in localStorage
         if (isDarkMode) {
             document.body.classList.add('dark-mode');
             darkModeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />';
