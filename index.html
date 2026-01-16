@@ -408,6 +408,7 @@
         /* Large devices (desktops, 1024px and up) */
         @media (min-width: 1024px) {
             .lg\:ml-80 { margin-left: 20rem; }
+            .lg\:ml-16 { margin-left: 4rem; }
             .lg\:translate-x-0 { transform: translateX(0); }
             .lg\:hidden { display: none !important; }
             .lg\:block { display: block !important; }
@@ -600,6 +601,35 @@
         @media (min-width: 480px) {
             .sidebar-responsive {
                 width: 20rem;
+            }
+        }
+        
+        /* Minimized sidebar state (desktop only) */
+        @media (min-width: 1024px) {
+            .sidebar-responsive.minimized {
+                width: 4rem;
+                max-width: 4rem;
+            }
+            
+            .sidebar-responsive.minimized .sidebar-text,
+            .sidebar-responsive.minimized .search-container,
+            .sidebar-responsive.minimized .file-stats-container,
+            .sidebar-responsive.minimized .sidebar-section-title,
+            .sidebar-responsive.minimized .folder-name,
+            .sidebar-responsive.minimized .sidebar-section-header button {
+                display: none !important;
+            }
+            
+            .sidebar-responsive.minimized .sidebar-item,
+            .sidebar-responsive.minimized .folder-container > div {
+                justify-content: center;
+                padding-left: 0;
+                padding-right: 0;
+                margin-left: 0 !important;
+            }
+            
+            .sidebar-responsive.minimized .folder-content {
+                display: none !important;
             }
         }
         
@@ -848,6 +878,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: margin-left 0.3s ease, padding-left 0.3s ease;
+        }
+        
+        /* Footer adjusts with sidebar state on desktop */
+        @media (min-width: 1024px) {
+            .footer {
+                margin-left: 20rem;
+            }
+            
+            .footer.sidebar-minimized {
+                margin-left: 4rem;
+            }
         }
         
         .footer > div {
@@ -1037,15 +1079,22 @@
         <!-- Sidebar -->
         <aside id="sidebar" class="sidebar-responsive sidebar-position bg-white dark:bg-gray-800 shadow-2xl fixed overflow-y-auto transition-all duration-300 z-40 -translate-x-full lg:translate-x-0 border-r border-gray-200 dark:border-gray-700">
             <div class="p-3 sm:p-4">
-                <h2 class="text-sm sm:text-base lg:text-lg font-bold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center gap-2 pb-3 border-b border-gray-200 dark:border-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
-                    </svg>
-                    <span>PDF Files</span>
-                </h2>
+                <div class="flex items-center justify-between mb-3 sm:mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="sidebar-text text-sm sm:text-base lg:text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                        </svg>
+                        <span>PDF Files</span>
+                    </h2>
+                    <button id="minimizeSidebar" class="hidden lg:flex hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors" aria-label="Minimize sidebar" title="Minimize sidebar">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
+                        </svg>
+                    </button>
+                </div>
                 
                 <!-- Search Bar -->
-                <div class="mb-3 sm:mb-4 relative group">
+                <div class="search-container mb-3 sm:mb-4 relative group">
                     <input 
                         type="text" 
                         id="searchInput" 
@@ -1059,7 +1108,7 @@
                 </div>
                 
                 <!-- File Statistics and Folder Controls -->
-                <div class="flex items-center justify-between mb-3">
+                <div class="file-stats-container flex items-center justify-between mb-3">
                     <span id="fileStats" class="stats-badge">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
@@ -1451,6 +1500,7 @@
         let favorites = [];
         let recentFiles = [];
         let isDarkMode = false;
+        let isSidebarMinimized = false;
         
         try {
             favorites = JSON.parse(localStorage.getItem('pdfFavorites') || '[]');
@@ -1477,6 +1527,13 @@
         } catch (e) {
             console.error('Failed to access dark mode from localStorage:', e);
             isDarkMode = false;
+        }
+        
+        try {
+            isSidebarMinimized = localStorage.getItem('sidebarMinimized') === 'true';
+        } catch (e) {
+            console.error('Failed to access sidebar state from localStorage:', e);
+            isSidebarMinimized = false;
         }
 
         // PDF loading abort controller for race condition prevention
@@ -1525,6 +1582,9 @@
         const clearRecentBtn = document.getElementById('clearRecent');
         const printPdfBtn = document.getElementById('printPdf');
         const copyLinkBtn = document.getElementById('copyLinkBtn');
+        const minimizeSidebarBtn = document.getElementById('minimizeSidebar');
+        const mainContent = document.getElementById('main-content');
+        const footer = document.querySelector('.footer');
         
         // Validate critical DOM elements exist
         const criticalElements = {
@@ -2061,7 +2121,7 @@
             
             // Create folder name span
             const nameSpan = document.createElement('span');
-            nameSpan.className = 'text-sm font-medium text-gray-700 flex-1 truncate';
+            nameSpan.className = 'folder-name text-sm font-medium text-gray-700 flex-1 truncate';
             nameSpan.textContent = name;
             nameSpan.title = name;
             
@@ -2312,8 +2372,47 @@
             } catch (error) {
                 console.error('Error rendering PDF:', error);
                 hideLoadingIndicator();
-                welcomeMessage.classList.remove('hidden');
-                showToast('Error loading PDF. Try "Open in New Tab" or download the file.', 'error');
+                
+                // Create a better error UI with recovery options
+                const errorContainer = document.createElement('div');
+                errorContainer.className = 'flex flex-col items-center justify-center flex-1 min-h-[500px]';
+                errorContainer.innerHTML = `
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 max-w-lg mx-4 border border-gray-100 dark:border-gray-700">
+                        <div class="flex justify-center mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">Failed to Load PDF</h2>
+                        <p class="text-base text-gray-700 dark:text-gray-300 mb-6 text-center">
+                            The PDF file could not be displayed. This may be due to file corruption, network issues, or browser limitations.
+                        </p>
+                        <div class="flex flex-col gap-3">
+                            <a href="${encodeURI(currentPdfPath)}" download class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 w-full text-center shadow-lg hover:shadow-xl">
+                                Download PDF
+                            </a>
+                            <a href="${encodeURI(currentPdfPath)}" target="_blank" rel="noopener noreferrer" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 w-full text-center shadow-lg hover:shadow-xl">
+                                Open in New Tab
+                            </a>
+                            <button onclick="location.reload()" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-xl font-semibold transition-all duration-200 w-full text-center">
+                                Refresh Page
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Show error UI
+                welcomeMessage.classList.add('hidden');
+                pdfContainer.classList.add('hidden');
+                const mainContent = document.getElementById('main-content');
+                const existingError = mainContent.querySelector('.error-container');
+                if (existingError) {
+                    existingError.remove();
+                }
+                errorContainer.classList.add('error-container');
+                mainContent.appendChild(errorContainer);
+                
+                showToast('Failed to load PDF. Please try downloading or opening in a new tab.', 'error');
             }
         }
 
@@ -2404,10 +2503,23 @@
                     pdfContainer.classList.remove('hidden');
                 };
                 
-                pdfViewer.onerror = function() {
-                    // Only set iframe fallback when object tag fails
+                pdfViewer.onerror = function(e) {
+                    console.error('PDF object tag failed:', e);
+                    // Try iframe fallback
                     pdfViewerFallback.src = pdfUrl;
-                    // Still hide loading and show container - iframe fallback will attempt to load
+                    
+                    // Set a timeout to check if iframe also fails
+                    setTimeout(() => {
+                        // If we're still in loading state after iframe attempt, show error
+                        if (loadingIndicator.classList.contains('flex') || !loadingIndicator.classList.contains('hidden')) {
+                            hideLoadingIndicator();
+                            pdfContainer.classList.add('hidden');
+                            
+                            // Show error message with recovery options
+                            showToast('PDF viewer failed. Please use "Open in New Tab" or "Download" buttons.', 'error');
+                        }
+                    }, PDF_LOAD_TIMEOUT_MS + 2000);
+                    
                     hideLoadingIndicator();
                     pdfContainer.classList.remove('hidden');
                 };
@@ -2441,6 +2553,55 @@
                 sidebar.classList.add('-translate-x-full');
                 sidebarOverlay.classList.add('hidden');
             }
+        }
+        
+        // Sidebar minimize/expand functionality (desktop only)
+        function toggleSidebarMinimized() {
+            if (window.innerWidth < 1024) return; // Only works on desktop
+            
+            isSidebarMinimized = !isSidebarMinimized;
+            safeSetLocalStorage('sidebarMinimized', isSidebarMinimized);
+            
+            if (isSidebarMinimized) {
+                sidebar.classList.add('minimized');
+                mainContent.classList.remove('lg:ml-80');
+                mainContent.classList.add('lg:ml-16');
+                if (footer) {
+                    footer.classList.add('sidebar-minimized');
+                }
+                // Update minimize button icon
+                if (minimizeSidebarBtn) {
+                    minimizeSidebarBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" />
+                        </svg>
+                    `;
+                    minimizeSidebarBtn.setAttribute('aria-label', 'Expand sidebar');
+                    minimizeSidebarBtn.setAttribute('title', 'Expand sidebar');
+                }
+            } else {
+                sidebar.classList.remove('minimized');
+                mainContent.classList.remove('lg:ml-16');
+                mainContent.classList.add('lg:ml-80');
+                if (footer) {
+                    footer.classList.remove('sidebar-minimized');
+                }
+                // Update minimize button icon
+                if (minimizeSidebarBtn) {
+                    minimizeSidebarBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
+                        </svg>
+                    `;
+                    minimizeSidebarBtn.setAttribute('aria-label', 'Minimize sidebar');
+                    minimizeSidebarBtn.setAttribute('title', 'Minimize sidebar');
+                }
+            }
+        }
+        
+        // Add event listener for minimize button
+        if (minimizeSidebarBtn) {
+            minimizeSidebarBtn.addEventListener('click', toggleSidebarMinimized);
         }
 
         // Handle window resize with debouncing for better mobile performance
@@ -2917,6 +3078,25 @@
         if (isDarkMode) {
             document.body.classList.add('dark-mode');
             darkModeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />';
+        }
+        
+        // Apply sidebar minimized state if previously set (desktop only)
+        if (isSidebarMinimized && window.innerWidth >= 1024) {
+            sidebar.classList.add('minimized');
+            mainContent.classList.remove('lg:ml-80');
+            mainContent.classList.add('lg:ml-16');
+            if (footer) {
+                footer.classList.add('sidebar-minimized');
+            }
+            if (minimizeSidebarBtn) {
+                minimizeSidebarBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" />
+                    </svg>
+                `;
+                minimizeSidebarBtn.setAttribute('aria-label', 'Expand sidebar');
+                minimizeSidebarBtn.setAttribute('title', 'Expand sidebar');
+            }
         }
     </script>
 </body>
