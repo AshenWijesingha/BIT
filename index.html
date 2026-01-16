@@ -3907,7 +3907,7 @@
         // Register Service Worker for offline support and caching
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
+                navigator.serviceWorker.register('sw.js', { scope: './' })
                     .then((registration) => {
                         console.log('[App] ServiceWorker registered:', registration.scope);
                         

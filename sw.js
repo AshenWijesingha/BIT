@@ -91,6 +91,9 @@ self.addEventListener('fetch', (event) => {
                     caches.open(CACHE_NAME)
                         .then((cache) => {
                             cache.put(request, responseClone);
+                        })
+                        .catch((error) => {
+                            console.warn('[ServiceWorker] Failed to cache PDF:', error);
                         });
                     return response;
                 })
@@ -110,6 +113,9 @@ self.addEventListener('fetch', (event) => {
                     caches.open(CACHE_NAME)
                         .then((cache) => {
                             cache.put(request, responseClone);
+                        })
+                        .catch((error) => {
+                            console.warn('[ServiceWorker] Failed to cache files.json:', error);
                         });
                     return response;
                 })
@@ -133,6 +139,9 @@ self.addEventListener('fetch', (event) => {
                             caches.open(CACHE_NAME)
                                 .then((cache) => {
                                     cache.put(request, responseClone);
+                                })
+                                .catch((error) => {
+                                    console.warn('[ServiceWorker] Failed to update cache:', error);
                                 });
                         }
                         return networkResponse;
