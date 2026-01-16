@@ -35,10 +35,24 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Prepare deployment files
         run: |
+          set -e  # Exit on error
           # Create deployment directory
           mkdir -p _site
-          # Copy all files except large archives
-          rsync -av --exclude='.git' --exclude='*.zip' --exclude='_site' . _site/
+          # Copy all files except large archives and git files
+          rsync -av --exclude='.git' --exclude='*.zip' --exclude='_site' --exclude='.github' . _site/ || {
+            echo "Error: Failed to copy files"
+            exit 1
+          }
+          # Verify critical files exist
+          if [ ! -f "_site/index.html" ]; then
+            echo "Error: index.html not found in deployment"
+            exit 1
+          fi
+          if [ ! -f "_site/files.json" ]; then
+            echo "Error: files.json not found in deployment"
+            exit 1
+          fi
+          echo "✓ Deployment files prepared successfully"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
