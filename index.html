@@ -559,7 +559,7 @@
         }
         
         /* Header height constants */
-        .header-height { height: 56px; }
+        .header-height { height: 56px; transition: height 0.3s ease; }
         .header-spacing { padding-top: 56px; }
         .sidebar-position { top: 56px; height: calc(100vh - 56px); }
         .main-min-height { min-height: calc(100vh - 56px); }
@@ -581,7 +581,7 @@
         /* Focus visible for accessibility */
         *:focus-visible {
             outline: 2px solid #3b82f6;
-            outline-offset: 2px;
+            outline-offset: 4px;
         }
         
         /* Prevent horizontal scroll on mobile */
@@ -633,7 +633,7 @@
         /* Toast notification styles */
         .toast-container {
             position: fixed;
-            bottom: 5rem;
+            bottom: 6rem;
             right: 1rem;
             z-index: 100;
             display: flex;
@@ -791,20 +791,19 @@
         }
         
         .footer a {
-            color: #60a5fa;
+            color: #3b82f6;
             text-decoration: none;
             transition: color 0.2s;
         }
         
         .footer a:hover {
-            color: #93c5fd;
+            color: #60a5fa;
         }
         
         /* Sidebar section styles */
         .sidebar-section {
             border-top: 1px solid #e5e7eb;
             padding-top: 0.75rem;
-            margin-top: 0.75rem;
         }
         
         body.dark-mode .sidebar-section {
@@ -815,13 +814,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
         
         .sidebar-section-title {
             font-size: 0.75rem;
             font-weight: 600;
-            color: #6b7280;
+            color: #374151;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -937,19 +936,19 @@
             </h1>
             <div class="flex items-center gap-1 sm:gap-2">
                 <!-- Help/Keyboard Shortcuts -->
-                <button id="helpButton" class="bg-blue-700 hover:bg-blue-800 active:bg-blue-900 px-2 sm:px-3 py-2 rounded-lg flex-shrink-0 transition-all duration-200 hover:shadow-md transform hover:scale-105 active:scale-95" aria-label="Help and keyboard shortcuts" title="Help (Press ?)">
+                <button id="helpButton" class="bg-blue-700 hover:bg-blue-800 hover:shadow-md active:bg-blue-900 active:shadow-lg px-2 sm:px-3 py-2 rounded-lg flex-shrink-0 transition-all duration-200 transform hover:scale-105 active:scale-95" aria-label="Help and keyboard shortcuts" title="Help (Press ?)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </button>
                 <!-- Dark Mode Toggle -->
-                <button id="darkModeToggle" class="bg-blue-700 hover:bg-blue-800 active:bg-blue-900 px-2 sm:px-3 py-2 rounded-lg flex-shrink-0 transition-all duration-200 hover:shadow-md transform hover:scale-105 active:scale-95" aria-label="Toggle dark mode" title="Toggle dark mode">
+                <button id="darkModeToggle" class="bg-blue-700 hover:bg-blue-800 hover:shadow-md active:bg-blue-900 active:shadow-lg px-2 sm:px-3 py-2 rounded-lg flex-shrink-0 transition-all duration-200 transform hover:scale-105 active:scale-95" aria-label="Toggle dark mode" title="Toggle dark mode">
                     <svg id="darkModeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                     </svg>
                 </button>
                 <!-- Sidebar Toggle -->
-                <button id="toggleSidebar" class="lg:hidden bg-blue-700 hover:bg-blue-800 active:bg-blue-900 px-2 sm:px-3 py-2 rounded-lg flex-shrink-0 transition-all duration-200 hover:shadow-md transform hover:scale-105 active:scale-95" aria-label="Toggle sidebar" title="Toggle sidebar">
+                <button id="toggleSidebar" class="lg:hidden bg-blue-700 hover:bg-blue-800 hover:shadow-md active:bg-blue-900 active:shadow-lg px-2 sm:px-3 py-2 rounded-lg flex-shrink-0 transition-all duration-200 transform hover:scale-105 active:scale-95" aria-label="Toggle sidebar" title="Toggle sidebar">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
@@ -975,7 +974,7 @@
                         type="text" 
                         id="searchInput" 
                         placeholder="Search PDFs..." 
-                        class="w-full px-10 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-white hover:border-gray-400 dark:hover:border-gray-500 placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                        class="w-full px-10 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 focus:border-blue-500 dark:focus:ring-blue-400 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-white hover:border-gray-400 dark:hover:border-gray-500 placeholder:text-gray-400 dark:placeholder:text-gray-500"
                         aria-label="Search for PDF files by name or folder"
                     />
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-500 absolute left-3 top-2.5 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -986,7 +985,7 @@
                 <!-- File Statistics and Folder Controls -->
                 <div class="flex items-center justify-between mb-3">
                     <span id="fileStats" class="stats-badge">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <span id="fileCount">0 files</span>
@@ -1043,7 +1042,7 @@
         <main id="main-content" class="flex-1 lg:ml-80 p-2 sm:p-3 md:p-4 flex flex-col">
             <!-- Welcome Message -->
             <div id="welcomeMessage" class="flex flex-col items-center justify-center text-center flex-1 min-h-[500px]">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 sm:p-10 max-w-lg mx-4 border border-gray-100 dark:border-gray-700">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 max-w-lg mx-4 border border-gray-100 dark:border-gray-700">
                     <div class="relative inline-block mb-6">
                         <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_192,h_192,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" loading="lazy" class="h-24 w-24 sm:h-28 sm:w-28 mx-auto rounded-2xl shadow-lg mb-2 object-cover ring-4 ring-blue-100 dark:ring-blue-900">
                         <div class="absolute -top-1 -right-1 h-6 w-6 bg-green-500 rounded-full border-4 border-white dark:border-gray-800 animate-pulse" aria-hidden="true"></div>
@@ -1074,7 +1073,7 @@
 
             <!-- Loading Indicator -->
             <div id="loadingIndicator" class="hidden flex-col items-center justify-center flex-1 min-h-[400px]">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-10 max-w-sm mx-4 border border-gray-100 dark:border-gray-700">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 sm:p-10 max-w-sm mx-4 border border-gray-100 dark:border-gray-700">
                     <div class="relative mb-6">
                         <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_80,h_80,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo - Loading" class="h-20 w-20 mx-auto rounded-xl mb-2 object-cover animate-pulse shadow-lg ring-4 ring-blue-100 dark:ring-blue-900">
                         <div class="absolute inset-0 rounded-xl bg-gradient-to-tr from-blue-500/20 to-purple-500/20 animate-pulse"></div>
@@ -1091,7 +1090,7 @@
                 <nav class="mb-2 sm:mb-3" aria-label="Breadcrumb">
                     <ol id="breadcrumb" class="flex items-center flex-wrap gap-1 text-xs sm:text-sm text-gray-600">
                         <li class="flex items-center">
-                            <a href="#" id="breadcrumbHome" class="hover:text-blue-600 transition-colors">Home</a>
+                            <a href="#" id="breadcrumbHome" class="hover:text-blue-600 hover:underline transition-colors">Home</a>
                         </li>
                     </ol>
                 </nav>
@@ -1105,7 +1104,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <h3 id="pdfTitle" class="text-sm sm:text-base md:text-lg font-semibold text-gray-700 truncate"></h3>
+                                <h3 id="pdfTitle" class="text-sm sm:text-base md:text-lg font-semibold text-gray-700 truncate max-w-[calc(100%-8rem)] sm:max-w-[calc(100%-6rem)]"></h3>
                                 <button id="favoritePdf" class="flex-shrink-0 text-gray-400 hover:text-yellow-500 transition-colors" aria-label="Add to favorites" title="Add to favorites">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -1113,15 +1112,15 @@
                                 </button>
                             </div>
                             <div class="flex items-center gap-2 flex-wrap">
-                                <!-- Zoom Controls -->
-                                <div class="hidden sm:flex items-center gap-1 bg-gray-100 rounded px-2 py-1">
-                                    <button id="zoomOut" class="hover:bg-gray-200 p-1 rounded transition-colors" aria-label="Zoom out" title="Zoom out">
+                                <!-- Zoom Controls - Visible on all screens -->
+                                <div class="flex items-center gap-1 bg-gray-100 rounded px-2 py-1">
+                                    <button id="zoomOut" class="hover:bg-gray-200 p-1.5 rounded transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Zoom out" title="Zoom out">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
                                         </svg>
                                     </button>
                                     <span id="zoomLevel" class="text-xs font-medium min-w-[3rem] text-center">100%</span>
-                                    <button id="zoomIn" class="hover:bg-gray-200 p-1 rounded transition-colors" aria-label="Zoom in" title="Zoom in">
+                                    <button id="zoomIn" class="hover:bg-gray-200 p-1.5 rounded transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Zoom in" title="Zoom in">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
                                         </svg>
@@ -1129,7 +1128,7 @@
                                 </div>
                                 
                                 <!-- Print Button -->
-                                <button id="printPdf" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm" aria-label="Print PDF" title="Print PDF">
+                                <button id="printPdf" class="bg-gray-200 hover:bg-gray-300 px-3 sm:px-3 py-2.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm min-h-[44px]" aria-label="Print PDF" title="Print PDF">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                                     </svg>
@@ -1137,7 +1136,7 @@
                                 </button>
                                 
                                 <!-- Copy Link Button -->
-                                <button id="copyLinkBtn" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm" aria-label="Copy link to clipboard" title="Copy link to clipboard">
+                                <button id="copyLinkBtn" class="bg-gray-200 hover:bg-gray-300 px-3 sm:px-3 py-2.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm min-h-[44px]" aria-label="Copy link to clipboard" title="Copy link to clipboard">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                                     </svg>
@@ -1145,7 +1144,7 @@
                                 </button>
                                 
                                 <!-- Fullscreen Toggle -->
-                                <button id="fullscreenToggle" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 py-1.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm" aria-label="Toggle fullscreen" title="Toggle fullscreen">
+                                <button id="fullscreenToggle" class="bg-gray-200 hover:bg-gray-300 px-3 sm:px-3 py-2.5 sm:py-2 rounded flex items-center gap-1 transition-all text-gray-700 text-xs sm:text-sm min-h-[44px]" aria-label="Toggle fullscreen" title="Toggle fullscreen">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                                     </svg>
@@ -1153,7 +1152,7 @@
                                 </button>
                                 
                                 <!-- Download Button -->
-                                <a id="downloadPdf" href="#" download class="bg-blue-500 hover:bg-blue-600 text-white px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded flex items-center gap-1 sm:gap-2 transition-all text-xs sm:text-sm">
+                                <a id="downloadPdf" href="#" download class="bg-blue-500 hover:bg-blue-600 text-white px-3 sm:px-3 md:px-4 py-2.5 sm:py-2 rounded flex items-center gap-1 sm:gap-2 transition-all text-xs sm:text-sm min-h-[44px]">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
@@ -1161,7 +1160,7 @@
                                 </a>
                                 
                                 <!-- Open in New Tab -->
-                                <a id="openInNewTab" href="#" target="_blank" class="bg-gray-200 hover:bg-gray-300 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded flex items-center gap-1 sm:gap-2 transition-all text-gray-700 text-xs sm:text-sm">
+                                <a id="openInNewTab" href="#" target="_blank" class="bg-gray-200 hover:bg-gray-300 px-3 sm:px-3 md:px-4 py-2.5 sm:py-2 rounded flex items-center gap-1 sm:gap-2 transition-all text-gray-700 text-xs sm:text-sm min-h-[44px]">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                     </svg>
@@ -2594,7 +2593,7 @@
         // Helper function to create breadcrumb separator SVG
         function createBreadcrumbSeparator() {
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('class', 'h-3 w-3 mx-1 text-gray-400');
+            svg.setAttribute('class', 'h-4 w-4 mx-1 text-gray-400');
             svg.setAttribute('fill', 'currentColor');
             svg.setAttribute('viewBox', '0 0 20 20');
             const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -2617,7 +2616,7 @@
             homeLi.className = 'flex items-center';
             const homeLink = document.createElement('a');
             homeLink.href = '#';
-            homeLink.className = 'hover:text-blue-600 transition-colors cursor-pointer';
+            homeLink.className = 'hover:text-blue-600 hover:underline transition-colors cursor-pointer';
             homeLink.textContent = 'Home';
             homeLink.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -2642,7 +2641,7 @@
                     
                     const link = document.createElement('a');
                     link.href = '#';
-                    link.className = 'text-gray-500 hover:text-blue-600 transition-colors cursor-pointer';
+                    link.className = 'text-gray-500 hover:text-blue-600 hover:underline transition-colors cursor-pointer';
                     link.textContent = part;
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
