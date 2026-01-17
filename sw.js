@@ -2,10 +2,11 @@
  * BIT Repository Service Worker
  * Provides offline caching and improved performance for the PDF viewer application.
  * 
- * @version 2.1.0
+ * @version 3.0.0
+ * Note: Keep this version in sync with index.html #appVersion element
  */
 
-const CACHE_NAME = 'bit-repository-v2.1.0';
+const CACHE_NAME = 'bit-repository-v3.0.0';
 const STATIC_ASSETS = [
     './',
     './index.html',
