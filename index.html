@@ -29,6 +29,16 @@
     <link rel="icon" type="image/jpeg" sizes="96x96" href="https://res.cloudinary.com/dkj22lm1g/image/upload/w_96,h_96,c_fill/v1768415117/BIT_Repository_xropb0.jpg">
     <link rel="apple-touch-icon" sizes="180x180" href="https://res.cloudinary.com/dkj22lm1g/image/upload/w_180,h_180,c_fill/v1768415117/BIT_Repository_xropb0.jpg">
     
+    <!-- Web App Manifest for PWA support -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="BIT Repository">
+    <meta name="application-name" content="BIT Repository">
+    <meta name="msapplication-TileColor" content="#2563eb">
+    <meta name="msapplication-config" content="none">
+    
     <!-- Open Graph meta tags for social sharing -->
     <meta property="og:title" content="BIT Repository - PDF Viewer | Course Materials for BIT Students">
     <meta property="og:description" content="Browse and view PDF course materials for Bachelor of Information Technology program. Access lecture notes, tutorials, and study materials organized by semester.">
@@ -1038,6 +1048,107 @@
             color: #e5e7eb;
             border-color: #4b5563;
         }
+        
+        /* Loading skeleton styles */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 0.25rem;
+        }
+        
+        body.dark-mode .skeleton {
+            background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+            background-size: 200% 100%;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-text {
+            height: 1rem;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .skeleton-text-short {
+            width: 60%;
+        }
+        
+        .skeleton-icon {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 0.25rem;
+        }
+        
+        /* File tree loading skeleton */
+        .file-tree-skeleton {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+        }
+        
+        .file-tree-skeleton-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+        }
+        
+        /* Error state styling */
+        .error-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        
+        .error-state svg {
+            width: 3rem;
+            height: 3rem;
+            color: #ef4444;
+            margin-bottom: 1rem;
+        }
+        
+        .error-state h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        body.dark-mode .error-state h3 {
+            color: #e5e7eb;
+        }
+        
+        .error-state p {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+        
+        body.dark-mode .error-state p {
+            color: #9ca3af;
+        }
+        
+        .error-state button {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #ffffff;
+            background-color: #2563eb;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        
+        .error-state button:hover {
+            background-color: #1d4ed8;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -1157,6 +1268,29 @@
                         <span class="sidebar-section-title">📁 All Files</span>
                     </div>
                     <div id="fileTree" class="space-y-2">
+                        <!-- Loading skeleton - shown while files.json is being fetched -->
+                        <div id="fileTreeSkeleton" class="file-tree-skeleton">
+                            <div class="file-tree-skeleton-item">
+                                <div class="skeleton skeleton-icon"></div>
+                                <div class="skeleton skeleton-text skeleton-text-short"></div>
+                            </div>
+                            <div class="file-tree-skeleton-item" style="margin-left: 1rem;">
+                                <div class="skeleton skeleton-icon"></div>
+                                <div class="skeleton skeleton-text"></div>
+                            </div>
+                            <div class="file-tree-skeleton-item" style="margin-left: 1rem;">
+                                <div class="skeleton skeleton-icon"></div>
+                                <div class="skeleton skeleton-text skeleton-text-short"></div>
+                            </div>
+                            <div class="file-tree-skeleton-item">
+                                <div class="skeleton skeleton-icon"></div>
+                                <div class="skeleton skeleton-text"></div>
+                            </div>
+                            <div class="file-tree-skeleton-item" style="margin-left: 1rem;">
+                                <div class="skeleton skeleton-icon"></div>
+                                <div class="skeleton skeleton-text skeleton-text-short"></div>
+                            </div>
+                        </div>
                         <!-- File tree will be dynamically populated by buildFileTree() function -->
                     </div>
                 </div>
@@ -1356,7 +1490,8 @@
             </div>
             <div class="border-t border-gray-700 pt-4">
                 <p class="text-sm text-gray-400 mb-2">© 2026 BIT Repository. Educational materials for the BIT program.</p>
-                <p class="text-sm text-gray-400">Made with ❤️ for students</p>
+                <p class="text-sm text-gray-400 mb-2">Made with ❤️ for students</p>
+                <p class="text-xs text-gray-500" id="appVersion">Version 2.1.0</p>
             </div>
         </div>
     </footer>
@@ -1497,10 +1632,13 @@
          * - Mobile browsers (Chrome Mobile, Safari Mobile, Samsung Internet)
          * 
          * @author BIT Repository
-         * @version 2.0.0
+         * @version 2.1.0
          * @license Educational Use
          * ============================================================================
          */
+        
+        /** @constant {string} APP_VERSION - Application version number */
+        const APP_VERSION = '2.1.0';
         
         // Configure PDF.js worker - Must be set before any PDF loading
         if (typeof pdfjsLib !== 'undefined') {
@@ -2410,14 +2548,46 @@
          * @function buildFileTree
          */
         function buildFileTree() {
+            // Remove loading skeleton if present
+            const skeleton = document.getElementById('fileTreeSkeleton');
+            if (skeleton) {
+                skeleton.remove();
+            }
+            
             fileTree.innerHTML = '';
             
             if (Object.keys(pdfFiles).length === 0) {
-                fileTree.innerHTML = `
-                    <div class="p-4 text-center text-gray-500">
-                        <p class="text-sm">Loading files...</p>
-                    </div>
-                `;
+                // Create empty state using secure DOM API
+                const emptyState = document.createElement('div');
+                emptyState.className = 'error-state';
+                
+                // Empty state icon
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('fill', 'none');
+                svg.setAttribute('viewBox', '0 0 24 24');
+                svg.setAttribute('stroke', 'currentColor');
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('stroke-linecap', 'round');
+                path.setAttribute('stroke-linejoin', 'round');
+                path.setAttribute('stroke-width', '1.5');
+                path.setAttribute('d', 'M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z');
+                svg.appendChild(path);
+                
+                const h3 = document.createElement('h3');
+                h3.textContent = 'No files found';
+                
+                const p = document.createElement('p');
+                p.textContent = 'Unable to load file structure. Please try refreshing the page.';
+                
+                const button = document.createElement('button');
+                button.textContent = 'Refresh';
+                button.addEventListener('click', () => location.reload());
+                
+                emptyState.appendChild(svg);
+                emptyState.appendChild(h3);
+                emptyState.appendChild(p);
+                emptyState.appendChild(button);
+                fileTree.appendChild(emptyState);
                 return;
             }
             
@@ -3732,6 +3902,32 @@
                 minimizeSidebarBtn.setAttribute('aria-label', 'Expand sidebar');
                 minimizeSidebarBtn.setAttribute('title', 'Expand sidebar');
             }
+        }
+        
+        // Register Service Worker for offline support and caching
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js', { scope: './' })
+                    .then((registration) => {
+                        console.log('[App] ServiceWorker registered:', registration.scope);
+                        
+                        // Check for updates periodically
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            if (newWorker) {
+                                newWorker.addEventListener('statechange', () => {
+                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        // New content available, show toast
+                                        showToast('New version available! Refresh to update.', 'info');
+                                    }
+                                });
+                            }
+                        });
+                    })
+                    .catch((error) => {
+                        console.warn('[App] ServiceWorker registration failed:', error);
+                    });
+            });
         }
     </script>
 </body>

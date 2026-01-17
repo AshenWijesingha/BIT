@@ -1,0 +1,65 @@
+{
+  "name": "BIT Repository - PDF Viewer",
+  "short_name": "BIT Repository",
+  "description": "Browse and view PDF course materials for Bachelor of Information Technology program",
+  "start_url": "/BIT/",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#2563eb",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "https://res.cloudinary.com/dkj22lm1g/image/upload/w_72,h_72,c_fill/v1768415117/BIT_Repository_xropb0.jpg",
+      "sizes": "72x72",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://res.cloudinary.com/dkj22lm1g/image/upload/w_96,h_96,c_fill/v1768415117/BIT_Repository_xropb0.jpg",
+      "sizes": "96x96",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://res.cloudinary.com/dkj22lm1g/image/upload/w_128,h_128,c_fill/v1768415117/BIT_Repository_xropb0.jpg",
+      "sizes": "128x128",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://res.cloudinary.com/dkj22lm1g/image/upload/w_144,h_144,c_fill/v1768415117/BIT_Repository_xropb0.jpg",
+      "sizes": "144x144",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://res.cloudinary.com/dkj22lm1g/image/upload/w_152,h_152,c_fill/v1768415117/BIT_Repository_xropb0.jpg",
+      "sizes": "152x152",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://res.cloudinary.com/dkj22lm1g/image/upload/w_192,h_192,c_fill/v1768415117/BIT_Repository_xropb0.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://res.cloudinary.com/dkj22lm1g/image/upload/w_384,h_384,c_fill/v1768415117/BIT_Repository_xropb0.jpg",
+      "sizes": "384x384",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://res.cloudinary.com/dkj22lm1g/image/upload/w_512,h_512,c_fill/v1768415117/BIT_Repository_xropb0.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/BIT/",
+  "prefer_related_applications": false
+}
