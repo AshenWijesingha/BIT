@@ -91,9 +91,30 @@
     <!-- PDF.js library for rendering PDFs on all devices including mobile -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous"></script>
     <style>
+        /* Modern CSS Variables for theming */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-gradient-hover: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+            --card-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --card-shadow-hover: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --accent-blue: #4f46e5;
+            --accent-purple: #7c3aed;
+            --accent-pink: #ec4899;
+            --success-green: #10b981;
+            --warning-amber: #f59e0b;
+            --error-red: #ef4444;
+        }
+        
+        body.dark-mode {
+            --glass-bg: rgba(31, 41, 55, 0.85);
+            --glass-border: rgba(75, 85, 99, 0.3);
+        }
+        
         /* Tailwind-like utility classes as fallback when CDN is blocked */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; }
         .min-h-screen { min-height: 100vh; }
         .bg-gray-100 { background-color: #f3f4f6; }
         .bg-white { background-color: #ffffff; }
@@ -459,17 +480,142 @@
         }
 
         /* Custom scrollbar styling */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px; 
+        }
+        ::-webkit-scrollbar-thumb:hover { 
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+        
+        body.dark-mode ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #4c51bf 0%, #553c9a 100%);
+        }
+        
+        /* Modern glassmorphism card */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .glass-card:hover {
+            box-shadow: var(--card-shadow-hover);
+        }
+        
+        /* Modern gradient backgrounds */
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-bg-subtle {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        body.dark-mode .gradient-bg-subtle {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        }
+        
+        /* Modern animated gradient */
+        .animated-gradient {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Floating animation for decorative elements */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Glow effect */
+        .glow {
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .glow:hover {
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.6);
+        }
+        
+        /* Modern button styles */
+        .btn-modern {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-modern:hover::before {
+            left: 100%;
+        }
+        
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-modern:active {
+            transform: translateY(0);
+        }
+        
+        /* Secondary button */
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+        
+        .btn-secondary::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            z-index: -1;
+            margin: -2px;
+            border-radius: inherit;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        body.dark-mode .btn-secondary {
+            background: rgba(31, 41, 55, 0.9);
+            color: #f3f4f6;
+        }
 
         /* Active sidebar item */
         .sidebar-item.active { 
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white; 
-            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-            transform: translateX(2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transform: translateX(4px);
         }
         .sidebar-item.active span { color: white; }
         .sidebar-item.active svg { color: white; }
@@ -643,17 +789,39 @@
             }
         }
         
-        /* Loading spinner */
+        /* Modern Loading spinner with gradient */
         .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3b82f6;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+            position: relative;
+            animation: loaderRotate 1s linear infinite;
         }
         
-        @keyframes spin {
+        .loader::before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: #667eea;
+            border-right-color: #764ba2;
+            animation: loaderRotate 0.5s linear infinite reverse;
+        }
+        
+        .loader::after {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            inset: 6px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-bottom-color: #f093fb;
+            border-left-color: #f5576c;
+        }
+        
+        @keyframes loaderRotate {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
@@ -663,6 +831,7 @@
             position: fixed;
             inset: 0;
             background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
             z-index: 30;
         }
         
@@ -746,38 +915,46 @@
             z-index: 100;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.75rem;
         }
         
         .toast {
-            background-color: #1f2937;
+            background: rgba(31, 41, 55, 0.95);
+            backdrop-filter: blur(20px);
             color: #ffffff;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2);
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            animation: slideIn 0.3s ease-out;
-            max-width: 300px;
+            gap: 0.75rem;
+            animation: toastSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 350px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .toast.success { background-color: #059669; }
-        .toast.error { background-color: #dc2626; }
-        .toast.info { background-color: #2563eb; }
+        .toast.success { 
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95) 0%, rgba(5, 150, 105, 0.95) 100%);
+        }
+        .toast.error { 
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.95) 0%, rgba(220, 38, 38, 0.95) 100%);
+        }
+        .toast.info { 
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(79, 70, 229, 0.95) 100%);
+        }
         
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
+        @keyframes toastSlideIn {
+            from { transform: translateX(120%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
         
-        @keyframes slideOut {
+        @keyframes toastSlideOut {
             from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(120%); opacity: 0; }
         }
         
         .toast.fade-out {
-            animation: slideOut 0.3s ease-out forwards;
+            animation: toastSlideOut 0.3s ease-out forwards;
         }
         
         /* Scroll to top button */
@@ -786,26 +963,28 @@
             bottom: 1.5rem;
             right: 1.5rem;
             z-index: 60;
-            background-color: #2563eb;
-            color: white;
-            width: 44px;
-            height: 44px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: none;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .scroll-to-top:hover {
-            background-color: #1d4ed8;
-            transform: translateY(-2px);
+            transform: translateY(-4px) scale(1.1);
         }
         
         .scroll-to-top.visible {
             display: flex;
+            animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes bounceIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
         
         /* Modal styles */
@@ -890,9 +1069,8 @@
         
         /* Footer styles */
         .footer {
-            background-color: #1f2937;
-            color: #9ca3af;
-            padding: 1.5rem 1rem;
+            color: #ffffff;
+            padding: 2rem 1rem;
             margin-top: auto;
             width: 100%;
             display: flex;
@@ -1200,33 +1378,33 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="bg-gray-100 min-h-screen flex flex-col gradient-bg-subtle">
     <!-- Skip to content link for accessibility -->
     <a href="#main-content" class="skip-link">Skip to content</a>
     
     <!-- Header -->
-    <header class="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg fixed w-full z-50 header-height">
+    <header class="animated-gradient text-white shadow-lg fixed w-full z-50 header-height backdrop-blur-sm">
         <div class="px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between h-full">
             <h1 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold flex items-center gap-1 sm:gap-2 min-w-0">
-                <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_40,h_40,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" loading="lazy" class="h-7 w-7 sm:h-10 sm:w-10 rounded-lg flex-shrink-0 object-cover shadow-md ring-2 ring-white ring-opacity-30">
-                <span class="truncate text-sm sm:text-base md:text-lg lg:text-xl">BIT Repository</span>
-                <span class="hidden sm:inline truncate text-sm md:text-base lg:text-lg opacity-90"> - PDF Viewer</span>
+                <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_40,h_40,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" loading="lazy" class="h-7 w-7 sm:h-10 sm:w-10 rounded-xl flex-shrink-0 object-cover shadow-lg ring-2 ring-white/30 transition-transform hover:scale-105">
+                <span class="truncate text-sm sm:text-base md:text-lg lg:text-xl font-semibold">BIT Repository</span>
+                <span class="hidden sm:inline truncate text-sm md:text-base lg:text-lg opacity-80 font-normal"> - PDF Viewer</span>
             </h1>
             <div class="flex items-center gap-1 sm:gap-2">
                 <!-- Help/Keyboard Shortcuts -->
-                <button id="helpButton" class="bg-blue-700 hover:bg-blue-800 hover:shadow-md active:bg-blue-900 active:shadow-lg px-2 sm:px-3 py-2 rounded-lg flex-shrink-0 transition-all duration-200 transform hover:scale-105 active:scale-95" aria-label="Help and keyboard shortcuts" title="Help (Press ?)">
+                <button id="helpButton" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-2 sm:px-3 py-2 rounded-xl flex-shrink-0 transition-all duration-300 transform hover:scale-105 active:scale-95 border border-white/20" aria-label="Help and keyboard shortcuts" title="Help (Press ?)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
                     </svg>
                 </button>
                 <!-- Dark Mode Toggle -->
-                <button id="darkModeToggle" class="bg-blue-700 hover:bg-blue-800 hover:shadow-md active:bg-blue-900 active:shadow-lg px-2 sm:px-3 py-2 rounded-lg flex-shrink-0 transition-all duration-200 transform hover:scale-105 active:scale-95" aria-label="Toggle dark mode" title="Toggle dark mode">
+                <button id="darkModeToggle" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-2 sm:px-3 py-2 rounded-xl flex-shrink-0 transition-all duration-300 transform hover:scale-105 active:scale-95 border border-white/20" aria-label="Toggle dark mode" title="Toggle dark mode">
                     <svg id="darkModeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
                     </svg>
                 </button>
                 <!-- Sidebar Toggle -->
-                <button id="toggleSidebar" class="lg:hidden bg-blue-700 hover:bg-blue-800 hover:shadow-md active:bg-blue-900 active:shadow-lg px-2 sm:px-3 py-2 rounded-lg flex-shrink-0 transition-all duration-200 transform hover:scale-105 active:scale-95" aria-label="Toggle sidebar" title="Toggle sidebar">
+                <button id="toggleSidebar" class="lg:hidden bg-white/10 hover:bg-white/20 backdrop-blur-sm px-2 sm:px-3 py-2 rounded-xl flex-shrink-0 transition-all duration-300 transform hover:scale-105 active:scale-95 border border-white/20" aria-label="Toggle sidebar" title="Toggle sidebar">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
@@ -1237,13 +1415,15 @@
 
     <div class="flex flex-1 header-spacing">
         <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar-responsive sidebar-position bg-white dark:bg-gray-800 shadow-2xl fixed overflow-y-auto transition-all duration-300 z-40 -translate-x-full lg:translate-x-0 border-r border-gray-200 dark:border-gray-700">
+        <aside id="sidebar" class="sidebar-responsive sidebar-position glass-card fixed overflow-y-auto transition-all duration-300 z-40 -translate-x-full lg:translate-x-0 border-r border-gray-200/50 dark:border-gray-700/50">
             <div class="p-3 sm:p-4">
-                <div class="flex items-center justify-between mb-3 sm:mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between mb-3 sm:mb-4 pb-3 border-b border-gray-200/50 dark:border-gray-700/50">
                     <h2 class="sidebar-text text-sm sm:text-base lg:text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
-                        </svg>
+                        <div class="p-2 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                            </svg>
+                        </div>
                         <span>PDF Files</span>
                     </h2>
                     <button id="minimizeSidebar" class="hidden lg:flex hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors" aria-label="Minimize sidebar" title="Minimize sidebar">
@@ -1259,11 +1439,11 @@
                         type="text" 
                         id="searchInput" 
                         placeholder="Search PDFs..." 
-                        class="w-full px-10 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 focus:border-blue-500 dark:focus:ring-blue-400 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-white hover:border-gray-400 dark:hover:border-gray-500 placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                        class="w-full px-10 py-3 text-sm border border-gray-200/50 dark:border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0 focus:border-indigo-500 dark:focus:ring-indigo-400 transition-all duration-300 bg-white/50 dark:bg-gray-700/50 dark:text-white hover:border-gray-300 dark:hover:border-gray-500 placeholder:text-gray-400 dark:placeholder:text-gray-500 backdrop-blur-sm shadow-sm hover:shadow-md focus:shadow-lg"
                         aria-label="Search for PDF files by name or folder"
                     />
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-500 absolute left-3 top-2.5 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-500 absolute left-3 top-3 group-focus-within:text-indigo-500 dark:group-focus-within:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                     </svg>
                 </div>
                 
@@ -1349,28 +1529,77 @@
         <!-- Main Content -->
         <main id="main-content" class="flex-1 lg:ml-80 p-2 sm:p-3 md:p-4 flex flex-col">
             <!-- Welcome Message -->
-            <div id="welcomeMessage" class="flex flex-col items-center justify-center text-center flex-1 min-h-[500px]">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 max-w-lg mx-4 border border-gray-100 dark:border-gray-700">
-                    <div class="relative inline-block mb-6">
-                        <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_192,h_192,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" loading="lazy" class="h-24 w-24 sm:h-28 sm:w-28 mx-auto rounded-2xl shadow-lg mb-2 object-cover ring-4 ring-blue-100 dark:ring-blue-900">
-                        <div class="absolute -top-1 -right-1 h-6 w-6 bg-green-500 rounded-full border-4 border-white dark:border-gray-800 animate-pulse" aria-hidden="true"></div>
+            <div id="welcomeMessage" class="flex flex-col items-center justify-center text-center flex-1 min-h-[500px] relative">
+                <!-- Decorative background elements -->
+                <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div class="absolute top-10 left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+                    <div class="absolute top-20 right-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style="animation-delay: 1s;"></div>
+                    <div class="absolute bottom-10 left-1/2 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style="animation-delay: 2s;"></div>
+                </div>
+                
+                <div class="glass-card rounded-3xl p-6 sm:p-10 max-w-xl mx-4 relative z-10 transition-all duration-500 hover:shadow-2xl">
+                    <!-- Logo with modern styling -->
+                    <div class="relative inline-block mb-8">
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl blur-2xl opacity-30 scale-110 float-animation"></div>
+                        <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_192,h_192,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" loading="lazy" class="relative h-28 w-28 sm:h-32 sm:w-32 mx-auto rounded-3xl shadow-2xl object-cover ring-4 ring-white/50 dark:ring-gray-700/50 transition-transform duration-500 hover:scale-105">
+                        <div class="absolute -bottom-2 -right-2 h-8 w-8 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full border-4 border-white dark:border-gray-800 shadow-lg flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Welcome to BIT Repository</h2>
-                    <p class="text-base text-gray-700 dark:text-gray-300 mb-3 font-medium">Browse and view PDF course materials</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Access lecture notes, tutorials, and study materials for the Bachelor of Information Technology program.</p>
-                    <div class="flex flex-col gap-3 justify-center w-full max-w-xs mx-auto">
-                        <button id="browseFilesBtn" class="lg:hidden bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3.5 rounded-xl font-semibold transition-all duration-200 w-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:scale-95" aria-label="Browse PDF files">
+                    
+                    <!-- Title with gradient -->
+                    <h2 class="text-3xl sm:text-4xl font-extrabold mb-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent leading-tight">
+                        Welcome to BIT Repository
+                    </h2>
+                    
+                    <!-- Subtitle -->
+                    <p class="text-lg text-gray-700 dark:text-gray-300 mb-2 font-semibold">
+                        📚 Browse and view PDF course materials
+                    </p>
+                    
+                    <!-- Description -->
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto leading-relaxed">
+                        Access lecture notes, tutorials, and study materials for the Bachelor of Information Technology program. Everything you need in one place.
+                    </p>
+                    
+                    <!-- Feature badges -->
+                    <div class="flex flex-wrap justify-center gap-2 mb-8">
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            56+ PDFs
+                        </span>
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                            </svg>
+                            Dark Mode
+                        </span>
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            Mobile Ready
+                        </span>
+                    </div>
+                    
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center w-full max-w-sm mx-auto">
+                        <button id="browseFilesBtn" class="lg:hidden btn-modern px-8 py-4 rounded-2xl font-semibold w-full sm:w-auto shadow-lg" aria-label="Browse PDF files">
                             <span class="flex items-center justify-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
                                 </svg>
                                 Browse Files
                             </span>
                         </button>
-                        <button id="viewHelpBtn" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3.5 rounded-xl font-semibold transition-all duration-200 w-full shadow-md hover:shadow-lg transform hover:-translate-y-1 active:scale-95 border border-gray-200 dark:border-gray-600" aria-label="View help and keyboard shortcuts">
+                        <button id="viewHelpBtn" class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 px-8 py-4 rounded-2xl font-semibold transition-all duration-300 w-full sm:w-auto shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:scale-95 border border-gray-200/50 dark:border-gray-600/50" aria-label="View help and keyboard shortcuts">
                             <span class="flex items-center justify-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
                                 </svg>
                                 View Help
                             </span>
@@ -1381,10 +1610,10 @@
 
             <!-- Loading Indicator -->
             <div id="loadingIndicator" class="hidden flex-col items-center justify-center flex-1 min-h-[400px]">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 sm:p-10 max-w-sm mx-4 border border-gray-100 dark:border-gray-700">
+                <div class="glass-card rounded-3xl p-8 sm:p-10 max-w-sm mx-4">
                     <div class="relative mb-6">
-                        <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_80,h_80,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo - Loading" class="h-20 w-20 mx-auto rounded-xl mb-2 object-cover animate-pulse shadow-lg ring-4 ring-blue-100 dark:ring-blue-900">
-                        <div class="absolute inset-0 rounded-xl bg-gradient-to-tr from-blue-500/20 to-purple-500/20 animate-pulse"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl blur-xl opacity-30 scale-110 animate-pulse"></div>
+                        <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_80,h_80,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo - Loading" class="relative h-20 w-20 mx-auto rounded-2xl object-cover shadow-lg ring-4 ring-white/50 dark:ring-gray-700/50">
                     </div>
                     <div class="loader mb-6 mx-auto"></div>
                     <p class="text-lg text-gray-800 dark:text-gray-200 font-semibold mb-2">Loading PDF...</p>
@@ -1395,10 +1624,10 @@
             <!-- PDF Viewer Container -->
             <div id="pdfContainer" class="hidden">
                 <!-- Breadcrumb Navigation -->
-                <nav class="mb-2 sm:mb-3 overflow-x-auto" aria-label="Breadcrumb">
-                    <ol id="breadcrumb" class="flex items-center flex-wrap gap-1 text-xs sm:text-sm text-gray-600 min-w-0">
+                <nav class="mb-2 sm:mb-3 overflow-x-auto glass-card rounded-xl px-4 py-2" aria-label="Breadcrumb">
+                    <ol id="breadcrumb" class="flex items-center flex-wrap gap-1 text-xs sm:text-sm text-gray-600 dark:text-gray-300 min-w-0">
                         <li class="flex items-center">
-                            <a href="#" id="breadcrumbHome" class="hover:text-blue-600 hover:underline transition-colors">Home</a>
+                            <a href="#" id="breadcrumbHome" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-medium">Home</a>
                         </li>
                     </ol>
                 </nav>
@@ -1406,14 +1635,16 @@
                 <!-- PDF Controls Wrapper -->
                 <div class="pdf-controls-wrapper">
                     <!-- PDF Controls -->
-                    <div class="bg-white dark:bg-gray-800 rounded-t-lg shadow-lg p-2 sm:p-3 md:p-4 sticky top-14 z-30 border-b border-gray-100 dark:border-gray-700">
+                    <div class="glass-card rounded-t-2xl p-2 sm:p-3 md:p-4 sticky top-14 z-30 border-b border-gray-200/50 dark:border-gray-700/50">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 md:gap-4">
                             <div class="flex items-center gap-2 min-w-0 flex-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                </svg>
+                                <div class="p-2 rounded-lg bg-gradient-to-br from-red-400 to-rose-500 shadow-md">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                    </svg>
+                                </div>
                                 <h3 id="pdfTitle" class="text-sm sm:text-base md:text-lg font-semibold text-gray-700 dark:text-gray-200 truncate max-w-[calc(100%-8rem)] sm:max-w-[calc(100%-6rem)]"></h3>
-                                <button id="favoritePdf" class="flex-shrink-0 text-gray-400 hover:text-yellow-500 active:text-yellow-600 dark:active:text-yellow-400 transition-colors p-2 -m-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Add to favorites" title="Add to favorites">
+                                <button id="favoritePdf" class="flex-shrink-0 text-gray-400 hover:text-yellow-500 active:text-yellow-600 dark:active:text-yellow-400 transition-all duration-300 p-2 -m-1 min-h-[44px] min-w-[44px] flex items-center justify-center hover:scale-110" aria-label="Add to favorites" title="Add to favorites">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
                                     </svg>
@@ -1421,22 +1652,22 @@
                             </div>
                             <div class="flex items-center gap-2 flex-wrap">
                                 <!-- Zoom Controls - Visible on all screens -->
-                                <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg px-2 py-1">
-                                    <button id="zoomOut" class="hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500 p-1.5 rounded transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-600 dark:text-gray-300" aria-label="Zoom out" title="Zoom out">
+                                <div class="flex items-center gap-1 bg-gray-100/80 dark:bg-gray-700/80 backdrop-blur-sm rounded-xl px-2 py-1 border border-gray-200/50 dark:border-gray-600/50">
+                                    <button id="zoomOut" class="hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500 p-1.5 rounded-lg transition-all duration-200 min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-600 dark:text-gray-300 hover:scale-105" aria-label="Zoom out" title="Zoom out">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM13.5 10.5h-6" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM13.5 10.5h-6" />
                                         </svg>
                                     </button>
-                                    <span id="zoomLevel" class="text-xs font-medium min-w-[3rem] text-center text-gray-700 dark:text-gray-200">100%</span>
-                                    <button id="zoomIn" class="hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500 p-1.5 rounded transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-600 dark:text-gray-300" aria-label="Zoom in" title="Zoom in">
+                                    <span id="zoomLevel" class="text-xs font-semibold min-w-[3rem] text-center text-gray-700 dark:text-gray-200">100%</span>
+                                    <button id="zoomIn" class="hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500 p-1.5 rounded-lg transition-all duration-200 min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-600 dark:text-gray-300 hover:scale-105" aria-label="Zoom in" title="Zoom in">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
                                         </svg>
                                     </button>
                                 </div>
                                 
                                 <!-- Print Button -->
-                                <button id="printPdf" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg flex items-center gap-1 transition-all text-gray-700 dark:text-gray-200 text-xs sm:text-sm min-h-[44px]" aria-label="Print PDF" title="Print PDF">
+                                <button id="printPdf" class="bg-gray-100/80 dark:bg-gray-700/80 backdrop-blur-sm hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-2.5 rounded-xl flex items-center gap-1 transition-all duration-200 text-gray-700 dark:text-gray-200 text-xs sm:text-sm min-h-[44px] border border-gray-200/50 dark:border-gray-600/50 hover:scale-105" aria-label="Print PDF" title="Print PDF">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
                                     </svg>
@@ -1444,7 +1675,7 @@
                                 </button>
                                 
                                 <!-- Copy Link Button -->
-                                <button id="copyLinkBtn" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg flex items-center gap-1 transition-all text-gray-700 dark:text-gray-200 text-xs sm:text-sm min-h-[44px]" aria-label="Copy link to clipboard" title="Copy link to clipboard">
+                                <button id="copyLinkBtn" class="bg-gray-100/80 dark:bg-gray-700/80 backdrop-blur-sm hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-2.5 rounded-xl flex items-center gap-1 transition-all duration-200 text-gray-700 dark:text-gray-200 text-xs sm:text-sm min-h-[44px] border border-gray-200/50 dark:border-gray-600/50 hover:scale-105" aria-label="Copy link to clipboard" title="Copy link to clipboard">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
                                     </svg>
@@ -1452,7 +1683,7 @@
                                 </button>
                                 
                                 <!-- Fullscreen Toggle -->
-                                <button id="fullscreenToggle" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-3 sm:px-3 py-2.5 sm:py-2 rounded-lg flex items-center gap-1 transition-all text-gray-700 dark:text-gray-200 text-xs sm:text-sm min-h-[44px]" aria-label="Toggle fullscreen" title="Toggle fullscreen">
+                                <button id="fullscreenToggle" class="bg-gray-100/80 dark:bg-gray-700/80 backdrop-blur-sm hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-2.5 rounded-xl flex items-center gap-1 transition-all duration-200 text-gray-700 dark:text-gray-200 text-xs sm:text-sm min-h-[44px] border border-gray-200/50 dark:border-gray-600/50 hover:scale-105" aria-label="Toggle fullscreen" title="Toggle fullscreen">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                                     </svg>
@@ -1460,15 +1691,15 @@
                                 </button>
                                 
                                 <!-- Download Button -->
-                                <a id="downloadPdf" href="#" download class="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white px-3 sm:px-3 md:px-4 py-2.5 sm:py-2 rounded-lg flex items-center gap-1 sm:gap-2 transition-all text-xs sm:text-sm min-h-[44px] shadow-sm hover:shadow">
+                                <a id="downloadPdf" href="#" download class="btn-modern px-4 py-2.5 rounded-xl flex items-center gap-2 text-xs sm:text-sm min-h-[44px] font-semibold">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                                     </svg>
                                     <span class="hidden sm:inline">Download</span>
                                 </a>
                                 
                                 <!-- Open in New Tab -->
-                                <a id="openInNewTab" href="#" target="_blank" rel="noopener noreferrer" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-3 sm:px-3 md:px-4 py-2.5 sm:py-2 rounded-lg flex items-center gap-1 sm:gap-2 transition-all text-gray-700 dark:text-gray-200 text-xs sm:text-sm min-h-[44px]">
+                                <a id="openInNewTab" href="#" target="_blank" rel="noopener noreferrer" class="bg-gray-100/80 dark:bg-gray-700/80 backdrop-blur-sm hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all duration-200 text-gray-700 dark:text-gray-200 text-xs sm:text-sm min-h-[44px] border border-gray-200/50 dark:border-gray-600/50 hover:scale-105">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                                     </svg>
@@ -1478,23 +1709,23 @@
                         </div>
                         
                         <!-- Page Navigation for Canvas Mode -->
-                        <div id="pageNavigation" class="hidden mt-2 sm:mt-3 flex items-center justify-center gap-3 border-t border-gray-200 dark:border-gray-600 pt-2 sm:pt-3">
-                            <button id="prevPage" class="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center shadow-sm" aria-label="Previous page" title="Previous page">
+                        <div id="pageNavigation" class="hidden mt-2 sm:mt-3 flex items-center justify-center gap-3 border-t border-gray-200/50 dark:border-gray-600/50 pt-2 sm:pt-3">
+                            <button id="prevPage" class="btn-modern px-4 py-2.5 rounded-xl text-sm min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Previous page" title="Previous page">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 19.5L8.25 12l7.5-7.5" />
                                 </svg>
                             </button>
-                            <span id="pageInfo" class="text-sm sm:text-base text-gray-600 dark:text-gray-300 font-medium px-2">Page <span id="pageNum">1</span> of <span id="pageCount">1</span></span>
-                            <button id="nextPage" class="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center shadow-sm" aria-label="Next page" title="Next page">
+                            <span id="pageInfo" class="text-sm sm:text-base text-gray-600 dark:text-gray-300 font-semibold px-4 py-2 bg-gray-100/80 dark:bg-gray-700/80 rounded-xl border border-gray-200/50 dark:border-gray-600/50">Page <span id="pageNum">1</span> of <span id="pageCount">1</span></span>
+                            <button id="nextPage" class="btn-modern px-4 py-2.5 rounded-xl text-sm min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Next page" title="Next page">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                 </svg>
                             </button>
                         </div>
                     </div>
                 </div>
                 <!-- PDF Container -->
-                <div id="pdfIframeContainer" class="pdf-iframe-container">
+                <div id="pdfIframeContainer" class="pdf-iframe-container rounded-b-2xl overflow-hidden">
                     <!-- Native PDF viewer using object tag (works on desktop) -->
                     <object id="pdfViewer" type="application/pdf" width="100%" height="100%" style="min-height: calc(100vh - 10rem);">
                         <iframe id="pdfViewerFallback" title="PDF Viewer" width="100%" height="100%" style="min-height: calc(100vh - 10rem);"></iframe>
@@ -1507,53 +1738,53 @@
     </div>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer animated-gradient text-white">
         <div class="text-center px-3 sm:px-6 max-w-3xl mx-auto">
             <!-- Top row: Logo and tagline -->
             <div class="footer-top-row flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-4">
                 <div class="flex items-center gap-2 flex-shrink-0">
-                    <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_40,h_40,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-8 w-8 rounded-lg object-cover">
-                    <span class="font-semibold text-white text-sm sm:text-base">BIT Repository</span>
+                    <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_40,h_40,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-10 w-10 rounded-xl object-cover shadow-lg ring-2 ring-white/20">
+                    <span class="font-bold text-white text-sm sm:text-base">BIT Repository</span>
                 </div>
-                <div class="hidden sm:block text-gray-500" aria-hidden="true">|</div>
-                <p class="text-xs sm:text-sm text-gray-300 text-center">Bachelor of Information Technology Course Materials</p>
+                <div class="hidden sm:block text-white/40" aria-hidden="true">|</div>
+                <p class="text-xs sm:text-sm text-white/80 text-center">Bachelor of Information Technology Course Materials</p>
             </div>
             
             <!-- Links row -->
-            <div class="footer-links flex flex-col sm:flex-row flex-wrap items-center justify-center gap-2 sm:gap-4 mb-4 text-sm">
-                <a href="https://github.com/AshenWijesingha/BIT" target="_blank" rel="noopener noreferrer" class="footer-link-item hover:text-blue-400 transition-colors px-2 py-1.5 rounded-md">
+            <div class="footer-links flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4 mb-4 text-sm">
+                <a href="https://github.com/AshenWijesingha/BIT" target="_blank" rel="noopener noreferrer" class="footer-link-item hover:bg-white/10 transition-all duration-200 px-4 py-2 rounded-xl border border-white/10 backdrop-blur-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                     </svg>
                     <span>GitHub</span>
                 </a>
-                <button id="footerHelpBtn" class="footer-link-item hover:text-blue-400 transition-colors px-2 py-1.5 rounded-md">
+                <button id="footerHelpBtn" class="footer-link-item hover:bg-white/10 transition-all duration-200 px-4 py-2 rounded-xl border border-white/10 backdrop-blur-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
                     </svg>
                     <span>Help</span>
                 </button>
-                <span class="footer-link-item text-gray-300 px-2 py-1.5 whitespace-nowrap">
+                <span class="footer-link-item text-white/70 px-4 py-2 whitespace-nowrap">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span>Press <span class="kbd mx-1">?</span> for shortcuts</span>
+                    <span>Press <span class="kbd bg-white/20 border-white/30">?</span> for shortcuts</span>
                 </span>
             </div>
             
             <!-- Bottom row: Copyright -->
-            <div class="border-t border-gray-700 pt-4">
-                <p class="text-xs sm:text-sm text-gray-400 mb-1.5">© 2026 BIT Repository. Educational materials for the BIT program.</p>
-                <p class="text-xs sm:text-sm text-gray-400 mb-1.5">Made with ❤️ for students</p>
-                <p class="text-xs text-gray-500" id="appVersion">Version 2.1.0</p>
+            <div class="border-t border-white/10 pt-4">
+                <p class="text-xs sm:text-sm text-white/60 mb-1.5">© 2026 BIT Repository. Educational materials for the BIT program.</p>
+                <p class="text-xs sm:text-sm text-white/60 mb-1.5">Made with ❤️ for students</p>
+                <p class="text-xs text-white/40" id="appVersion">Version 3.0.0</p>
             </div>
         </div>
     </footer>
 
     <!-- Scroll to Top Button -->
-    <button id="scrollToTop" class="scroll-to-top" aria-label="Scroll to top" title="Scroll to top">
+    <button id="scrollToTop" class="scroll-to-top btn-modern" aria-label="Scroll to top" title="Scroll to top">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
         </svg>
     </button>
 
@@ -1562,11 +1793,11 @@
 
     <!-- Help/Keyboard Shortcuts Modal -->
     <div id="helpModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
-        <div class="modal-content">
+        <div class="modal-content glass-card rounded-3xl">
             <div class="p-4 sm:p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 id="helpModalTitle" class="text-xl font-bold text-gray-800 dark:text-gray-100">Help & Keyboard Shortcuts</h2>
-                    <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-2 -m-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Close modal">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 id="helpModalTitle" class="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Help & Keyboard Shortcuts</h2>
+                    <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-all duration-200 p-2 -m-1 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Close modal">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -1575,9 +1806,9 @@
                 
                 <div class="space-y-6">
                     <!-- About Section -->
-                    <div>
+                    <div class="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl">
                         <h3 class="font-semibold text-gray-700 dark:text-gray-200 mb-2 flex items-center gap-2">
-                            <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_24,h_24,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-5 w-5 rounded object-cover" role="presentation"> About BIT Repository
+                            <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_24,h_24,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-6 w-6 rounded-lg object-cover shadow" role="presentation"> About BIT Repository
                         </h3>
                         <p class="text-sm text-gray-600 dark:text-gray-400">
                             This is a PDF repository for Bachelor of Information Technology (BIT) course materials. 
@@ -1591,11 +1822,11 @@
                             <span>⌨️</span> Keyboard Shortcuts
                         </h3>
                         <div class="grid grid-cols-2 gap-2 text-sm">
-                            <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700 rounded p-2">
+                            <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3">
                                 <span class="text-gray-600 dark:text-gray-300">Show help</span>
                                 <kbd class="kbd">?</kbd>
                             </div>
-                            <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700 rounded p-2">
+                            <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3">
                                 <span class="text-gray-600 dark:text-gray-300">Search files</span>
                                 <div><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">F</kbd></div>
                             </div>
