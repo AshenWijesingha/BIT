@@ -90,6 +90,8 @@
     <script src="https://cdn.tailwindcss.com" crossorigin="anonymous"></script>
     <!-- PDF.js library for rendering PDFs on all devices including mobile -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous"></script>
+    <!-- JSZip library for creating ZIP files for folder downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous"></script>
     <style>
         /* Tailwind-like utility classes as fallback when CDN is blocked */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -2708,9 +2710,27 @@
             chevronPath.setAttribute('d', 'M8.25 4.5l7.5 7.5-7.5 7.5');
             chevronIcon.appendChild(chevronPath);
             
+            // Create download folder button
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'folder-action-btn';
+            downloadBtn.setAttribute('aria-label', 'Download all PDFs in folder');
+            downloadBtn.setAttribute('title', 'Download all PDFs in folder as ZIP');
+            downloadBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+            `;
+            
+            // Prevent folder toggle when clicking download button
+            downloadBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                downloadFolder(name, content, level);
+            });
+            
             // Assemble header
             header.appendChild(folderIcon);
             header.appendChild(nameSpan);
+            header.appendChild(downloadBtn);
             header.appendChild(chevronIcon);
             
             // Folder content
@@ -3061,6 +3081,155 @@
                 
                 showToast('Failed to load PDF. Please try downloading or opening in a new tab.', 'error');
             }
+        }
+
+        /**
+         * Downloads all PDF files in a folder as a ZIP archive.
+         * Uses JSZip library to create the ZIP file and FileSaver pattern for download.
+         * Shows progress toast notifications during the download process.
+         * 
+         * @async
+         * @function downloadFolder
+         * @param {string} folderName - The display name of the folder
+         * @param {Object|Array} content - The folder contents (files or nested folders)
+         * @param {number} level - The nesting level of the folder
+         * 
+         * @example
+         * downloadFolder('IT5306 Principles of Information Security', folderContent, 0);
+         */
+        async function downloadFolder(folderName, content, level) {
+            try {
+                // Check if JSZip is available
+                if (typeof JSZip === 'undefined') {
+                    showToast('ZIP library not loaded. Please refresh the page.', 'error');
+                    return;
+                }
+                
+                showToast('Preparing download...', 'info');
+                
+                // Collect all PDF files from this folder and subfolders
+                const pdfFiles = collectPdfFilesFromFolder(content);
+                
+                if (pdfFiles.length === 0) {
+                    showToast('No PDF files found in this folder.', 'info');
+                    return;
+                }
+                
+                // Create a new ZIP file
+                const zip = new JSZip();
+                let successCount = 0;
+                let failCount = 0;
+                
+                // Show progress toast
+                showToast(`Downloading ${pdfFiles.length} PDF file(s)...`, 'info');
+                
+                // Download and add each PDF to the ZIP
+                for (let i = 0; i < pdfFiles.length; i++) {
+                    const filePath = pdfFiles[i];
+                    
+                    try {
+                        // Fetch the PDF file
+                        const response = await fetch(encodeURI(filePath));
+                        
+                        if (!response.ok) {
+                            console.warn(`Failed to download ${filePath}: ${response.status}`);
+                            failCount++;
+                            continue;
+                        }
+                        
+                        // Get the file as a blob
+                        const blob = await response.blob();
+                        
+                        // Extract the file name (relative to the base folder)
+                        const fileName = filePath.split('/').pop();
+                        
+                        // Add to ZIP
+                        zip.file(fileName, blob);
+                        successCount++;
+                        
+                    } catch (error) {
+                        console.error(`Error downloading ${filePath}:`, error);
+                        failCount++;
+                    }
+                }
+                
+                if (successCount === 0) {
+                    showToast('Failed to download any PDF files.', 'error');
+                    return;
+                }
+                
+                // Generate the ZIP file
+                showToast('Creating ZIP file...', 'info');
+                const zipBlob = await zip.generateAsync({ 
+                    type: 'blob',
+                    compression: 'DEFLATE',
+                    compressionOptions: { level: 6 }
+                });
+                
+                // Create download link
+                const downloadLink = document.createElement('a');
+                const url = URL.createObjectURL(zipBlob);
+                downloadLink.href = url;
+                
+                // Sanitize folder name for filename
+                const sanitizedFolderName = folderName.replace(/[^a-z0-9]/gi, '_').replace(/_+/g, '_');
+                downloadLink.download = `${sanitizedFolderName}.zip`;
+                
+                // Trigger download
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                
+                // Clean up object URL
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+                
+                // Show success message
+                if (failCount > 0) {
+                    showToast(`Downloaded ${successCount} of ${pdfFiles.length} PDF files. ${failCount} failed.`, 'info');
+                } else {
+                    showToast(`Successfully downloaded ${successCount} PDF file(s)!`, 'success');
+                }
+                
+            } catch (error) {
+                console.error('Error downloading folder:', error);
+                showToast('Failed to create ZIP file. Please try again.', 'error');
+            }
+        }
+        
+        /**
+         * Recursively collects all PDF file paths from a folder structure.
+         * Handles both simple arrays and nested folder objects.
+         * 
+         * @function collectPdfFilesFromFolder
+         * @param {Object|Array} content - The folder contents to scan
+         * @returns {string[]} Array of PDF file paths
+         * 
+         * @example
+         * const files = collectPdfFilesFromFolder(folderContent);
+         * // Returns: ['Semester 5/file1.pdf', 'Semester 5/file2.pdf']
+         */
+        function collectPdfFilesFromFolder(content) {
+            const files = [];
+            
+            if (Array.isArray(content)) {
+                // Simple array of files
+                files.push(...content);
+            } else {
+                // Object with subfolders and _root files
+                if (content._root) {
+                    files.push(...content._root);
+                }
+                
+                // Recursively collect from subfolders
+                for (const [key, value] of Object.entries(content)) {
+                    if (key !== '_root') {
+                        const subFiles = collectPdfFilesFromFolder(value);
+                        files.push(...subFiles);
+                    }
+                }
+            }
+            
+            return files;
         }
 
         /**
