@@ -1730,8 +1730,9 @@
         /** @constant {number} MAX_RECENT_FILES - Maximum number of recent files to track */
         const MAX_RECENT_FILES = 10;
         
-        /** @constant {number} OBJECT_URL_CLEANUP_DELAY_MS - Delay before revoking object URLs in milliseconds */
-        const OBJECT_URL_CLEANUP_DELAY_MS = 1000;
+        /** @constant {number} OBJECT_URL_CLEANUP_DELAY_MS - Delay before revoking object URLs in milliseconds. 
+         * Set to 5 seconds to ensure download has properly initiated even on slower connections */
+        const OBJECT_URL_CLEANUP_DELAY_MS = 5000;
         
         /** @constant {number} TOAST_DURATION_MS - Toast notification duration (5s for accessibility) */
         const TOAST_DURATION_MS = 5000;
@@ -3135,6 +3136,13 @@
                     const filePath = pdfFiles[i];
                     
                     try {
+                        // Validate path doesn't contain directory traversal sequences
+                        if (filePath.includes('../') || filePath.includes('..\\')) {
+                            console.warn(`Skipping potentially unsafe path: ${filePath}`);
+                            failCount++;
+                            continue;
+                        }
+                        
                         // Properly encode each path component separately to prevent directory traversal
                         const pathComponents = filePath.split('/');
                         const encodedPath = pathComponents.map(component => encodeURIComponent(component)).join('/');
@@ -3191,8 +3199,10 @@
                 
                 // Sanitize folder name for filename - allow spaces, hyphens, periods
                 // Only remove characters that are problematic for file systems
+                // Using explicit character list with proper escaping
+                const problematicChars = /[<>:"\\\\/|?*\x00-\x1F]/g;
                 const sanitizedFolderName = folderName
-                    .replace(/[<>:"\\/|?*\x00-\x1F]/g, '')  // Remove problematic characters (escaped forward slash)
+                    .replace(problematicChars, '')  // Remove problematic characters
                     .replace(/\s+/g, ' ')  // Normalize multiple spaces to single space
                     .trim()  // Remove leading/trailing whitespace
                     .substring(0, 100);  // Limit length to avoid issues with long names
