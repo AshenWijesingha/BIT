@@ -1355,7 +1355,7 @@
                     <!-- Logo and Badge -->
                     <div class="relative inline-block mb-6">
                         <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_192,h_192,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" loading="lazy" class="h-24 w-24 sm:h-28 sm:w-28 mx-auto rounded-2xl shadow-lg mb-2 object-cover ring-4 ring-blue-100 dark:ring-blue-900">
-                        <div class="absolute -top-1 -right-1 h-6 w-6 bg-green-500 rounded-full border-4 border-white dark:border-gray-800 animate-pulse" aria-hidden="true" title="Repository Active"></div>
+                        <div class="absolute -top-1 -right-1 h-6 w-6 bg-green-500 rounded-full border-4 border-white dark:border-gray-800 animate-pulse" aria-hidden="true"></div>
                     </div>
                     
                     <!-- Title -->
@@ -2794,7 +2794,9 @@
                 btn.textContent = displayName;
                 btn.title = subject.name;
                 btn.addEventListener('click', () => {
+                    // Navigate to folder and show toast if navigation succeeds
                     navigateToFolder(subject.path);
+                    showToast(`Navigating to ${subject.name}`, 'info');
                 });
                 quickAccessLinks.appendChild(btn);
             });
