@@ -2,20 +2,24 @@
 
 A modern, responsive web-based PDF viewer for Bachelor of Information Technology (BIT) course materials.
 
-**Version:** 2.1.0
+**Version:** 2.2.0
 
 ## Features
 
 - 📚 **Auto-updating File Organization**: Automatically detects and displays new folders and PDFs added to the repository
 - 📱 **Mobile Responsive**: Optimized for all devices with proper touch targets and responsive design
 - 🌙 **Dark Mode**: Toggle between light and dark themes
-- 🔍 **Search**: Quickly find PDFs by name
+- 🔍 **Search**: Quickly find PDFs by name with search in both hero section and sidebar
 - ⭐ **Favorites**: Mark frequently accessed PDFs
 - 📖 **Smart PDF Rendering**: Uses native PDF viewer on desktop, PDF.js canvas rendering on mobile
 - 🎨 **Modern UI/UX**: Clean interface following best practices for accessibility and usability
 - 📲 **Progressive Web App (PWA)**: Install as a native app on mobile and desktop
 - 🔒 **Enterprise Security**: Content Security Policy, XSS prevention, secure DOM manipulation
 - ⚡ **Offline Support**: Service Worker provides caching and offline access to viewed PDFs
+- 📊 **Statistics Dashboard**: View file count, subjects, and favorites statistics on the homepage
+- ℹ️ **About & Contact**: Dedicated modals for information, terms of use, and contact/feedback options
+- 🔗 **Quick Access Links**: Fast navigation to subjects directly from the homepage
+- 📋 **Share Functionality**: Copy PDF links to clipboard for easy sharing
 
 ## Auto-Update Feature
 
