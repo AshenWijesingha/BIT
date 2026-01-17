@@ -91,7 +91,7 @@
     <!-- PDF.js library for rendering PDFs on all devices including mobile -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous"></script>
     <!-- JSZip library for creating ZIP files for folder downloads -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==" crossorigin="anonymous"></script>
     <style>
         /* Tailwind-like utility classes as fallback when CDN is blocked */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -3087,6 +3087,7 @@
          * Downloads all PDF files in a folder as a ZIP archive.
          * Uses JSZip library to create the ZIP file and FileSaver pattern for download.
          * Shows progress toast notifications during the download process.
+         * Preserves folder structure to avoid filename conflicts.
          * 
          * @async
          * @function downloadFolder
@@ -3123,13 +3124,20 @@
                 // Show progress toast
                 showToast(`Downloading ${pdfFiles.length} PDF file(s)...`, 'info');
                 
+                // Find the common base path to preserve folder structure
+                const basePath = findCommonBasePath(pdfFiles);
+                
                 // Download and add each PDF to the ZIP
                 for (let i = 0; i < pdfFiles.length; i++) {
                     const filePath = pdfFiles[i];
                     
                     try {
+                        // Properly encode each path component separately to prevent directory traversal
+                        const pathComponents = filePath.split('/');
+                        const encodedPath = pathComponents.map(component => encodeURIComponent(component)).join('/');
+                        
                         // Fetch the PDF file
-                        const response = await fetch(encodeURI(filePath));
+                        const response = await fetch(encodedPath);
                         
                         if (!response.ok) {
                             console.warn(`Failed to download ${filePath}: ${response.status}`);
@@ -3140,11 +3148,18 @@
                         // Get the file as a blob
                         const blob = await response.blob();
                         
-                        // Extract the file name (relative to the base folder)
-                        const fileName = filePath.split('/').pop();
+                        // Preserve relative path structure in ZIP to avoid filename conflicts
+                        // Remove the base path to keep only the relative structure
+                        let relativePath = filePath;
+                        if (basePath && filePath.startsWith(basePath)) {
+                            relativePath = filePath.substring(basePath.length);
+                            if (relativePath.startsWith('/')) {
+                                relativePath = relativePath.substring(1);
+                            }
+                        }
                         
-                        // Add to ZIP
-                        zip.file(fileName, blob);
+                        // Add to ZIP with folder structure preserved
+                        zip.file(relativePath, blob);
                         successCount++;
                         
                     } catch (error) {
@@ -3171,8 +3186,13 @@
                 const url = URL.createObjectURL(zipBlob);
                 downloadLink.href = url;
                 
-                // Sanitize folder name for filename
-                const sanitizedFolderName = folderName.replace(/[^a-z0-9]/gi, '_').replace(/_+/g, '_');
+                // Sanitize folder name for filename - allow spaces, hyphens, periods
+                // Only remove characters that are problematic for file systems
+                const sanitizedFolderName = folderName
+                    .replace(/[<>:"\/\\|?*\x00-\x1F]/g, '')  // Remove problematic characters
+                    .replace(/\s+/g, ' ')  // Normalize multiple spaces to single space
+                    .trim()  // Remove leading/trailing whitespace
+                    .substring(0, 100);  // Limit length to avoid issues with long names
                 downloadLink.download = `${sanitizedFolderName}.zip`;
                 
                 // Trigger download
@@ -3194,6 +3214,46 @@
                 console.error('Error downloading folder:', error);
                 showToast('Failed to create ZIP file. Please try again.', 'error');
             }
+        }
+        
+        /**
+         * Finds the common base path among all file paths.
+         * Used to determine what part of the path to strip when creating ZIP structure.
+         * 
+         * @function findCommonBasePath
+         * @param {string[]} filePaths - Array of file paths
+         * @returns {string} The common base path, or empty string if none
+         * 
+         * @example
+         * findCommonBasePath(['Semester 5/IT5306/file1.pdf', 'Semester 5/IT5306/file2.pdf'])
+         * // Returns: 'Semester 5/'
+         */
+        function findCommonBasePath(filePaths) {
+            if (filePaths.length === 0) return '';
+            if (filePaths.length === 1) {
+                const parts = filePaths[0].split('/');
+                parts.pop(); // Remove filename
+                return parts.length > 0 ? parts.join('/') + '/' : '';
+            }
+            
+            // Split all paths into components
+            const pathComponents = filePaths.map(path => path.split('/'));
+            
+            // Find the shortest path length
+            const minLength = Math.min(...pathComponents.map(p => p.length));
+            
+            // Find common prefix
+            let commonPath = [];
+            for (let i = 0; i < minLength - 1; i++) { // -1 to exclude filename
+                const component = pathComponents[0][i];
+                if (pathComponents.every(p => p[i] === component)) {
+                    commonPath.push(component);
+                } else {
+                    break;
+                }
+            }
+            
+            return commonPath.length > 0 ? commonPath.join('/') + '/' : '';
         }
         
         /**
