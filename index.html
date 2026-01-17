@@ -91,7 +91,7 @@
     <!-- PDF.js library for rendering PDFs on all devices including mobile -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous"></script>
     <!-- JSZip library for creating ZIP files for folder downloads -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg==" crossorigin="anonymous"></script>
     <style>
         /* Tailwind-like utility classes as fallback when CDN is blocked */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1730,6 +1730,9 @@
         /** @constant {number} MAX_RECENT_FILES - Maximum number of recent files to track */
         const MAX_RECENT_FILES = 10;
         
+        /** @constant {number} OBJECT_URL_CLEANUP_DELAY_MS - Delay before revoking object URLs in milliseconds */
+        const OBJECT_URL_CLEANUP_DELAY_MS = 1000;
+        
         /** @constant {number} TOAST_DURATION_MS - Toast notification duration (5s for accessibility) */
         const TOAST_DURATION_MS = 5000;
         
@@ -3189,7 +3192,7 @@
                 // Sanitize folder name for filename - allow spaces, hyphens, periods
                 // Only remove characters that are problematic for file systems
                 const sanitizedFolderName = folderName
-                    .replace(/[<>:"\/\\|?*\x00-\x1F]/g, '')  // Remove problematic characters
+                    .replace(/[<>:"\\/|?*\x00-\x1F]/g, '')  // Remove problematic characters (escaped forward slash)
                     .replace(/\s+/g, ' ')  // Normalize multiple spaces to single space
                     .trim()  // Remove leading/trailing whitespace
                     .substring(0, 100);  // Limit length to avoid issues with long names
@@ -3200,8 +3203,8 @@
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
                 
-                // Clean up object URL
-                setTimeout(() => URL.revokeObjectURL(url), 100);
+                // Clean up object URL after download has initiated
+                setTimeout(() => URL.revokeObjectURL(url), OBJECT_URL_CLEANUP_DELAY_MS);
                 
                 // Show success message
                 if (failCount > 0) {
