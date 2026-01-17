@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- 
+        BIT Repository - PDF Viewer
+        Version: 3.0.0
+        Note: When updating version, also update sw.js CACHE_NAME
+    -->
     <!-- Viewport configuration optimized for mobile devices (especially Samsung S10 5G and similar high-DPI devices) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
     
@@ -1570,7 +1575,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                             </svg>
-                            56+ PDFs
+                            <span id="welcomePdfCount">PDFs</span>
                         </span>
                         <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -2730,6 +2735,13 @@
                 
                 totalFileCount = countFilesInStructure(pdfFiles);
                 fileCountEl.textContent = totalFileCount + (totalFileCount === 1 ? ' file' : ' files');
+                
+                // Update welcome page PDF count
+                const welcomePdfCountEl = document.getElementById('welcomePdfCount');
+                if (welcomePdfCountEl) {
+                    welcomePdfCountEl.textContent = totalFileCount + '+ PDFs';
+                }
+                
                 buildFileTree();
                 updateFavoritesSection();
                 updateRecentSection();
