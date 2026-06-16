@@ -2,7 +2,7 @@
 
 A modern, responsive web-based PDF viewer for Bachelor of Information Technology (BIT) course materials.
 
-**Version:** 3.0.0
+**Version:** 3.0.1
 
 ## Features
 
