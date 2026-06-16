@@ -10,10 +10,10 @@
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <!-- Content Security Policy: Allow scripts from CDNs and inline styles (required for Tailwind CDN) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://res.cloudinary.com data:; font-src 'self' data:; connect-src 'self'; frame-src 'self'; object-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://res.cloudinary.com data:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self'; frame-src 'self'; object-src 'self';">
     
     <meta name="description" content="BIT Repository - Browse and view PDF course materials for Bachelor of Information Technology program. Access lecture notes, tutorials, and study materials for BIT students.">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#4f46e5">
     <meta name="author" content="BIT Repository">
     <meta name="keywords" content="BIT, Bachelor of Information Technology, PDF, course materials, study materials, university, lecture notes, tutorials, IT education, computing, semester materials">
     <meta name="robots" content="index, follow">
@@ -36,7 +36,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="BIT Repository">
     <meta name="application-name" content="BIT Repository">
-    <meta name="msapplication-TileColor" content="#2563eb">
+    <meta name="msapplication-TileColor" content="#4f46e5">
     <meta name="msapplication-config" content="none">
     
     <!-- Open Graph meta tags for social sharing -->
@@ -86,8 +86,46 @@
     }
     </script>
     
+    <!-- Inter typeface for a modern, professional reading experience -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <!-- Tailwind CSS CDN - Note: Inline styles required, CSP allows 'unsafe-inline' for style-src -->
     <script src="https://cdn.tailwindcss.com" crossorigin="anonymous"></script>
+    <!-- Tailwind design-system configuration: class-based dark mode, Inter type, refined indigo brand scale -->
+    <script>
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                // Class strategy: the `dark` class is toggled on <body> alongside the
+                // legacy `dark-mode` class so Tailwind `dark:` utilities respond to the
+                // in-app toggle (not just the OS setting). Maximally CDN-compatible.
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+                        },
+                        colors: {
+                            // Re-map "blue" to a refined, premium indigo so every existing
+                            // blue-* utility (static + dynamically generated) adopts the brand.
+                            blue: {
+                                50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc',
+                                400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca',
+                                800: '#3730a3', 900: '#312e81', 950: '#1e1b4b'
+                            }
+                        },
+                        boxShadow: {
+                            md: '0 12px 28px -12px rgba(15,23,42,0.22)',
+                            lg: '0 18px 40px -16px rgba(15,23,42,0.25)',
+                            xl: '0 24px 50px -18px rgba(15,23,42,0.28)',
+                            '2xl': '0 32px 64px -20px rgba(15,23,42,0.32)'
+                        }
+                    }
+                }
+            };
+        }
+    </script>
     <!-- PDF.js library for rendering PDFs on all devices including mobile -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous"></script>
     <!-- JSZip library for creating ZIP files for folder downloads -->
@@ -1425,6 +1463,369 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
     </style>
+
+    <!-- ============================================================
+         BIT REPOSITORY — 2026 UI/UX REVAMP
+         A cohesive, token-driven design system layered over the base
+         styles. Redefines the visual language (color, depth, type,
+         spacing, motion) while preserving every existing class/ID hook.
+         ============================================================ -->
+    <style id="bit-theme-revamp">
+        /* ---- Design tokens : light ---- */
+        :root {
+            --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+            --bg: #eef1f8;
+            --bg-glow-1: #e7e9ff;
+            --bg-glow-2: #f1ecff;
+
+            --surface: #ffffff;
+            --surface-2: #f6f8fc;
+            --surface-3: #eef1f7;
+
+            --border: #e6e9f2;
+            --border-strong: #d4d9e6;
+
+            --text: #0f172a;
+            --text-2: #334155;
+            --muted: #64748b;
+            --muted-2: #94a3b8;
+
+            --brand-50: #eef2ff;
+            --brand-soft: #eef2ff;
+            --brand-softer: #f4f5ff;
+            --brand-400: #818cf8;
+            --brand-500: #6366f1;
+            --brand-600: #4f46e5;
+            --brand-700: #4338ca;
+
+            --accent: #7c3aed;
+            --accent-2: #8b5cf6;
+
+            --ok: #059669;
+            --warn: #d97706;
+            --danger: #dc2626;
+
+            --ring: 0 0 0 3px rgba(79, 70, 229, 0.32);
+            --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.08);
+            --shadow: 0 8px 22px -12px rgba(15, 23, 42, 0.20);
+            --shadow-md: 0 16px 34px -16px rgba(15, 23, 42, 0.24);
+            --shadow-lg: 0 28px 56px -22px rgba(15, 23, 42, 0.30);
+            --shadow-brand: 0 14px 30px -12px rgba(79, 70, 229, 0.45);
+
+            --r: 0.75rem;
+            --r-lg: 1rem;
+            --r-xl: 1.25rem;
+
+            --header-grad: linear-gradient(100deg, #4338ca 0%, #4f46e5 46%, #6d28d9 100%);
+        }
+
+        /* ---- Design tokens : dark (kept on Tailwind gray family for cohesion with dark: utilities) ---- */
+        body.dark-mode {
+            --bg: #0b1120;
+            --bg-glow-1: #141a3a;
+            --bg-glow-2: #131133;
+
+            --surface: #1f2937;
+            --surface-2: #111827;
+            --surface-3: #172033;
+
+            --border: #374151;
+            --border-strong: #44506a;
+
+            --text: #e5e7eb;
+            --text-2: #cbd5e1;
+            --muted: #9ca3af;
+            --muted-2: #7c879b;
+
+            --brand-soft: rgba(99, 102, 241, 0.16);
+            --brand-softer: rgba(99, 102, 241, 0.08);
+            --brand-400: #a5b4fc;
+            --brand-500: #818cf8;
+            --brand-600: #6366f1;
+            --brand-700: #4f46e5;
+
+            --accent: #a78bfa;
+            --accent-2: #8b5cf6;
+
+            --ring: 0 0 0 3px rgba(129, 140, 248, 0.45);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+            --shadow: 0 10px 26px -12px rgba(0, 0, 0, 0.6);
+            --shadow-md: 0 16px 36px -14px rgba(0, 0, 0, 0.65);
+            --shadow-lg: 0 30px 60px -22px rgba(0, 0, 0, 0.72);
+            --shadow-brand: 0 16px 34px -12px rgba(67, 56, 202, 0.7);
+
+            --header-grad: linear-gradient(100deg, #312e81 0%, #3730a3 50%, #4c1d95 100%);
+        }
+
+        /* ---- Base ---- */
+        body, button, input, select, textarea { font-family: var(--font-sans); }
+        h1, h2, h3, h4 { letter-spacing: -0.015em; }
+        body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+        body.bg-gray-100 {
+            background:
+                radial-gradient(1100px 560px at 100% -8%, var(--bg-glow-2), transparent 60%),
+                radial-gradient(900px 480px at -8% 0%, var(--bg-glow-1), transparent 55%),
+                var(--bg);
+            background-attachment: fixed;
+            color: var(--text);
+        }
+        body.dark-mode {
+            background:
+                radial-gradient(1100px 560px at 100% -8%, var(--bg-glow-2), transparent 62%),
+                radial-gradient(900px 480px at -8% 0%, var(--bg-glow-1), transparent 58%),
+                var(--bg);
+            background-attachment: fixed;
+            color: var(--text);
+        }
+
+        ::selection { background: rgba(99, 102, 241, 0.24); }
+
+        /* ---- Scrollbars ---- */
+        * { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; border: 2px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--muted-2); background-clip: padding-box; }
+
+        /* ---- Header ---- */
+        header.header-height {
+            background: var(--header-grad);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 34px -16px rgba(49, 46, 129, 0.6);
+        }
+        header.header-height h1 span { letter-spacing: -0.01em; }
+        header.header-height img { box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.55); }
+        header.header-height button {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #fff;
+            border-radius: 0.7rem;
+            transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+        }
+        header.header-height button:hover {
+            background: rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.45);
+            transform: translateY(-1px);
+        }
+        header.header-height button:active { transform: scale(0.94); }
+
+        /* ---- Sidebar ---- */
+        #sidebar.sidebar-responsive {
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            box-shadow: 8px 0 30px -22px rgba(15, 23, 42, 0.35);
+        }
+        body.dark-mode #sidebar.sidebar-responsive { box-shadow: 8px 0 34px -20px rgba(0, 0, 0, 0.75); }
+
+        .sidebar-section { border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 0.25rem; }
+        body.dark-mode .sidebar-section { border-color: var(--border); }
+        .sidebar-section-title { color: var(--muted); letter-spacing: 0.08em; font-size: 0.7rem; }
+        body.dark-mode .sidebar-section-title { color: var(--muted); }
+
+        /* Search fields */
+        #searchInput, #heroSearchInput {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 0.8rem;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+        #searchInput::placeholder, #heroSearchInput::placeholder { color: var(--muted-2); }
+        #searchInput:hover, #heroSearchInput:hover { border-color: var(--border-strong); }
+        #searchInput:focus, #heroSearchInput:focus {
+            outline: none;
+            border-color: var(--brand-500);
+            background: var(--surface);
+            box-shadow: var(--ring);
+        }
+        body.dark-mode #searchInput, body.dark-mode #heroSearchInput { background: var(--surface-2); }
+        body.dark-mode #searchInput:focus, body.dark-mode #heroSearchInput:focus { background: var(--surface-3); }
+
+        /* Sidebar items & folders */
+        .sidebar-item, .folder-container > div {
+            border-radius: 0.6rem;
+            transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+        }
+        .sidebar-item span { color: var(--text-2); }
+        .folder-name { color: var(--text); }
+        .sidebar-item:hover:not(.active), .folder-container > div:hover {
+            background: var(--brand-softer);
+            transform: translateX(2px);
+        }
+        body.dark-mode .sidebar-item:hover:not(.active),
+        body.dark-mode .folder-container > div:hover { background: rgba(99, 102, 241, 0.12); }
+        .sidebar-item.active {
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            color: #fff;
+            box-shadow: 0 10px 22px -10px rgba(79, 70, 229, 0.6);
+            transform: none;
+        }
+        .sidebar-item.active span, .sidebar-item.active svg { color: #fff; }
+
+        /* Folder action buttons */
+        .folder-action-btn { color: var(--muted); border-radius: 0.55rem; }
+        .folder-action-btn:hover {
+            background: var(--brand-soft);
+            color: var(--brand-600);
+            border-color: transparent;
+            transform: scale(1.06);
+        }
+        body.dark-mode .folder-action-btn:hover { background: rgba(99, 102, 241, 0.16); color: var(--brand-400); }
+
+        /* Stats badge */
+        .stats-badge {
+            background: var(--brand-soft);
+            color: var(--brand-700);
+            border: 1px solid var(--border);
+            box-shadow: none;
+            font-weight: 600;
+        }
+        body.dark-mode .stats-badge { background: rgba(99, 102, 241, 0.16); color: var(--brand-400); border-color: var(--border); }
+
+        /* ---- Hero / welcome card ---- */
+        #welcomeMessage > div {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-xl);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+        #welcomeMessage > div::before {
+            content: '';
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 180px;
+            background: radial-gradient(620px 200px at 50% -40%, var(--brand-soft), transparent 70%);
+            pointer-events: none;
+        }
+        #welcomeMessage > div > * { position: relative; }
+        #welcomeMessage .grid > div { border-radius: var(--r-lg); box-shadow: var(--shadow-sm); transition: transform 0.18s ease, box-shadow 0.18s ease; }
+        #welcomeMessage .grid > div:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+        /* Hero / primary action buttons (target by ID to beat inline utilities) */
+        #browseFilesBtn, #aboutBtn, #viewHelpBtn { border-radius: 0.85rem; }
+        #browseFilesBtn { background: linear-gradient(135deg, var(--brand-500), var(--brand-700)); box-shadow: var(--shadow-brand); }
+        #aboutBtn { background: linear-gradient(135deg, var(--accent-2), #6d28d9); box-shadow: 0 14px 30px -12px rgba(124, 58, 237, 0.5); }
+        #viewHelpBtn { background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); }
+        body.dark-mode #viewHelpBtn { background: var(--surface-2); color: var(--text-2); border-color: var(--border); }
+        #browseFilesBtn:hover, #aboutBtn:hover { filter: brightness(1.06); }
+
+        /* ---- PDF toolbar ---- */
+        .pdf-controls-wrapper > div {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r) var(--r) 0 0;
+            box-shadow: var(--shadow-sm);
+        }
+        #pdfTitle { color: var(--text); }
+        #breadcrumb { color: var(--muted); }
+        #breadcrumb a { color: var(--muted); border-radius: 0.4rem; padding: 0.1rem 0.35rem; transition: color 0.15s ease, background 0.15s ease; }
+        #breadcrumb a:hover { color: var(--brand-600); background: var(--brand-softer); text-decoration: none; }
+
+        #printPdf, #copyLinkBtn, #fullscreenToggle, #openInNewTab {
+            background: var(--surface-2);
+            color: var(--text-2);
+            border: 1px solid var(--border);
+            border-radius: 0.7rem;
+            transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+        }
+        #printPdf:hover, #copyLinkBtn:hover, #fullscreenToggle:hover, #openInNewTab:hover {
+            background: var(--surface-3);
+            border-color: var(--border-strong);
+        }
+        body.dark-mode #printPdf, body.dark-mode #copyLinkBtn,
+        body.dark-mode #fullscreenToggle, body.dark-mode #openInNewTab {
+            background: var(--surface-2); color: var(--text-2); border-color: var(--border);
+        }
+        #downloadPdf {
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            border-radius: 0.7rem;
+            box-shadow: 0 12px 24px -12px rgba(79, 70, 229, 0.6);
+        }
+        #downloadPdf:hover { filter: brightness(1.06); }
+        #zoomIn, #zoomOut { color: var(--text-2); border-radius: 0.5rem; }
+        #zoomLevel { color: var(--text); }
+        #prevPage, #nextPage {
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            border-radius: 0.6rem;
+        }
+        #prevPage:hover, #nextPage:hover { filter: brightness(1.06); }
+
+        /* ---- PDF viewer surface ---- */
+        .pdf-iframe-container { background: #475569; border-radius: 0 0 var(--r) var(--r); }
+        body.dark-mode .pdf-iframe-container { background: #0b1120; }
+        .pdf-page-canvas { border-radius: 0.5rem; box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.45); }
+
+        /* ---- Modals & dialogs ---- */
+        .modal-overlay { background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(7px) saturate(120%); }
+        .modal-content, .confirm-dialog {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-xl);
+            box-shadow: var(--shadow-lg);
+        }
+        body.dark-mode .modal-content, body.dark-mode .confirm-dialog { background: var(--surface); border-color: var(--border); }
+        .confirm-dialog-title { color: var(--text); }
+        .confirm-dialog-message { color: var(--muted); }
+        .confirm-dialog-btn { border-radius: 0.7rem; }
+        .confirm-dialog-btn.cancel { background: var(--surface-2); color: var(--text-2); }
+        .confirm-dialog-btn.cancel:hover { background: var(--surface-3); }
+        body.dark-mode .confirm-dialog-btn.cancel { background: var(--surface-3); color: var(--text-2); }
+        .confirm-dialog-btn.confirm { background: var(--danger); }
+
+        /* ---- Toasts ---- */
+        .toast { border-radius: var(--r); box-shadow: var(--shadow-md); backdrop-filter: blur(2px); }
+        .toast.info { background: var(--brand-600); }
+
+        /* ---- Footer ---- */
+        .footer { background: #0b1120; border-top: 1px solid rgba(255, 255, 255, 0.06); color: #94a3b8; }
+        body.dark-mode .footer { background: #070b16; }
+        .footer .footer-link-item { border-radius: 0.6rem; transition: background 0.18s ease, color 0.18s ease; }
+        .footer .footer-link-item:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+        .footer a { color: var(--brand-400); }
+        .footer a:hover { color: #c7d2fe; }
+
+        /* ---- Scroll-to-top ---- */
+        .scroll-to-top {
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            border-radius: 1rem;
+            box-shadow: 0 14px 28px -12px rgba(79, 70, 229, 0.6);
+        }
+        .scroll-to-top:hover { filter: brightness(1.08); transform: translateY(-3px); }
+
+        /* ---- Misc components ---- */
+        .skip-link { background: var(--brand-700); border-radius: 0 0 0.5rem 0; }
+        .kbd {
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            color: var(--text-2);
+            border-radius: 0.4rem;
+            box-shadow: 0 1px 0 var(--border);
+        }
+        body.dark-mode .kbd { background: var(--surface-2); border-color: var(--border); color: var(--text-2); }
+        .loader { border-color: var(--border); border-top-color: var(--brand-500); }
+        .skeleton { background: linear-gradient(90deg, var(--surface-3) 25%, var(--surface-2) 37%, var(--surface-3) 63%); background-size: 400% 100%; }
+        body.dark-mode .skeleton { background: linear-gradient(90deg, #1f2937 25%, #2b3850 37%, #1f2937 63%); background-size: 400% 100%; }
+        .error-state h3 { color: var(--text); }
+        .error-state p { color: var(--muted); }
+        .error-state button { background: var(--brand-600); border-radius: 0.7rem; }
+        .error-state button:hover { background: var(--brand-700); }
+
+        /* ---- Focus visibility (accessibility) ---- */
+        *:focus-visible { outline: 2px solid var(--brand-500); outline-offset: 3px; border-radius: 4px; }
+        button:focus-visible, a:focus-visible { outline: 2px solid var(--brand-500); outline-offset: 2px; }
+
+        /* ---- Honor reduced-motion preference for the new interactions ---- */
+        @media (prefers-reduced-motion: reduce) {
+            body.bg-gray-100, body.dark-mode { background-attachment: scroll; }
+            .sidebar-item:hover:not(.active), .folder-container > div:hover,
+            #welcomeMessage .grid > div:hover, header.header-height button:hover,
+            .scroll-to-top:hover { transform: none; }
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Skip to content link for accessibility -->
@@ -1898,7 +2299,7 @@
             <div class="border-t border-gray-700 pt-4">
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">© 2026 BIT Repository. Educational materials for the BIT program.</p>
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">Made with ❤️ for students</p>
-                <p class="text-xs text-gray-500" id="appVersion">Version 2.2.0</p>
+                <p class="text-xs text-gray-500" id="appVersion">Version 3.0.0</p>
             </div>
         </div>
     </footer>
@@ -2039,7 +2440,7 @@
                     <div class="text-center">
                         <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_128,h_128,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-20 w-20 mx-auto rounded-2xl shadow-lg mb-4 object-cover ring-4 ring-blue-100 dark:ring-blue-900">
                         <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">BIT Repository</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">2.2.0</span></p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.0.0</span></p>
                     </div>
                     
                     <!-- Purpose -->
@@ -2248,7 +2649,7 @@
          */
         
         /** @constant {string} APP_VERSION - Application version number */
-        const APP_VERSION = '2.2.0';
+        const APP_VERSION = '3.0.0';
         
         // Configure PDF.js worker - Must be set before any PDF loading
         if (typeof pdfjsLib !== 'undefined') {
@@ -2428,7 +2829,11 @@
         }
         
         try {
-            isDarkMode = localStorage.getItem('darkMode') === 'true';
+            const storedDarkMode = localStorage.getItem('darkMode');
+            // Honor a saved preference; otherwise fall back to the OS color scheme on first visit.
+            isDarkMode = storedDarkMode === null
+                ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                : storedDarkMode === 'true';
         } catch (e) {
             console.error('Failed to access dark mode from localStorage:', e);
             isDarkMode = false;
@@ -4721,6 +5126,7 @@
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
             document.body.classList.toggle('dark-mode', isDarkMode);
+            document.body.classList.toggle('dark', isDarkMode);
             safeSetLocalStorage('darkMode', isDarkMode);
             
             // Update icon to show sun (light mode) or moon (dark mode)
@@ -5264,9 +5670,10 @@
         // Load file structure and initialize the application
         loadFileStructure();
         
-        // Apply dark mode if previously set in localStorage
+        // Apply dark mode if previously set in localStorage (or matched from OS on first visit)
         if (isDarkMode) {
             document.body.classList.add('dark-mode');
+            document.body.classList.add('dark');
             darkModeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />';
         }
         
