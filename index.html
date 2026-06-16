@@ -1826,6 +1826,123 @@
             .scroll-to-top:hover { transform: none; }
         }
     </style>
+
+    <!-- ============================================================
+         MOBILE RESPONSIVENESS — production-grade tuning
+         Dynamic viewport units (URL-bar safe), safe-area insets,
+         comfortable touch targets, overflow control, scroll-lock,
+         and a refined small-screen PDF toolbar.
+         ============================================================ -->
+    <style id="bit-mobile-responsive">
+        /* Never allow horizontal overflow; let flex children truncate */
+        html, body { max-width: 100%; overflow-x: hidden; }
+        main#main-content { min-width: 0; max-width: 100%; }
+
+        /* Prevent iOS Safari auto-zoom on input focus (font must be >= 16px) */
+        @media (max-width: 480px) {
+            input, select, textarea,
+            #searchInput, #heroSearchInput { font-size: 16px; }
+        }
+
+        /* Lock background scrolling while the mobile drawer is open */
+        @media (max-width: 1023px) {
+            body.sidebar-open { overflow: hidden; }
+        }
+
+        /* ---- Dynamic viewport height for the PDF viewer (handles the mobile URL bar) ---- */
+        @supports (height: 100dvh) {
+            .pdf-iframe-container { min-height: calc(100dvh - 10rem); }
+            .pdf-iframe-container iframe,
+            .pdf-iframe-container object {
+                height: calc(100dvh - 10rem) !important;
+                min-height: calc(100dvh - 10rem) !important;
+            }
+            #pdfCanvasContainer { height: calc(100dvh - 10rem); }
+
+            @media (max-width: 768px) {
+                .pdf-iframe-container { min-height: calc(100dvh - 14rem); }
+                .pdf-iframe-container iframe,
+                .pdf-iframe-container object {
+                    height: calc(100dvh - 14rem) !important;
+                    min-height: calc(100dvh - 14rem) !important;
+                }
+                #pdfCanvasContainer { height: calc(100dvh - 14rem); }
+            }
+            @media (max-width: 768px) and (orientation: landscape) {
+                #pdfCanvasContainer { height: calc(100dvh - 10rem); }
+            }
+        }
+
+        /* ---- Safe-area insets for notched / gesture-bar devices ---- */
+        @supports (padding: max(0px)) {
+            .footer { padding-bottom: max(1.5rem, calc(env(safe-area-inset-bottom) + 0.5rem)); }
+            .toast-container {
+                right: max(1rem, env(safe-area-inset-right));
+                bottom: max(6rem, calc(env(safe-area-inset-bottom) + 5rem));
+            }
+            .scroll-to-top {
+                right: max(1.25rem, env(safe-area-inset-right));
+                bottom: max(1.25rem, calc(env(safe-area-inset-bottom) + 0.5rem));
+            }
+            #sidebar.sidebar-responsive { padding-bottom: env(safe-area-inset-bottom); }
+        }
+
+        /* ---- Wider, comfortable drawer + larger touch targets on phones/tablets ---- */
+        @media (max-width: 1023px) {
+            #sidebar.sidebar-responsive { width: min(86vw, 21rem); max-width: min(86vw, 21rem); }
+            .sidebar-item, .folder-container > div {
+                min-height: 46px;
+                padding-top: 0.55rem;
+                padding-bottom: 0.55rem;
+            }
+            #favoritesList > div, #recentList > div { min-height: 42px; }
+            #breadcrumb { -webkit-overflow-scrolling: touch; }
+        }
+
+        /* ---- Refined, swipeable PDF toolbar on phones ---- */
+        @media (max-width: 600px) {
+            .pdf-controls-wrapper > div { padding: 0.6rem 0.7rem; }
+            /* Force a predictable stacked layout (overrides sm:flex-row) */
+            .pdf-controls-wrapper > div > div.flex.flex-col {
+                flex-direction: column !important;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+            .pdf-controls-wrapper > div > div.flex.flex-col > .flex.items-center.min-w-0 { width: 100%; }
+            /* Actions become a single horizontally-scrollable strip (no cramped wrapping) */
+            .pdf-controls-wrapper > div > div.flex.flex-col > .flex.items-center.flex-wrap {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                gap: 0.5rem;
+                padding-bottom: 2px;
+            }
+            .pdf-controls-wrapper > div > div.flex.flex-col > .flex.items-center.flex-wrap::-webkit-scrollbar { display: none; }
+            .pdf-controls-wrapper > div > div.flex.flex-col > .flex.items-center.flex-wrap > * { flex: 0 0 auto; }
+            #printPdf, #copyLinkBtn, #fullscreenToggle, #openInNewTab, #downloadPdf { min-height: 44px; }
+        }
+
+        /* ---- Full-width toasts on small screens ---- */
+        @media (max-width: 480px) {
+            .toast-container { left: 0.75rem; right: 0.75rem; align-items: stretch; }
+            .toast { max-width: none; width: 100%; }
+        }
+
+        /* ---- Hero / welcome tuning on small screens ---- */
+        @media (max-width: 480px) {
+            #welcomeMessage { min-height: auto; padding-top: 0.5rem; }
+            #welcomeMessage > div { padding: 1.25rem 1.1rem; }
+            #welcomeMessage .grid { gap: 0.6rem; }
+            #welcomeMessage h2 { font-size: 1.5rem; line-height: 1.9rem; }
+        }
+
+        /* ---- Header tuning for very small phones ---- */
+        @media (max-width: 360px) {
+            header.header-height button { padding-left: 0.5rem; padding-right: 0.5rem; }
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Skip to content link for accessibility -->
@@ -4870,6 +4987,18 @@
         });
 
         sidebarOverlay.addEventListener('click', closeSidebar);
+
+        // Keep background scroll locked whenever the mobile drawer is open.
+        // A single observer covers every open/close path (toggle, search, resize, etc.).
+        const syncSidebarScrollLock = () => {
+            const isOpen = !sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024;
+            document.body.classList.toggle('sidebar-open', isOpen);
+        };
+        new MutationObserver(syncSidebarScrollLock).observe(sidebar, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+        window.addEventListener('resize', syncSidebarScrollLock);
 
         /**
          * Closes the sidebar on mobile devices.
