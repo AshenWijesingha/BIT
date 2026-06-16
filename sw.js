@@ -5,19 +5,21 @@
  * @version 2.1.0
  */
 
-const CACHE_NAME = 'bit-repository-v3.0.1';
+const CACHE_NAME = 'bit-repository-v3.1.0';
 const STATIC_ASSETS = [
     './',
     './index.html',
     './files.json',
-    './manifest.json'
+    './manifest.json',
+    // Self-hosted PDF.js engine + JSZip (no external CDN dependency)
+    './vendor/pdfjs/pdf.min.js',
+    './vendor/pdfjs/pdf.worker.min.js',
+    './vendor/jszip/jszip.min.js'
 ];
 
 // External assets that should be cached
 const EXTERNAL_ASSETS = [
-    'https://cdn.tailwindcss.com',
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+    'https://cdn.tailwindcss.com'
 ];
 
 /**

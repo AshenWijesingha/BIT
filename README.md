@@ -2,7 +2,7 @@
 
 A modern, responsive web-based PDF viewer for Bachelor of Information Technology (BIT) course materials.
 
-**Version:** 3.0.1
+**Version:** 3.1.0
 
 ## Features
 
@@ -12,6 +12,7 @@ A modern, responsive web-based PDF viewer for Bachelor of Information Technology
 - 🔍 **Search**: Quickly find PDFs by name with search in both hero section and sidebar
 - ⭐ **Favorites**: Mark frequently accessed PDFs
 - 📖 **Smart PDF Rendering**: Uses native PDF viewer on desktop, PDF.js canvas rendering on mobile
+- 📦 **Self-hosted PDF engine**: PDF.js and JSZip are vendored in `vendor/` — no external CDN is required to view PDFs, so rendering works reliably (and offline) without third-party/CSP issues
 - 🎨 **Modern UI/UX**: Clean interface following best practices for accessibility and usability
 - 📲 **Progressive Web App (PWA)**: Install as a native app on mobile and desktop
 - 🔒 **Enterprise Security**: Content Security Policy, XSS prevention, secure DOM manipulation
@@ -59,6 +60,9 @@ BIT/
 ├── files.json            # Auto-generated file structure
 ├── manifest.json         # PWA manifest for app installation
 ├── sw.js                 # Service Worker for offline support
+├── vendor/               # Self-hosted libraries (PDF.js, JSZip)
+│   ├── pdfjs/            # pdf.min.js + pdf.worker.min.js
+│   └── jszip/           # jszip.min.js
 └── generate-file-list.js # File list generator script
 ```
 
