@@ -47,7 +47,7 @@ const path = require('path');
  */
 
 /** @constant {string[]} INCLUDE_DIRS - Directories to include in the scan */
-const INCLUDE_DIRS = ['BIT Project', 'Semester 5'];
+const INCLUDE_DIRS = ['BIT Project', 'Semester 5', 'Past Papers'];
 
 /** @constant {string[]} INCLUDE_EXTENSIONS - File extensions to include (lowercase) */
 const INCLUDE_EXTENSIONS = ['.pdf'];
