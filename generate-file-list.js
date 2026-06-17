@@ -29,7 +29,8 @@
  *   - Comprehensive error handling
  * 
  * CONFIGURATION:
- *   - INCLUDE_DIRS: Directories to scan for PDF files
+ *   - CONTENT_ROOT: Root folder ("Files") whose subfolders are the categories
+ *   - PREFERRED_ORDER: Preferred display order for top-level categories
  *   - INCLUDE_EXTENSIONS: File extensions to include
  * 
  * @author BIT Repository
@@ -46,8 +47,15 @@ const path = require('path');
  * ============================================================================
  */
 
-/** @constant {string[]} INCLUDE_DIRS - Directories to include in the scan */
-const INCLUDE_DIRS = ['BIT Project', 'Semester 5', 'Past Papers'];
+/** @constant {string} CONTENT_ROOT - Root folder holding all content categories */
+const CONTENT_ROOT = 'Files';
+
+/**
+ * @constant {string[]} PREFERRED_ORDER - Preferred display order for the top-level
+ * categories discovered inside CONTENT_ROOT. Any categories not listed here are
+ * appended afterwards in alphabetical order.
+ */
+const PREFERRED_ORDER = ['Semester 5', 'Semester 6', 'Past Papers', 'BIT Project'];
 
 /** @constant {string[]} INCLUDE_EXTENSIONS - File extensions to include (lowercase) */
 const INCLUDE_EXTENSIONS = ['.pdf'];
@@ -149,7 +157,7 @@ function scanDirectory(dirPath, relativePath = '', visited = new Set()) {
 
 /**
  * Generates the complete file structure by scanning all configured directories.
- * Iterates through INCLUDE_DIRS and builds a hierarchical structure of PDF files.
+ * Scans each top-level folder inside CONTENT_ROOT and builds a hierarchical structure of PDF files.
  * 
  * @function generateFileStructure
  * @returns {Object} Object with directory names as keys and file structures as values
@@ -160,30 +168,56 @@ function scanDirectory(dirPath, relativePath = '', visited = new Set()) {
  */
 function generateFileStructure() {
     const fileStructure = {};
-    
-    for (const dir of INCLUDE_DIRS) {
-        const dirPath = path.join(__dirname, dir);
-        
+    const rootPath = path.join(__dirname, CONTENT_ROOT);
+
+    if (!fs.existsSync(rootPath)) {
+        console.warn(`Warning: Content root "${CONTENT_ROOT}" not found`);
+        return fileStructure;
+    }
+
+    // Discover the top-level category folders inside the content root
+    let categories;
+    try {
+        categories = fs.readdirSync(rootPath, { withFileTypes: true })
+            .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+            .map((entry) => entry.name);
+    } catch (err) {
+        console.error(`Error reading content root "${CONTENT_ROOT}":`, err.message);
+        return fileStructure;
+    }
+
+    // Apply the preferred display order; unlisted categories follow alphabetically
+    categories.sort((a, b) => {
+        const ia = PREFERRED_ORDER.indexOf(a);
+        const ib = PREFERRED_ORDER.indexOf(b);
+        if (ia !== -1 && ib !== -1) return ia - ib;
+        if (ia !== -1) return -1;
+        if (ib !== -1) return 1;
+        return a.localeCompare(b);
+    });
+
+    for (const category of categories) {
+        const dirPath = path.join(rootPath, category);
+        // Paths keep the "Files/" prefix (so the app can fetch them) while the
+        // structure key stays a clean display name (e.g. "Semester 5").
+        const relativePath = `${CONTENT_ROOT}/${category}`;
+
         try {
-            if (fs.existsSync(dirPath)) {
-                const content = scanDirectory(dirPath, dir);
-                if (Array.isArray(content) ? content.length > 0 : Object.keys(content).length > 0) {
-                    fileStructure[dir] = content;
-                } else {
-                    console.warn(`Warning: Directory "${dir}" exists but contains no PDF files`);
-                }
+            const content = scanDirectory(dirPath, relativePath);
+            if (Array.isArray(content) ? content.length > 0 : Object.keys(content).length > 0) {
+                fileStructure[category] = content;
             } else {
-                console.warn(`Warning: Directory "${dir}" not found, skipping...`);
+                console.warn(`Warning: "${relativePath}" exists but contains no PDF files`);
             }
         } catch (err) {
-            console.error(`Error scanning directory "${dir}":`, err.message);
+            console.error(`Error scanning "${relativePath}":`, err.message);
         }
     }
-    
+
     if (Object.keys(fileStructure).length === 0) {
         console.warn('Warning: No PDF files found in any directory');
     }
-    
+
     return fileStructure;
 }
 
