@@ -49,14 +49,11 @@ This will regenerate `files.json` with the current repository structure.
 
 ```
 BIT/
-├── BIT Project/          # BIT project files
-├── Semester 5/           # Semester 5 course materials
-│   ├── EN5106 Fundamentals of Management & Entrepreneurship/
-│   ├── IT5206 Professional Practice/
-│   ├── IT5306 Principles of Information Security/
-│   ├── IT5406 Systems & Network Administration/
-│   └── IT5506 Mathematics for Computing II/
-├── Past Papers/          # Past examination papers (by semester & subject)
+├── Files/                # All course content (scanned into files.json)
+│   ├── Semester 5/       # Semester 5 course materials (by subject)
+│   ├── Semester 6/       # Semester 6 course materials (by subject)
+│   ├── Past Papers/      # Past examination papers (by semester & subject)
+│   └── BIT Project/      # BIT project files
 ├── index.html            # Main web application
 ├── files.json            # Auto-generated file structure
 ├── manifest.json         # PWA manifest for app installation
@@ -69,7 +66,7 @@ BIT/
 
 ## Adding New Content
 
-Simply add PDF files to any folder under `BIT Project/`, `Semester 5/`, or `Past Papers/`. The GitHub Action will automatically:
+Simply add PDF files to any folder under `Files/` (e.g. `Files/Semester 6/<subject>/`). New top-level folders placed directly in `Files/` automatically become new categories. The GitHub Action will then:
 
 1. Detect the new files
 2. Regenerate `files.json`
