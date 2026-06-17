@@ -56,6 +56,7 @@ BIT/
 │   ├── IT5306 Principles of Information Security/
 │   ├── IT5406 Systems & Network Administration/
 │   └── IT5506 Mathematics for Computing II/
+├── Past Papers/          # Past examination papers (by semester & subject)
 ├── index.html            # Main web application
 ├── files.json            # Auto-generated file structure
 ├── manifest.json         # PWA manifest for app installation
@@ -68,7 +69,7 @@ BIT/
 
 ## Adding New Content
 
-Simply add PDF files to any folder under `BIT Project/` or `Semester 5/`. The GitHub Action will automatically:
+Simply add PDF files to any folder under `BIT Project/`, `Semester 5/`, or `Past Papers/`. The GitHub Action will automatically:
 
 1. Detect the new files
 2. Regenerate `files.json`

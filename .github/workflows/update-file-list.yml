@@ -9,6 +9,7 @@ on:
       - '**/*.pdf'
       - 'BIT Project/**'
       - 'Semester 5/**'
+      - 'Past Papers/**'
   workflow_dispatch:
 
 permissions:
