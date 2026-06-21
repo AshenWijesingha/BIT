@@ -2177,6 +2177,65 @@
         /* "Quick Access" label */
         #welcomeMessage .border-t { border-color: var(--border); }
     </style>
+
+    <!-- ============================================================
+         COMPREHENSIVE DARK THEME — guarantee every font, surface,
+         border and button adapts; smooth toggle + icon animation.
+         ============================================================ -->
+    <style id="bit-dark-theme">
+        /* Full gray text scale → readable light tones on dark surfaces */
+        body.dark-mode .text-gray-400 { color: #9aa6b8; }
+        body.dark-mode .text-gray-500 { color: #aab4c4; }
+        body.dark-mode .text-gray-600 { color: #cbd5e1; }
+        body.dark-mode .text-gray-700 { color: #e2e8f0; }
+        body.dark-mode .text-gray-800 { color: #f1f5f9; }
+        body.dark-mode .text-gray-900 { color: #f8fafc; }
+
+        /* Surfaces → dark */
+        body.dark-mode .bg-white { background-color: var(--surface); }
+        body.dark-mode .bg-gray-50 { background-color: var(--surface-2); }
+        body.dark-mode .bg-gray-100 { background-color: var(--surface-2); }
+        body.dark-mode .bg-gray-200 { background-color: #374151; }
+
+        /* Borders → dark */
+        body.dark-mode .border-gray-100,
+        body.dark-mode .border-gray-200,
+        body.dark-mode .border-gray-300 { border-color: var(--border); }
+
+        /* Gray button hover states → dark */
+        body.dark-mode .hover\:bg-gray-100:hover { background-color: #374151; }
+        body.dark-mode .hover\:bg-gray-200:hover { background-color: #3f4a5e; }
+        body.dark-mode .hover\:bg-gray-300:hover { background-color: #4b5563; }
+
+        /* Hover text helpers used in close buttons / links */
+        body.dark-mode .hover\:text-gray-600:hover { color: #e2e8f0; }
+        body.dark-mode .hover\:text-gray-700:hover { color: #f1f5f9; }
+        body.dark-mode .hover\:bg-gray-50:hover { background-color: var(--surface-3); }
+
+        /* ---- Smooth, brief cross-fade applied only while toggling theme ---- */
+        body.theme-transition,
+        body.theme-transition *,
+        body.theme-transition *::before,
+        body.theme-transition *::after {
+            transition: background-color 0.32s var(--ease, ease),
+                        color 0.32s var(--ease, ease),
+                        border-color 0.32s var(--ease, ease),
+                        fill 0.32s var(--ease, ease),
+                        box-shadow 0.32s var(--ease, ease) !important;
+        }
+
+        /* ---- Dark-mode toggle icon spin ---- */
+        @keyframes themeIconSpin {
+            from { transform: rotate(-180deg) scale(0.6); opacity: 0.4; }
+            to   { transform: rotate(0deg) scale(1); opacity: 1; }
+        }
+        .theme-icon-spin { animation: themeIconSpin 0.45s var(--ease, ease); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .theme-icon-spin { animation: none; }
+            body.theme-transition, body.theme-transition * { transition: none !important; }
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Skip to content link for accessibility -->
@@ -2650,7 +2709,7 @@
             <div class="border-t border-gray-700 pt-4">
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">© 2026 BIT Repository. Educational materials for the BIT program.</p>
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">Made with ❤️ for students</p>
-                <p class="text-xs text-gray-500" id="appVersion">Version 3.3.0</p>
+                <p class="text-xs text-gray-500" id="appVersion">Version 3.4.0</p>
             </div>
         </div>
     </footer>
@@ -2791,7 +2850,7 @@
                     <div class="text-center">
                         <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_128,h_128,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-20 w-20 mx-auto rounded-2xl shadow-lg mb-4 object-cover ring-4 ring-blue-100 dark:ring-blue-900">
                         <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">BIT Repository</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.3.0</span></p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.4.0</span></p>
                     </div>
                     
                     <!-- Purpose -->
@@ -3000,7 +3059,7 @@
          */
         
         /** @constant {string} APP_VERSION - Application version number */
-        const APP_VERSION = '3.3.0';
+        const APP_VERSION = '3.4.0';
         
         // Configure PDF.js worker - Must be set before any PDF loading
         if (typeof pdfjsLib !== 'undefined') {
@@ -5517,10 +5576,20 @@
          */
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
+
+            // Smoothly cross-fade theme-affected colors during the switch
+            document.body.classList.add('theme-transition');
+            window.setTimeout(() => document.body.classList.remove('theme-transition'), 400);
+
             document.body.classList.toggle('dark-mode', isDarkMode);
             document.body.classList.toggle('dark', isDarkMode);
             safeSetLocalStorage('darkMode', isDarkMode);
-            
+
+            // Briefly spin the icon for a pleasant toggle animation
+            darkModeIcon.classList.remove('theme-icon-spin');
+            void darkModeIcon.getBoundingClientRect();
+            darkModeIcon.classList.add('theme-icon-spin');
+
             // Update icon to show sun (light mode) or moon (dark mode)
             if (isDarkMode) {
                 darkModeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />';
