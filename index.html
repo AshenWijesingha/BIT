@@ -2336,6 +2336,58 @@
         body.dark-mode .bookmark-dot { background: #818cf8; }
         .sidebar-item.finished .bookmark-dot { margin-left: 0.35rem; }
     </style>
+
+    <!-- ============================================================
+         TOOLBAR TOGGLE BUTTONS — Favorite / Bookmark / Mark Finished
+         Uniform size + theme-responsive surface (dark in dark mode,
+         light in light mode); accent colour shown when active.
+         ============================================================ -->
+    <style id="bit-toolbar-icon-buttons">
+        #favoritePdf, #bookmarkPageBtn, #markFinishedBtn {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            min-height: 40px;
+            margin: 0;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.65rem;
+            background-color: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            transition: background-color 0.18s var(--ease, ease),
+                        color 0.18s var(--ease, ease),
+                        border-color 0.18s var(--ease, ease),
+                        transform 0.12s var(--ease, ease);
+        }
+        #favoritePdf svg, #bookmarkPageBtn svg, #markFinishedBtn svg {
+            width: 1.2rem;
+            height: 1.2rem;
+        }
+        #favoritePdf:hover, #bookmarkPageBtn:hover, #markFinishedBtn:hover {
+            background-color: var(--surface-3);
+            border-color: var(--border-strong);
+        }
+        #favoritePdf:active, #bookmarkPageBtn:active, #markFinishedBtn:active { transform: scale(0.94); }
+
+        body.dark-mode #favoritePdf, body.dark-mode #bookmarkPageBtn, body.dark-mode #markFinishedBtn {
+            background-color: var(--surface-2);
+            border-color: var(--border);
+            color: var(--muted);
+        }
+        body.dark-mode #favoritePdf:hover, body.dark-mode #bookmarkPageBtn:hover, body.dark-mode #markFinishedBtn:hover {
+            background-color: var(--surface-3);
+            border-color: var(--border-strong);
+        }
+
+        /* Active / toggled accent colours (win via higher specificity) */
+        #favoritePdf.text-yellow-500 { color: #eab308; }
+        #bookmarkPageBtn.is-bookmarked { color: var(--brand-600); }
+        body.dark-mode #bookmarkPageBtn.is-bookmarked { color: var(--brand-400); }
+        #markFinishedBtn.is-finished { color: #22c55e; }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Skip to content link for accessibility -->
@@ -2829,7 +2881,7 @@
             <div class="border-t border-gray-700 pt-4">
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">© 2026 BIT Repository. Educational materials for the BIT program.</p>
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">Made with ❤️ for students</p>
-                <p class="text-xs text-gray-500" id="appVersion">Version 3.5.0</p>
+                <p class="text-xs text-gray-500" id="appVersion">Version 3.5.1</p>
             </div>
         </div>
     </footer>
@@ -2970,7 +3022,7 @@
                     <div class="text-center">
                         <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_128,h_128,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-20 w-20 mx-auto rounded-2xl shadow-lg mb-4 object-cover ring-4 ring-blue-100 dark:ring-blue-900">
                         <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">BIT Repository</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.5.0</span></p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.5.1</span></p>
                     </div>
                     
                     <!-- Purpose -->
@@ -3179,7 +3231,7 @@
          */
         
         /** @constant {string} APP_VERSION - Application version number */
-        const APP_VERSION = '3.5.0';
+        const APP_VERSION = '3.5.1';
         
         // Configure PDF.js worker - Must be set before any PDF loading
         if (typeof pdfjsLib !== 'undefined') {
