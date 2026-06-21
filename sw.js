@@ -5,7 +5,7 @@
  * @version 2.1.0
  */
 
-const CACHE_NAME = 'bit-repository-v3.2.1';
+const CACHE_NAME = 'bit-repository-v3.2.2';
 const STATIC_ASSETS = [
     './',
     './index.html',
