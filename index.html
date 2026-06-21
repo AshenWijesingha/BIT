@@ -2039,6 +2039,144 @@
             .chevron, .folder-content { transition: none !important; }
         }
     </style>
+
+    <!-- ============================================================
+         SEARCH BARS + LANDING PAGE — refined, friendly, cohesive
+         ============================================================ -->
+    <style id="bit-search-landing">
+        /* ---- Unified pill-style search fields ---- */
+        #searchInput, #heroSearchInput {
+            width: 100%;
+            border-radius: 9999px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            box-shadow: var(--shadow-sm);
+            transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease),
+                        background-color 0.18s var(--ease);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        #searchInput {
+            height: 44px;
+            padding: 0 3.25rem 0 2.7rem;
+            font-size: 0.9rem;
+        }
+        #heroSearchInput {
+            height: 54px;
+            padding: 0 3.75rem 0 3.1rem;
+            font-size: 1.02rem;
+        }
+        #searchInput::placeholder, #heroSearchInput::placeholder { color: var(--muted-2); }
+        #searchInput:hover, #heroSearchInput:hover { border-color: var(--border-strong); }
+        #searchInput:focus, #heroSearchInput:focus {
+            outline: none;
+            border-color: var(--brand-500);
+            background: var(--surface);
+            box-shadow: var(--ring), var(--shadow-sm);
+        }
+        body.dark-mode #searchInput, body.dark-mode #heroSearchInput { background: var(--surface-2); }
+        body.dark-mode #searchInput:focus, body.dark-mode #heroSearchInput:focus { background: var(--surface-3); }
+
+        /* Leading magnifier icon — perfectly centered (direct child svg only) */
+        .search-box > svg {
+            position: absolute;
+            left: 1.05rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.15rem;
+            height: 1.15rem;
+            color: var(--muted-2);
+            pointer-events: none;
+            transition: color 0.18s var(--ease);
+        }
+        .hero-search > svg { left: 1.15rem; width: 1.3rem; height: 1.3rem; }
+        .search-box:focus-within > svg { color: var(--brand-500); }
+
+        /* Clear button + results count — vertically centered */
+        #clearSearchBtn {
+            top: 50%;
+            right: 0.55rem;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            color: var(--muted);
+            transition: background-color 0.15s var(--ease), color 0.15s var(--ease);
+        }
+        #clearSearchBtn:hover { background: var(--surface-3); color: var(--text); }
+        #searchResultsCount {
+            top: 50%;
+            right: 2.55rem;
+            transform: translateY(-50%);
+            background: var(--brand-soft);
+            color: var(--brand-700);
+            border-radius: 9999px;
+            font-weight: 600;
+            padding: 0.1rem 0.45rem;
+        }
+        body.dark-mode #searchResultsCount { background: rgba(99,102,241,0.16); color: var(--brand-400); }
+        /* Ctrl+F hint in the hero search */
+        .hero-search kbd {
+            top: 50%;
+            right: 0.85rem;
+            transform: translateY(-50%);
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 0.45rem;
+        }
+        body.dark-mode .hero-search kbd { background: var(--surface-2); border-color: var(--border); }
+
+        /* ---- Landing page refinement ---- */
+        #welcomeMessage > div { padding: 2rem 1.75rem; }
+        @media (min-width: 640px) { #welcomeMessage > div { padding: 2.75rem 2.5rem; } }
+
+        /* Logo ring */
+        #welcomeMessage > div img { box-shadow: 0 18px 40px -18px rgba(79,70,229,0.45); }
+
+        /* Cohesive stat tiles: clean surface cards with a colored accent number,
+           replacing the multi-gradient "rainbow" look */
+        #welcomeMessage .grid > div {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            box-shadow: var(--shadow-sm);
+            padding: 0.9rem 0.75rem;
+            transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease), border-color 0.18s var(--ease);
+        }
+        #welcomeMessage .grid > div:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: var(--border-strong);
+        }
+
+        /* Quick-access chips: unified, friendly pills */
+        #quickAccessLinks button {
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-2);
+            padding: 0.4rem 0.9rem;
+            font-weight: 500;
+            transition: transform 0.16s var(--ease), background-color 0.16s var(--ease),
+                        color 0.16s var(--ease), border-color 0.16s var(--ease);
+        }
+        #quickAccessLinks button:hover {
+            background: var(--brand-soft);
+            color: var(--brand-700);
+            border-color: var(--brand-400);
+            transform: translateY(-1px);
+        }
+        body.dark-mode #quickAccessLinks button:hover { color: var(--brand-400); background: rgba(99,102,241,0.14); }
+
+        /* "Quick Access" label */
+        #welcomeMessage .border-t { border-color: var(--border); }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Skip to content link for accessibility -->
@@ -2094,7 +2232,7 @@
                 </div>
                 
                 <!-- Search Bar -->
-                <div class="search-container mb-3 sm:mb-4 relative group">
+                <div class="search-container search-box mb-3 sm:mb-4 relative group">
                     <input 
                         type="text" 
                         id="searchInput" 
@@ -2274,7 +2412,7 @@
                     
                     <!-- Quick Search (Main Interface) -->
                     <div class="mb-6">
-                        <div class="relative group max-w-md mx-auto">
+                        <div class="search-box hero-search relative group max-w-md mx-auto">
                             <input 
                                 type="text" 
                                 id="heroSearchInput" 
@@ -2512,7 +2650,7 @@
             <div class="border-t border-gray-700 pt-4">
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">© 2026 BIT Repository. Educational materials for the BIT program.</p>
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">Made with ❤️ for students</p>
-                <p class="text-xs text-gray-500" id="appVersion">Version 3.2.2</p>
+                <p class="text-xs text-gray-500" id="appVersion">Version 3.3.0</p>
             </div>
         </div>
     </footer>
@@ -2653,7 +2791,7 @@
                     <div class="text-center">
                         <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_128,h_128,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-20 w-20 mx-auto rounded-2xl shadow-lg mb-4 object-cover ring-4 ring-blue-100 dark:ring-blue-900">
                         <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">BIT Repository</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.2.2</span></p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.3.0</span></p>
                     </div>
                     
                     <!-- Purpose -->
@@ -2862,7 +3000,7 @@
          */
         
         /** @constant {string} APP_VERSION - Application version number */
-        const APP_VERSION = '3.2.2';
+        const APP_VERSION = '3.3.0';
         
         // Configure PDF.js worker - Must be set before any PDF loading
         if (typeof pdfjsLib !== 'undefined') {
