@@ -2251,33 +2251,36 @@
                         border-color 0.18s var(--ease, ease);
         }
 
+        /* These buttons must show a THEMED surface at REST (not only on hover),
+           so they never look light in dark mode. !important defeats any
+           conflicting utility / cache / injection-order issue. */
+
         /* ---- Sidebar minimize button ---- */
-        #minimizeSidebar { color: var(--muted); border-radius: 0.6rem; }
-        #minimizeSidebar svg { color: currentColor; }
-        #minimizeSidebar:hover { background: var(--brand-soft); color: var(--brand-600); }
-        body.dark-mode #minimizeSidebar { color: var(--muted); }
-        body.dark-mode #minimizeSidebar svg { color: currentColor; }
-        body.dark-mode #minimizeSidebar:hover { background: rgba(99, 102, 241, 0.16); color: var(--brand-400); }
+        #minimizeSidebar { background-color: var(--surface-3) !important; color: var(--muted) !important; border-radius: 0.6rem; }
+        #minimizeSidebar svg { color: currentColor !important; }
+        #minimizeSidebar:hover { background-color: var(--brand-soft) !important; color: var(--brand-600) !important; }
+        body.dark-mode #minimizeSidebar { background-color: var(--surface-3) !important; color: var(--muted) !important; }
+        body.dark-mode #minimizeSidebar:hover { background-color: rgba(99, 102, 241, 0.20) !important; color: var(--brand-400) !important; }
 
         /* ---- Favorites / Recently-viewed "Clear" buttons ---- */
-        #clearFavorites, #clearRecent { color: var(--muted); border-radius: 0.5rem; }
-        #clearFavorites:hover, #clearRecent:hover { color: #dc2626; background: rgba(220, 38, 38, 0.10); }
-        body.dark-mode #clearFavorites, body.dark-mode #clearRecent { color: var(--muted); }
-        body.dark-mode #clearFavorites:hover, body.dark-mode #clearRecent:hover { color: #f87171; background: rgba(248, 113, 113, 0.15); }
+        #clearFavorites, #clearRecent { background-color: var(--surface-3) !important; color: var(--muted) !important; border-radius: 0.5rem; }
+        #clearFavorites:hover, #clearRecent:hover { color: #dc2626 !important; background-color: rgba(220, 38, 38, 0.12) !important; }
+        body.dark-mode #clearFavorites, body.dark-mode #clearRecent { background-color: var(--surface-3) !important; color: var(--muted) !important; }
+        body.dark-mode #clearFavorites:hover, body.dark-mode #clearRecent:hover { color: #f87171 !important; background-color: rgba(248, 113, 113, 0.18) !important; }
 
         /* ---- Hero "View Help" button (ghost) ---- */
-        #viewHelpBtn { background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); }
-        #viewHelpBtn:hover { background: var(--surface-3); }
-        body.dark-mode #viewHelpBtn { background: var(--surface-2); color: var(--text-2); border-color: var(--border); }
-        body.dark-mode #viewHelpBtn:hover { background: var(--surface-3); }
+        #viewHelpBtn { background-color: var(--surface-2) !important; color: var(--text-2) !important; border: 1px solid var(--border) !important; }
+        #viewHelpBtn:hover { background-color: var(--surface-3) !important; }
+        body.dark-mode #viewHelpBtn { background-color: var(--surface-2) !important; color: var(--text-2) !important; border-color: var(--border) !important; }
+        body.dark-mode #viewHelpBtn:hover { background-color: var(--surface-3) !important; }
 
         /* ---- Header Help button icon stays white on the gradient header ---- */
         #helpButton svg { color: #fff; }
 
         /* ---- Footer About / Help / Contact (footer is dark in both themes) ---- */
-        .footer .footer-link-item { color: #cbd5e1; border-radius: 0.6rem; }
-        .footer .footer-link-item svg { color: currentColor; }
-        .footer .footer-link-item:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
+        .footer .footer-link-item { background-color: rgba(255, 255, 255, 0.06) !important; color: #d8dee9 !important; border-radius: 0.6rem; }
+        .footer .footer-link-item svg { color: currentColor !important; }
+        .footer .footer-link-item:hover { color: #ffffff !important; background-color: rgba(255, 255, 255, 0.12) !important; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -2752,7 +2755,7 @@
             <div class="border-t border-gray-700 pt-4">
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">© 2026 BIT Repository. Educational materials for the BIT program.</p>
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">Made with ❤️ for students</p>
-                <p class="text-xs text-gray-500" id="appVersion">Version 3.4.1</p>
+                <p class="text-xs text-gray-500" id="appVersion">Version 3.4.2</p>
             </div>
         </div>
     </footer>
@@ -2893,7 +2896,7 @@
                     <div class="text-center">
                         <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_128,h_128,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-20 w-20 mx-auto rounded-2xl shadow-lg mb-4 object-cover ring-4 ring-blue-100 dark:ring-blue-900">
                         <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">BIT Repository</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.4.1</span></p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.4.2</span></p>
                     </div>
                     
                     <!-- Purpose -->
@@ -3102,7 +3105,7 @@
          */
         
         /** @constant {string} APP_VERSION - Application version number */
-        const APP_VERSION = '3.4.1';
+        const APP_VERSION = '3.4.2';
         
         // Configure PDF.js worker - Must be set before any PDF loading
         if (typeof pdfjsLib !== 'undefined') {
