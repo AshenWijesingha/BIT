@@ -2512,7 +2512,7 @@
             <div class="border-t border-gray-700 pt-4">
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">© 2026 BIT Repository. Educational materials for the BIT program.</p>
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">Made with ❤️ for students</p>
-                <p class="text-xs text-gray-500" id="appVersion">Version 3.2.0</p>
+                <p class="text-xs text-gray-500" id="appVersion">Version 3.2.1</p>
             </div>
         </div>
     </footer>
@@ -2653,7 +2653,7 @@
                     <div class="text-center">
                         <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_128,h_128,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-20 w-20 mx-auto rounded-2xl shadow-lg mb-4 object-cover ring-4 ring-blue-100 dark:ring-blue-900">
                         <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">BIT Repository</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.2.0</span></p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.2.1</span></p>
                     </div>
                     
                     <!-- Purpose -->
@@ -2862,7 +2862,7 @@
          */
         
         /** @constant {string} APP_VERSION - Application version number */
-        const APP_VERSION = '3.2.0';
+        const APP_VERSION = '3.2.1';
         
         // Configure PDF.js worker - Must be set before any PDF loading
         if (typeof pdfjsLib !== 'undefined') {
@@ -3072,8 +3072,10 @@
         const pdfTitle = document.getElementById('pdfTitle');
         const downloadPdf = document.getElementById('downloadPdf');
         const openInNewTab = document.getElementById('openInNewTab');
-        const pdfViewer = document.getElementById('pdfViewer');
-        const pdfViewerFallback = document.getElementById('pdfViewerFallback');
+        // Reassignable: the native <object> viewer is recreated on each load
+        // (changing its `data` attribute alone does not reliably reload PDFs).
+        let pdfViewer = document.getElementById('pdfViewer');
+        let pdfViewerFallback = document.getElementById('pdfViewerFallback');
         const pdfCanvasContainer = document.getElementById('pdfCanvasContainer');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -5020,46 +5022,66 @@
                 
                 // Hide page navigation for native mode
                 pageNavigation.classList.add('hidden');
-                
-                pdfViewer.classList.remove('hidden');
-                pdfCanvasContainer.classList.add('hidden');
-                
+
                 // Set PDF URL with view parameters for better display
                 const pdfUrl = encodedPath + PDF_VIEW_MODE;
-                
+
+                // Recreate the <object> on every load. Changing the existing
+                // object's `data` attribute does NOT reliably reload the PDF in
+                // most browsers — the previously opened file stays visible — so
+                // we replace the node to guarantee the new file is shown.
+                const freshViewer = document.createElement('object');
+                freshViewer.id = 'pdfViewer';
+                freshViewer.type = 'application/pdf';
+                freshViewer.setAttribute('width', '100%');
+                freshViewer.setAttribute('height', '100%');
+                freshViewer.style.minHeight = 'calc(100vh - 10rem)';
+
+                const freshFallback = document.createElement('iframe');
+                freshFallback.id = 'pdfViewerFallback';
+                freshFallback.title = 'PDF Viewer';
+                freshFallback.setAttribute('width', '100%');
+                freshFallback.setAttribute('height', '100%');
+                freshFallback.style.minHeight = 'calc(100vh - 10rem)';
+                freshViewer.appendChild(freshFallback);
+
+                pdfViewer.replaceWith(freshViewer);
+                pdfViewer = freshViewer;
+                pdfViewerFallback = freshFallback;
+
+                pdfViewer.classList.remove('hidden');
+                pdfCanvasContainer.classList.add('hidden');
+
                 // Load PDF using object tag (better mobile support)
                 pdfViewer.onload = function() {
                     hideLoadingIndicator();
                     pdfContainer.classList.remove('hidden');
                 };
-                
+
                 pdfViewer.onerror = function(e) {
                     console.error('PDF object tag failed:', e);
                     // Try iframe fallback
                     pdfViewerFallback.src = pdfUrl;
-                    
+
                     // Set a timeout to check if iframe also fails
                     setTimeout(() => {
                         // If we're still in loading state after iframe attempt, show error
                         if (!loadingIndicator.classList.contains('hidden')) {
                             hideLoadingIndicator();
                             pdfContainer.classList.add('hidden');
-                            
+
                             // Show error message with recovery options
                             showToast('PDF viewer failed. Please use "Open in New Tab" or "Download" buttons.', 'error');
                         }
                     }, PDF_LOAD_TIMEOUT_MS + 2000);
-                    
+
                     hideLoadingIndicator();
                     pdfContainer.classList.remove('hidden');
                 };
-                
-                // Clear previous iframe src to prevent double loading
-                pdfViewerFallback.src = '';
-                
-                // Set the data attribute on object tag for PDF
+
+                // Set the data attribute on the fresh object tag to load the PDF
                 pdfViewer.setAttribute('data', pdfUrl);
-                
+
                 // Fallback timeout in case onload doesn't fire
                 setTimeout(() => {
                     if (loadingIndicator.style.display === 'flex') {
