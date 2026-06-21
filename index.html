@@ -1943,6 +1943,102 @@
             header.header-height button { padding-left: 0.5rem; padding-right: 0.5rem; }
         }
     </style>
+
+    <!-- ============================================================
+         UI POLISH — smooth, consistent animations, uniform controls,
+         and a clean collapsed (minimized) sidebar rail.
+         ============================================================ -->
+    <style id="bit-ui-polish">
+        :root { --ease: cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Sidebar, main content and footer move together (no jump) when
+           collapsing/expanding the desktop sidebar */
+        #sidebar.sidebar-responsive {
+            transition: width 0.3s var(--ease), max-width 0.3s var(--ease),
+                        transform 0.3s var(--ease), background-color 0.3s var(--ease),
+                        border-color 0.3s var(--ease);
+        }
+        main#main-content { transition: margin-left 0.3s var(--ease); }
+        .footer {
+            transition: margin-left 0.3s var(--ease), width 0.3s var(--ease),
+                        background-color 0.3s var(--ease), padding 0.3s var(--ease);
+        }
+
+        /* Gentle cross-fade of key surfaces when switching light/dark */
+        body,
+        header.header-height,
+        .pdf-controls-wrapper > div,
+        .modal-content,
+        .confirm-dialog,
+        .stats-badge,
+        .kbd {
+            transition-property: background-color, border-color, color;
+            transition-duration: 0.25s;
+            transition-timing-function: var(--ease);
+        }
+
+        /* Smoother folder chevron + expand/collapse */
+        .chevron { transition: transform 0.25s var(--ease); }
+        .folder-content { transition: max-height 0.3s var(--ease); }
+
+        /* ---- Collapsed (minimized) sidebar = clean icon rail (desktop only) ---- */
+        @media (min-width: 1024px) {
+            /* Hide ALL detailed content so nothing leaks past the 4rem rail
+               (the base rules missed the favorites/recent lists and empty states) */
+            .sidebar-responsive.minimized .search-container,
+            .sidebar-responsive.minimized .file-stats-container,
+            .sidebar-responsive.minimized .sidebar-section,
+            .sidebar-responsive.minimized .sidebar-text {
+                display: none !important;
+            }
+
+            /* Tighten padding and center the lone expand button */
+            .sidebar-responsive.minimized > div { padding-left: 0.5rem; padding-right: 0.5rem; }
+            .sidebar-responsive.minimized > div > div:first-child {
+                justify-content: center;
+                margin-bottom: 0;
+                padding-bottom: 0;
+                border-bottom: 0;
+            }
+            .sidebar-responsive.minimized #minimizeSidebar {
+                margin: 0 auto;
+                width: 44px;
+                height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        /* ---- Uniform header controls ---- */
+        header.header-height button {
+            min-width: 42px;
+            min-height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ---- Consistent, tactile press feedback on primary controls ---- */
+        #browseFilesBtn, #aboutBtn, #viewHelpBtn,
+        #downloadPdf, #printPdf, #copyLinkBtn, #fullscreenToggle, #openInNewTab,
+        #prevPage, #nextPage {
+            transition: transform 0.12s var(--ease), filter 0.18s var(--ease),
+                        background-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
+        }
+        #browseFilesBtn:active, #aboutBtn:active, #viewHelpBtn:active,
+        #downloadPdf:active, #printPdf:active, #copyLinkBtn:active,
+        #fullscreenToggle:active, #openInNewTab:active,
+        #prevPage:active, #nextPage:active { transform: translateY(1px) scale(0.985); }
+
+        .scroll-to-top { transition: transform 0.2s var(--ease), filter 0.2s var(--ease); }
+
+        /* Respect reduced-motion: keep layout transitions instant */
+        @media (prefers-reduced-motion: reduce) {
+            #sidebar.sidebar-responsive, main#main-content, .footer,
+            .chevron, .folder-content { transition: none !important; }
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
     <!-- Skip to content link for accessibility -->
@@ -2416,7 +2512,7 @@
             <div class="border-t border-gray-700 pt-4">
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">© 2026 BIT Repository. Educational materials for the BIT program.</p>
                 <p class="text-xs sm:text-sm text-gray-400 mb-1.5">Made with ❤️ for students</p>
-                <p class="text-xs text-gray-500" id="appVersion">Version 3.1.0</p>
+                <p class="text-xs text-gray-500" id="appVersion">Version 3.2.0</p>
             </div>
         </div>
     </footer>
@@ -2557,7 +2653,7 @@
                     <div class="text-center">
                         <img src="https://res.cloudinary.com/dkj22lm1g/image/upload/w_128,h_128,c_fill/v1768415117/BIT_Repository_xropb0.jpg" alt="BIT Repository Logo" class="h-20 w-20 mx-auto rounded-2xl shadow-lg mb-4 object-cover ring-4 ring-blue-100 dark:ring-blue-900">
                         <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">BIT Repository</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.1.0</span></p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Version <span id="aboutVersion">3.2.0</span></p>
                     </div>
                     
                     <!-- Purpose -->
@@ -2766,7 +2862,7 @@
          */
         
         /** @constant {string} APP_VERSION - Application version number */
-        const APP_VERSION = '3.1.0';
+        const APP_VERSION = '3.2.0';
         
         // Configure PDF.js worker - Must be set before any PDF loading
         if (typeof pdfjsLib !== 'undefined') {
